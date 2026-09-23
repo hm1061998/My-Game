@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/services/" />
+  <Folder Name="/services/api/">
+    <Project Path="services/api/OfficeCaseFiles.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OfficeCaseFiles.Api.Tests/OfficeCaseFiles.Api.Tests.csproj" />
+  </Folder>
+</Solution>
