@@ -85,7 +85,7 @@ TypeScript type generation from OpenAPI remains open. Vite still warns about the
 
 ## Next action
 
-T27 V0 passed: direction A (editorial detective) with original AI-assisted assets is accepted. Next is V1 game-first shell and tokens. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
+T27 V1 (game-first shell + direction-A tokens) is verified and committed. Next: V2 environment art using original AI-assisted assets, each recorded in `docs/assets/manifest.md`. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
 
 ## Relevant references
 

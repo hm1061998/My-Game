@@ -1,6 +1,30 @@
-:root { color: #e7eceb; background: #0b1720; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-synthesis: none; text-rendering: optimizeLegibility; --ink: #17333d; --navy: #112832; --navy-2: #173742; --paper: #fff8e9; --mint: #d9eee2; --coral: #dd7655; --amber: #f4bd64; --line: #34515c; --muted: #a9b9bb; }
+/* T27 direction A tokens. Mirror of src/theme/tokens.ts. */
+:root {
+  --ink: #1d3b3a; --ink-soft: #3f5c5a; --wall: #2f6f6a; --desk: #8fd3c1;
+  --paper: #efe3cc; --paper-light: #fff6e6; --paper-edge: #d8c7a6;
+  --coral: #e76f51; --amber: #f4a261; --safe: #2f8f6b; --danger: #c8442f; --info: #2f6f9f;
+  --muted: #5e6f6b; --line: #cdbb98;
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, "Segoe UI", sans-serif;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --radius-s: 6px; --radius-m: 10px; --radius-l: 14px;
+  --outline: 3px; --focus: 3px solid var(--coral);
+  --elev-1: 0 2px 0 rgb(29 59 58 / 18%), 0 6px 16px rgb(29 59 58 / 10%);
+  --elev-2: 0 3px 0 rgb(29 59 58 / 22%), 0 18px 40px rgb(29 59 58 / 18%);
+  --motion-fast: 120ms; --motion-base: 200ms; --motion-slow: 360ms;
+  color: var(--ink); background: var(--paper); font-family: var(--font-ui);
+  font-synthesis: none; text-rendering: optimizeLegibility;
+}
 * { box-sizing: border-box; }
-html { min-width: 320px; background: #0b1720; }
-body { min-width: 320px; min-height: 100vh; margin: 0; background: radial-gradient(circle at 82% 0%, rgb(76 137 135 / 22%), transparent 33%), radial-gradient(circle at 12% 32%, rgb(221 118 85 / 10%), transparent 28%), linear-gradient(180deg, #102630 0%, #09141c 100%); }
+html { min-width: 320px; background: var(--paper); }
+body {
+  min-width: 320px; min-height: 100vh; margin: 0; background-color: var(--paper);
+  background-image: radial-gradient(rgb(29 59 58 / 7%) 1px, transparent 1.2px);
+  background-size: 8px 8px;
+}
 button, input, textarea, select { font: inherit; }
-button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 3px solid #ffd17c; outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: var(--focus); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-fast: 0ms; --motion-base: 0ms; --motion-slow: 0ms; }
+  *, *::before, *::after { animation-duration: 0ms !important; transition-duration: 0ms !important; }
+}

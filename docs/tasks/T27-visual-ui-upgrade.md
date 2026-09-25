@@ -1,12 +1,12 @@
 # T27 — Game-first visual and interface upgrade
 
-Status: approved
+Status: in_progress
 Owner: Codex
 Depends on: T10
 Plan version: 1.0
 Approval: approved by user 2026-09-25 — option (b): full V0→V5 sequence with the mandatory V0 visual checkpoint; art direction and asset-source choice remain pending at V0 exit gate
 Lifecycle phase: define/design
-Workflow step: V0 exit gate passed — user chose direction A and original AI-assisted assets; next is V1 game-first shell and design system
+Workflow step: V1 complete and verified (game-first shell, shared tokens, status states); next is V2 environment art
 
 ## Outcome and success signal
 
@@ -147,11 +147,20 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: start V1 (viewport-first shell, shared CSS/Phaser tokens) on direction A.
+Next action: start V2 — generate direction-A office environment art (AI-assisted, manifest entry per asset) and replace code-drawn zones without moving collision rects.
+
+## V1 evidence (2026-09-25)
+
+- Changed: `apps/web/src/theme/tokens.ts` (colors, fonts, outline, motion, status glyphs, reduced-motion helper), `index.css` tokens and reduced-motion override, `App.tsx`/`App.css` viewport-first shell (compact case bar, dominant scene, collapsible mission drawer, control strip, secondary diagnostics), `StatusBadge.tsx` (loading/offline/missing/locked/success/recovery with distinct glyph + border shape), Phaser palette/fonts/camera-lerp reading tokens. No change to map, collision, scanner, session, scoring or API.
+- 1280×800 in-app browser: canvas 958×651 (baseline 896×496), document height 800 (baseline 979, no scroll). Drawer collapse: `aria-expanded=false`, body hidden, canvas widens to 1234 px; re-open restores 1010 px.
+- 375×812: no horizontal scroll, desktop-keyboard notice visible, API-down path shows two `offline` alerts with ⚠ glyph.
+- Scripts on final revision: `lint` pass, `typecheck` pass, `test:run` 21/21 (3 new StatusBadge/token tests), `build` pass (pre-existing Phaser chunk-size warning), headed `scripts/e2e.ps1` via Windows PowerShell 5.1 + `.tools/dotnet`: 1 passed, ~60 fps, p95 frame 17 ms.
+- Environment: the user-approved stop of the developer API (PID 5848) was required because it locked `OfficeCaseFiles.Api.exe` during the E2E build. `npm run e2e` needs `pwsh`, which is not installed here.
 
 ## Improvement review
 
-- Result: none
+- Result: candidate (L008)
+- V1 observation: `npm run e2e` hard-codes `pwsh`, absent on this machine, and a running developer API locks the build output the E2E runner needs. Recorded as candidate L008; no script change until it recurs.
 - Observation/evidence: T09 and T10 already supply the reusable React/Phaser lifecycle, visible-browser and integration-runner lessons. This audit found product-specific visual gaps, not a new cross-task failure mode.
 - Mechanism changed or no-change reason: no rule, skill, script or runtime mechanism changed; the proposed art pipeline remains unapproved design scope.
 - Validation: source/asset manifest review plus visible 1280×800 layout measurement on baseline `6af49c0`; generated preview state was removed and Git remained clean before documentation edits.

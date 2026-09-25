@@ -3,6 +3,7 @@ import type { GameLifecycleEvent, WorldInteraction } from '../bridge/events'
 import { moveWithCollision, movementDelta, type Point, type Rect } from '../movement'
 import { advancePatrol, CHECKPOINT, DODGE_COOLDOWN_MS, DODGE_DURATION_MS,
   reachedCheckpoint, SCANNER_MIN_X, SCANNER_RADIUS, SCANNER_Y, scannerDetects } from '../encounter'
+import { COLOR, FONT, prefersReducedMotion } from '../../theme/tokens'
 import { characterStyle, evidenceStyle, interactionLabel, movementPose, OFFICE_PALETTE,
   type CharacterStyle } from '../presentation'
 
@@ -94,17 +95,18 @@ export class OfficeScene extends Phaser.Scene {
     keyboard.on('keydown-SPACE', this.tryDodge)
 
     this.pauseLabel = this.add.text(22, 58, 'TẠM DỪNG  ·  ESC để tiếp tục', {
-      color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
+      color: COLOR.ink, backgroundColor: COLOR.paperLight, fontFamily: FONT.ui,
       fontSize: '18px', fontStyle: 'bold', padding: { x: 14, y: 10 },
     }).setScrollFactor(0).setDepth(10000).setOrigin(0, 1).setVisible(false)
     this.dodgeLabel = this.add.text(22, 15, 'SPACE · Né sẵn sàng', {
-      color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
+      color: COLOR.ink, backgroundColor: COLOR.paperLight, fontFamily: FONT.ui,
       fontSize: '15px', padding: { x: 10, y: 7 },
     }).setScrollFactor(0).setDepth(10000).setOrigin(0, 1)
     this.positionCanvasLabels()
     this.scale.on(Phaser.Scale.Events.RESIZE, this.positionCanvasLabels)
 
-    this.cameras.main.startFollow(this.player!, true, 0.12, 0.12)
+    const lerp = prefersReducedMotion() ? 1 : 0.12
+    this.cameras.main.startFollow(this.player!, true, lerp, lerp)
     this.cameras.main.setDeadzone(80, 60)
     if (import.meta.env.VITE_E2E_OBSERVABILITY === '1') {
       window.__officeCaseFilesE2E = { snapshot: () => ({
@@ -226,13 +228,13 @@ export class OfficeScene extends Phaser.Scene {
         const style = evidenceStyle(interaction.id)
         marker.add([
           this.add.rectangle(0, -27, 38, 34, style.color).setStrokeStyle(3, OFFICE_PALETTE.cream),
-          this.add.text(0, -29, style.symbol, { color: '#17333d', fontFamily: 'Georgia, serif',
+          this.add.text(0, -29, style.symbol, { color: '#17333d', fontFamily: FONT.display,
             fontSize: '22px', fontStyle: 'bold' }).setOrigin(0.5),
         ])
       }
       marker.add(this.add.text(0, interaction.kind === 'npc' ? -112 : -62,
         interactionLabel(interaction.id, interaction.labelVi), {
-          color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
+          color: COLOR.ink, backgroundColor: COLOR.paperLight, fontFamily: FONT.ui,
           fontSize: '13px', fontStyle: 'bold', padding: { x: 7, y: 4 },
         }).setOrigin(0.5).setStroke('#fff8e9', 1))
       return marker
@@ -273,7 +275,7 @@ export class OfficeScene extends Phaser.Scene {
     this.checkpointMarker.add([
       this.add.ellipse(0, 0, 112, 55, 0x4dbb91, 0.33).setStrokeStyle(2, 0x23866b),
       this.add.text(0, -45, 'MỐC AN TOÀN', { color: '#17333d', backgroundColor: '#e5fff2',
-        fontFamily: 'system-ui, sans-serif', fontSize: '15px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
+        fontFamily: FONT.ui, fontSize: '15px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
     ])
     this.checkpointMarker.setVisible(this.checkpointId === 'office-entry')
     this.add.rectangle(1360, SCANNER_Y, 330, 180, 0xf4c682, 0.12)
@@ -284,7 +286,7 @@ export class OfficeScene extends Phaser.Scene {
       this.add.circle(0, -26, 21, 0x355f75).setStrokeStyle(4, 0xe9d4a5),
       this.add.circle(0, -26, 8, 0xf7d07b),
       this.add.text(0, -61, 'MÁY QUÉT', { color: '#6f2b22', backgroundColor: '#fff1db',
-        fontFamily: 'system-ui, sans-serif', fontSize: '14px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
+        fontFamily: FONT.ui, fontSize: '14px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
     ])
     this.scanner.setVisible(this.checkpointId === 'meeting-zone' && !this.encounterCleared)
   }
@@ -336,13 +338,13 @@ export class OfficeScene extends Phaser.Scene {
       this.add.rectangle(x, 105, 190, 31, 0x8fc9d8).setStrokeStyle(5, 0xf8f5e7).setDepth(-57)
     }
     this.add.text(132, 185, 'LOBBY  →  MAIN OFFICE', {
-      color: '#58717a', fontFamily: 'system-ui, sans-serif', fontSize: '22px', fontStyle: 'bold',
+      color: '#58717a', fontFamily: FONT.ui, fontSize: '22px', fontStyle: 'bold',
     }).setDepth(-50)
     this.add.text(1180, 824, 'MEETING ZONE', {
-      color: '#678890', fontFamily: 'system-ui, sans-serif', fontSize: '20px', fontStyle: 'bold',
+      color: '#678890', fontFamily: FONT.ui, fontSize: '20px', fontStyle: 'bold',
     }).setDepth(-50)
     this.add.text(1284, 388, 'ARCHIVE · RESTRICTED', {
-      color: '#8e5a43', backgroundColor: '#fff1db', fontFamily: 'system-ui, sans-serif',
+      color: '#8e5a43', backgroundColor: '#fff1db', fontFamily: FONT.ui,
       fontSize: '17px', fontStyle: 'bold', padding: { x: 9, y: 5 },
     }).setDepth(-50)
   }
@@ -429,7 +431,7 @@ export class OfficeScene extends Phaser.Scene {
       this.add.ellipse(0, -102, 38, 16, style.hair),
       this.add.circle(10, -87, 3, OFFICE_PALETTE.ink),
       this.add.circle(-13, -52, 11, OFFICE_PALETTE.cream).setStrokeStyle(2, style.accent),
-      this.add.text(-13, -52, style.badge, { color: '#17333d', fontFamily: 'system-ui, sans-serif',
+      this.add.text(-13, -52, style.badge, { color: '#17333d', fontFamily: FONT.ui,
         fontSize: '10px', fontStyle: 'bold' }).setOrigin(0.5),
     ])
     return figure

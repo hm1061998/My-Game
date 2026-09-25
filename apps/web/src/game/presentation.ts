@@ -1,13 +1,15 @@
+import { COLOR, colorNumber } from '../theme/tokens'
+
 export const OFFICE_PALETTE = {
-  ink: 0x17333d,
+  ink: colorNumber(COLOR.ink),
   navy: 0x294858,
   teal: 0x3f7f83,
   mint: 0xd9eee2,
-  cream: 0xfff8e9,
-  coral: 0xdd7655,
-  amber: 0xf4bd64,
-  danger: 0xd65d4c,
-  safe: 0x3c9b78,
+  cream: colorNumber(COLOR.paperLight),
+  coral: colorNumber(COLOR.coral),
+  amber: colorNumber(COLOR.amber),
+  danger: colorNumber(COLOR.danger),
+  safe: colorNumber(COLOR.safe),
   floor: 0xdcece4,
   floorLine: 0xb7d4ca,
 } as const

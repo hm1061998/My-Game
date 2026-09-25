@@ -13,6 +13,7 @@ import type { GameLifecycleEvent, WorldInteraction } from "./game/bridge/events"
 import { currentObjective } from "./game/presentation";
 import { ResolutionPanel } from "./ResolutionPanel";
 import { SceneHud } from "./SceneHud";
+import { StatusBadge } from "./StatusBadge";
 import "./App.css";
 
 const GameCanvas = lazy(async () => {
@@ -39,6 +40,7 @@ export default function App() {
   const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
   const [answerFeedback, setAnswerFeedback] = useState<AnswerResult | null>(null);
   const [answerError, setAnswerError] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [notice, setNotice] = useState<string | null>(null);
   const [assistEnabled, setAssistEnabled] = useState(false);
   const [encounterError, setEncounterError] = useState<string | null>(null);
@@ -245,121 +247,92 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <header className="case-header">
-        <div>
-          <p className="eyebrow">OFFICE CASE FILES · A2–B1 ACTION DETECTIVE</p>
+      <header className="case-bar">
+        <div className="case-title">
+          <p className="eyebrow">OFFICE CASE FILES · CASE 01</p>
           <h1>The Swapped Report</h1>
-          <p className="case-summary">
-            Một bản báo cáo quan trọng đã bị tráo. Hãy khám phá văn phòng, đọc
-            manh mối tiếng Anh và tìm ra chuyện gì đã xảy ra.
-          </p>
         </div>
-        <dl className="status-panel" aria-label="Trạng thái hệ thống">
-          <div>
-            <dt>Game</dt>
-            <dd>{gameStatus}</dd>
-          </div>
-          <div>
-            <dt>API</dt>
-            <dd
-              className={
-                health.isSuccess ? "online" : health.isError ? "offline" : ""
-              }
-            >
-              {health.isSuccess
-                ? "Đã kết nối"
-                : health.isError
-                  ? "Chưa kết nối"
-                  : "Đang kiểm tra…"}
-            </dd>
-          </div>
-        </dl>
+        <p className="case-summary">
+          Một bản báo cáo quan trọng đã bị tráo. Hãy khám phá văn phòng, đọc
+          manh mối tiếng Anh và tìm ra chuyện gì đã xảy ra.
+        </p>
+        <div className="status-panel" aria-label="Trạng thái hệ thống">
+          <StatusBadge tone={gameStatus.startsWith("Đang khởi") ? "loading" : "success"}>
+            <span className="status-key">Game</span> {gameStatus}
+          </StatusBadge>
+          <StatusBadge tone={health.isSuccess ? "success" : health.isError ? "offline" : "loading"}>
+            <span className="status-key">API</span>{" "}
+            {health.isSuccess ? "Đã kết nối" : health.isError ? "Chưa kết nối" : "Đang kiểm tra…"}
+          </StatusBadge>
+        </div>
       </header>
 
-      <section className="workspace" aria-label="Khu vực điều tra">
-        <aside className="mission-card">
-          <p className="label">NHIỆM VỤ HIỆN TẠI</p>
-          <h2 lang="en">Explore the office</h2>
-          <p>{objective}</p>
-          <div className="controls" aria-label="Điều khiển">
-            <span>
-              <kbd>WASD</kbd> hoặc phím mũi tên: di chuyển
-            </span>
-            <span>
-              <kbd>Shift</kbd> Chạy
-            </span>
-            <span>
-              <kbd>Esc</kbd> Tạm dừng / tiếp tục
-            </span>
-            <span><kbd>E</kbd> Tương tác khi đứng gần điểm điều tra</span>
-            <span><kbd>Space</kbd> Né máy quét; có thời gian hồi</span>
-          </div>
-          <div className="session-panel" aria-live="polite">
-            <h3>Lượt điều tra</h3>
-            {session.isPending && <p>Đang kiểm tra lượt chơi…</p>}
-            {session.isError && (
-              <p role="alert">
-                Không tải được tiến độ. Kiểm tra API rồi tải lại trang.
-              </p>
-            )}
-            {session.isSuccess && !session.data && (
-              <>
-                <p>Chưa có lượt chơi trên trình duyệt này.</p>
-                <button
-                  type="button"
-                  disabled={started.isPending}
-                  onClick={() => started.mutate()}
-                >
-                  {started.isPending
-                    ? "Đang tạo lượt…"
-                    : "Bắt đầu lượt điều tra"}
-                </button>
-              </>
-            )}
-            {session.data && (
-              <>
-                <p>
-                  Mốc đã lưu:{" "}
-                  <strong>
-                    {session.data.checkpointId === "meeting-zone"
-                      ? "Khu họp"
-                      : "Sảnh văn phòng"}
-                  </strong>
-                </p>
-                <p>Phiên bản tiến độ: {session.data.revision}</p>
-                <p>Máy quét: {session.data.encounterCleared ? "Đã vượt" :
-                  `${session.data.encounterFailures} lần bị phát hiện`}</p>
-                {session.data.assistanceUsed && <p>Đã dùng chế độ hỗ trợ quét chậm.</p>}
-                <button type="button" onClick={openNotebook}>Mở sổ tay điều tra</button>
-                <button type="button" onClick={() => setOverlay("resolution")}>
-                  {session.data.status === "Completed" ? "Xem kết quả vụ án" : "Kết luận vụ án"}
-                </button>
-              </>
-            )}
-            {started.isError && (
-              <p role="alert">
-                Không lưu được tiến độ. Hãy kiểm tra API hoặc tải lại trang rồi
-                thử lại.
-              </p>
-            )}
-          </div>
-        </aside>
-
+      <section className={`workspace${drawerOpen ? "" : " drawer-collapsed"}`} aria-label="Khu vực điều tra">
         <div className="scene-card">
-          <div className="scene-toolbar">
-            <span>FLOOR 08 · MAIN OFFICE</span>
-            <span className="prototype-tag">CASE 01 · LIVE INVESTIGATION</span>
-          </div>
           <div className="scene-stage">
             <SceneHud objective={objective} session={session.data ?? null} nearby={nearby}
               notice={notice} mapError={caseMap.isError} />
-            <Suspense fallback={<div className="game-loading">Đang dựng hiện trường…</div>}>
+            <Suspense fallback={<div className="game-loading"><StatusBadge tone="loading">Đang dựng hiện trường…</StatusBadge></div>}>
               <GameCanvas key={gameGeneration} onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
                 overlayOpen={!!overlay} worldState={worldState} />
             </Suspense>
           </div>
+          <div className="control-strip" aria-label="Điều khiển">
+            <span><kbd>WASD</kbd>/<kbd>↑↓←→</kbd> Di chuyển</span>
+            <span><kbd>Shift</kbd> Chạy</span>
+            <span><kbd>E</kbd> Tương tác</span>
+            <span><kbd>Space</kbd> Né máy quét</span>
+            <span><kbd>Esc</kbd> Tạm dừng</span>
+          </div>
           <p className="desktop-notice" role="note">Gameplay cần bàn phím desktop. Nội dung hồ sơ và kết quả vẫn đọc được trên màn hình hẹp.</p>
         </div>
+
+        <aside className="mission-drawer" aria-label="Nhiệm vụ và lượt điều tra">
+          <button type="button" className="drawer-toggle" aria-expanded={drawerOpen}
+            aria-controls="mission-drawer-body" onClick={() => setDrawerOpen(open => !open)}>
+            <span aria-hidden="true">{drawerOpen ? "›" : "‹"}</span>
+            <span className="drawer-toggle-label">{drawerOpen ? "Thu gọn" : "Nhiệm vụ"}</span>
+          </button>
+          <div id="mission-drawer-body" className="drawer-body" hidden={!drawerOpen}>
+            <p className="label">NHIỆM VỤ HIỆN TẠI</p>
+            <h2 lang="en">Explore the office</h2>
+            <p>{objective}</p>
+            <div className="session-panel" aria-live="polite">
+              <h3>Lượt điều tra</h3>
+              {session.isPending && <StatusBadge tone="loading">Đang kiểm tra lượt chơi…</StatusBadge>}
+              {session.isError && <StatusBadge tone="offline" role="alert">
+                Không tải được tiến độ. Kiểm tra API rồi tải lại trang.</StatusBadge>}
+              {session.isSuccess && !session.data && (
+                <>
+                  <StatusBadge tone="missing">Chưa có lượt chơi trên trình duyệt này.</StatusBadge>
+                  <button type="button" className="primary-action" disabled={started.isPending}
+                    onClick={() => started.mutate()}>
+                    {started.isPending ? "Đang tạo lượt…" : "Bắt đầu lượt điều tra"}
+                  </button>
+                </>
+              )}
+              {session.data && (
+                <>
+                  <button type="button" className="primary-action" onClick={openNotebook}>Mở sổ tay điều tra</button>
+                  <button type="button" className="secondary-action" onClick={() => setOverlay("resolution")}>
+                    {session.data.status === "Completed" ? "Xem kết quả vụ án" : "Kết luận vụ án"}
+                  </button>
+                  <div className="session-facts">
+                    <p>Mốc đã lưu:{" "}
+                      <strong>{session.data.checkpointId === "meeting-zone" ? "Khu họp" : "Sảnh văn phòng"}</strong>
+                    </p>
+                    <p>Máy quét: {session.data.encounterCleared ? "Đã vượt" :
+                      `${session.data.encounterFailures} lần bị phát hiện`}</p>
+                    {session.data.assistanceUsed && <p>Đã dùng chế độ hỗ trợ quét chậm.</p>}
+                    <p className="diagnostic">Phiên bản tiến độ: {session.data.revision}</p>
+                  </div>
+                </>
+              )}
+              {started.isError && <StatusBadge tone="offline" role="alert">
+                Không lưu được tiến độ. Hãy kiểm tra API hoặc tải lại trang rồi thử lại.</StatusBadge>}
+            </div>
+          </div>
+        </aside>
       </section>
 
       {overlay && <div className="investigation-backdrop">
@@ -369,9 +342,9 @@ export default function App() {
           {overlay === "retry" && <>
             <h2>{encounterOutcome === "cleared" ?
               "Xác nhận vượt máy quét" : "Bị máy quét phát hiện"}</h2>
-            <p>{encounterOutcome === "cleared" ?
-              "Đang lưu kết quả vượt qua máy quét." :
-              "Bạn đã quay về mốc an toàn. Manh mối và câu trả lời đã lưu vẫn còn."}</p>
+            <StatusBadge tone={encounterOutcome === "cleared" ? "success" : "recovery"}>
+              {encounterOutcome === "cleared" ? "Đang lưu kết quả vượt qua máy quét." :
+                "Bạn đã quay về mốc an toàn. Manh mối và câu trả lời đã lưu vẫn còn."}</StatusBadge>
             <p>Số lần bị phát hiện: {session.data?.encounterFailures ?? 0}</p>
             {session.data && session.data.encounterFailures >= 2 && !assistEnabled &&
               <button type="button" onClick={() => setAssistEnabled(true)}>Bật hỗ trợ: máy quét chậm hơn</button>}
@@ -386,7 +359,7 @@ export default function App() {
           {overlay === "dialogue" && dialogue && <>
             <h2>{dialogue.title ?? "Đồng nghiệp"}</h2>
             {dialogue.dialogue?.map((line, index) => <p key={index}>{line}</p>)}
-            {dialogue.statementLocked && <p className="muted">Lời khai chi tiết sẽ mở khi có đủ bằng chứng.</p>}
+            {dialogue.statementLocked && <StatusBadge tone="locked">Lời khai chi tiết sẽ mở khi có đủ bằng chứng.</StatusBadge>}
           </>}
           {overlay === "notebook" && <>
             <h2>Sổ tay điều tra</h2>
@@ -452,10 +425,9 @@ export default function App() {
       </div>}
 
       {health.isError && (
-        <p className="api-warning" role="alert">
-          Backend chưa phản hồi. Khởi động API tại cổng 5062 rồi thử tải lại
-          trang.
-        </p>
+        <div className="api-warning"><StatusBadge tone="offline" role="alert">
+          Backend chưa phản hồi. Khởi động API tại cổng 5062 rồi thử tải lại trang.
+        </StatusBadge></div>
       )}
     </main>
   );
