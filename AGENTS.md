@@ -33,6 +33,7 @@ The current approved defaults are: Phaser sprite-based 2.5D, desktop keyboard co
 - Add dependencies only for a present task and update the lockfile.
 - Record decisions as proposed or accepted accurately. Memory never outranks the user's current instruction.
 - Update the task and `docs/memory/current.md` at a meaningful checkpoint or handoff.
+- At the end of every completed work session, after verification and handoff updates, commit only the scoped project changes and push the current branch to the already-configured `origin`. This is a standing user instruction for this repository. Never include unrelated user work, generated local state, databases, credentials or secrets; if the branch, remote, authentication or push result is ambiguous, stop and report the exact blocker instead of guessing.
 - Run the improvement review in `docs/agent/improvement.md` before every task handoff. Record `none` with a reason when no durable lesson exists.
 - Promote a lesson into a rule, skill, script, template, or ADR only after evidence supports reuse; validate the changed mechanism and avoid creating one for every small fix.
 - Docker and GitHub configuration begin only after the `code_complete` gate in `PROJECT_PLAN.md`.

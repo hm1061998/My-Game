@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: 8069335
-Dirty workspace: approved, uncommitted T06 question/unlock implementation, migration, tests and handoff docs. Git was clean at T06 start.
+Baseline: 344802f
+Dirty workspace: approved, uncommitted T07 browser-found React/Phaser lifecycle fixes plus README, rule, task, memory and lesson handoff updates. Git was clean when T07 verification resumed.
 
 ## Confirmed scope
 
@@ -20,11 +20,13 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T06 questions/unlocks is complete in the working tree; T01–T05, T13 and T14 are complete. T07 encounter/checkpoint is the next game slice. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T07 encounter/checkpoint is complete in the working tree; T01–T06, T13 and T14 are complete. T08 conclusion/review is the next game slice. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
-T06 was approved by the user's 2026-09-25 “tiếp tục bước sau” under PROJECT_PLAN.md 1.4. It reached visible browser confirmation, scripts, improvement review and handoff. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
+T07 was approved by the user's 2026-09-25 “tiếp tục” under PROJECT_PLAN.md 1.4. It reached visible Chrome confirmation, scripts, improvement review and handoff. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
+
+The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
 Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan, hãy lập task chi tiết vào tài liệu, chưa tiến hành code”. PROJECT_PLAN.md 1.4 and T16–T26 may be documented now; no admin code, dependency, migration, account, secret or external service is authorized in this turn.
 
@@ -42,6 +44,8 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - Browser testing found and fixed the scene pre-create input race and overlay Escape double-handling. The meeting checkpoint button remains a separate prototype action.
 - T06 added question prerequisites, safe GET/list/answer APIs, SQLite question progress and answer receipts, React notebook answer controls, retry feedback and post-pass explanation. First choice and attempt count persist; same submission ID/payload is idempotent. Q01 pass enables E05; Q02 alone does not enable E06; Q03 waits for T07's E03.
 - L005 is verified by T05 failure/fix and T06 visible Chrome Escape→canvas focus→movement path. No broader rule or skill was added.
+- T07 replaces the prototype checkpoint button with a physical meeting marker, adds a Phaser scanner patrol/dodge/retry loop and a two-failure slow-assist option, and persists encounter failures/clear/assist plus idempotent receipts atomically in SQLite. Completion makes E03 collectible; collecting it exposes Q03 without leaking the correct choice.
+- Visible Chrome covered checkpoint revision 1, two detections, assist, clear, E03/Q03 and reload at 1100×720. Browser verification found and fixed StrictMode duplicate canvases and unused Phaser audio-context exceptions; final reload had one canvas and no console/network issues. L006 records this as a candidate lifecycle lesson.
 
 ## Last checks
 
@@ -51,14 +55,15 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - T05 Chrome/Playwright at 1280×800 passed keyboard travel and `E` for E01/E02/E04, notebook content, reload retention and 1100×720 layout. One transient Chrome `ERR_NO_BUFFER_SPACE` did not reproduce on rerun.
 - T05 final `verify.ps1` passed agent structural check (20 tasks), npm ci/audit (0 advisories), lint/typecheck/build, 6 web tests, .NET locked restore/build (0 warnings/errors) and 5 API tests. EF T05 migration drift check found none.
 - T06 final headed Chrome at 1280×800 passed E01, wrong/correct Q01, Maya E05, Escape focus, reload with explanation and 1100×720 layout. `verify.ps1` passed 21 structural task checks, npm ci/audit 0, lint/typecheck/build, 6 web tests and 6 API tests; .NET build had 0 warnings/errors. T06 EF migration drift check and `git diff --check` passed.
+- T07 final visible Chrome at 1280×800 and a 1100×720 outer window passed physical checkpoint, two detections, assist, encounter clear, E03/Q03, reload/resume, single-canvas StrictMode cleanup and no console/network issues. Final `verify.ps1` passed 22 task checks, npm ci/audit (118 packages, 0 advisories), lint/typecheck/build, 10 web tests, locked .NET restore/build with 0 warnings/errors and 7 API tests. EF migration drift and `git diff --check` passed.
 
 ## Blockers and known issues
 
-No blocker for T06. E03 encounter and Q03/E06 continuation await T07; final scoring awaits T08. TypeScript type generation from OpenAPI remains open. The prototype checkpoint is not tied to in-canvas position. Vite still warns about the ~1.38 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal.
+No blocker for T07. Final conclusion/scoring awaits T08. TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio is intentionally disabled until a later approved slice introduces an audio feature.
 
 ## Next action
 
-Continue T07 encounter/checkpoint if the user asks for the next game step, with visible browser testing. Keep admin implementation stopped. When the user later authorizes admin coding, start T16 only: confirm the T05/T06 contract baseline and write approved identity/privacy/publishing/analytics decisions before T17–T24 implementation.
+Continue T08 conclusion/review if the user asks for the next game step, with a newly recorded approved task plan and visible browser testing. Keep admin implementation stopped. When the user later authorizes admin coding, start T16 only: confirm the T05–T08 contract baseline and write approved identity/privacy/publishing/analytics decisions before T17–T24 implementation.
 
 ## Relevant references
 
@@ -67,6 +72,7 @@ Continue T07 encounter/checkpoint if the user asks for the next game step, with 
 - `docs/tasks/T04-storage-session.md`
 - `docs/tasks/T05-case-npc-notebook.md`
 - `docs/tasks/T06-questions-unlocks.md`
+- `docs/tasks/T07-encounter-checkpoint.md`
 - `docs/tasks/T15-admin-console.md`
 - `docs/tasks/index.md`
 - `docs/agent/lessons.md`

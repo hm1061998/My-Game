@@ -8,7 +8,7 @@
 | [T04](T04-storage-session.md) storage/session foundation | done | Codex | T02 |
 | [T05](T05-case-npc-notebook.md) case/NPC/notebook | done | Codex | T03, T04 |
 | [T06](T06-questions-unlocks.md) questions/unlocks | done | Codex | T05 |
-| [T07](T07-encounter-checkpoint.md) encounter/checkpoint | approved | Codex | T03, T04, T05, T06 |
+| [T07](T07-encounter-checkpoint.md) encounter/checkpoint | done | Codex | T03, T04, T05, T06 |
 | T08 conclusion/review | todo | unassigned | T06, T07 |
 | T09 art/HUD/focus | todo | unassigned | T08 |
 | T10 browser/E2E/playtest | todo | unassigned | T08, T09 |

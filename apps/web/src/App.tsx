@@ -39,6 +39,7 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [assistEnabled, setAssistEnabled] = useState(false);
   const [encounterError, setEncounterError] = useState<string | null>(null);
+  const [encounterOutcome, setEncounterOutcome] = useState<"detected" | "cleared" | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const retryRef = useRef<{ id: string; submissionId: string; revision: number } | null>(null);
   const answerRetryRef = useRef<{ id: string; choiceId: string; submissionId: string; revision: number } | null>(null);
@@ -171,6 +172,7 @@ export default function App() {
         assistanceUsed: event.type === "encounter-cleared" && assistEnabled,
         submissionId: crypto.randomUUID(), revision: session.data.revision };
       encounterRetryRef.current = request;
+      setEncounterOutcome(request.outcome);
       setEncounterError(null);
       if (request.outcome === "detected") setOverlay("retry");
       encounter.mutate(request);
@@ -217,12 +219,16 @@ export default function App() {
     answerRetryRef.current = request;
     answer.mutate(request);
   };
+  const retryEncounter = () => {
+    const request = encounterRetryRef.current;
+    if (request) encounter.mutate(request);
+  };
   const activeQuestion = questions.data?.find(item => item.id === selectedQuestionId);
   const worldState = useMemo(() => session.data ? {
     checkpointId: session.data.checkpointId,
     encounterCleared: session.data.encounterCleared,
     assistEnabled,
-  } : undefined, [session.data?.checkpointId, session.data?.encounterCleared, assistEnabled]);
+  } : undefined, [session.data, assistEnabled]);
 
   return (
     <main className="app-shell">
@@ -349,9 +355,9 @@ export default function App() {
           aria-label={overlay === "notebook" ? "Sổ tay điều tra" : overlay === "retry" ? "Kết quả máy quét" : "Hội thoại"}>
           <button className="close-dialog" type="button" onClick={() => setOverlay(null)}>Đóng (Esc)</button>
           {overlay === "retry" && <>
-            <h2>{encounterRetryRef.current?.outcome === "cleared" ?
+            <h2>{encounterOutcome === "cleared" ?
               "Xác nhận vượt máy quét" : "Bị máy quét phát hiện"}</h2>
-            <p>{encounterRetryRef.current?.outcome === "cleared" ?
+            <p>{encounterOutcome === "cleared" ?
               "Đang lưu kết quả vượt qua máy quét." :
               "Bạn đã quay về mốc an toàn. Manh mối và câu trả lời đã lưu vẫn còn."}</p>
             <p>Số lần bị phát hiện: {session.data?.encounterFailures ?? 0}</p>
@@ -359,9 +365,9 @@ export default function App() {
               <button type="button" onClick={() => setAssistEnabled(true)}>Bật hỗ trợ: máy quét chậm hơn</button>}
             {assistEnabled && <p>Hỗ trợ quét chậm đang bật; không ảnh hưởng điểm tiếng Anh.</p>}
             {encounterError && <p role="alert">{encounterError}</p>}
-            {encounterError && encounterRetryRef.current &&
+            {encounterError &&
               <button type="button" disabled={encounter.isPending}
-                onClick={() => encounter.mutate(encounterRetryRef.current!)}>Gửi lại kết quả</button>}
+                onClick={retryEncounter}>Gửi lại kết quả</button>}
             <button type="button" disabled={encounter.isPending || !!encounterError}
               onClick={() => setOverlay(null)}>Thử lại</button>
           </>}

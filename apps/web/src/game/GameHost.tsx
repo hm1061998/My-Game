@@ -36,6 +36,7 @@ export function GameHost({ factory, onLifecycle, interactions = EMPTY_INTERACTIO
     return () => {
       runtimeRef.current = null
       game.destroy(true)
+      parent.replaceChildren()
       lifecycleRef.current?.({ type: 'destroyed' })
     }
   }, [factory])

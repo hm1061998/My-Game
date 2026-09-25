@@ -11,6 +11,7 @@ export const createGame: GameFactory = (parent, emit) => {
     scene: [scene],
     scale: { mode: Phaser.Scale.RESIZE, width: 960, height: 540 },
     render: { antialias: true, pixelArt: false },
+    audio: { noAudio: true },
   })
   return {
     destroy: (removeCanvas) => game.destroy(removeCanvas),

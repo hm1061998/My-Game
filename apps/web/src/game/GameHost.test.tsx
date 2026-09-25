@@ -1,3 +1,4 @@
+import { StrictMode } from 'react'
 import { render } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { GameHost } from './GameHost'
@@ -15,6 +16,18 @@ describe('GameHost', () => {
     expect(destroy).toHaveBeenCalledOnce()
     expect(destroy).toHaveBeenCalledWith(true)
     expect(lifecycle).toHaveBeenLastCalledWith({ type: 'destroyed' })
+  })
+
+  it('removes the old canvas before a StrictMode effect replay', () => {
+    const factory: GameFactory = vi.fn((parent) => {
+      parent.append(document.createElement('canvas'))
+      return { destroy: vi.fn(), setInteractions: vi.fn(), setOverlayPaused: vi.fn(), setWorldState: vi.fn() }
+    })
+    const view = render(<StrictMode><GameHost factory={factory} /></StrictMode>)
+    expect(factory).toHaveBeenCalledTimes(2)
+    expect(view.container.querySelectorAll('canvas')).toHaveLength(1)
+    view.unmount()
+    expect(view.container.querySelectorAll('canvas')).toHaveLength(0)
   })
 
   it('forwards game play-state changes to the DOM owner', () => {

@@ -1,12 +1,12 @@
 # T07 — Archive scanner encounter and checkpoint
 
-Status: approved
+Status: done
 Owner: Codex
 Depends on: T03, T04, T05, T06
 Plan version: PROJECT_PLAN.md 1.4, T07 implementation 1.0
 Approval: user's 2026-09-25 “tiếp tục” after committed T06; covers T07 game slice only
-Lifecycle phase: define/design → build
-Workflow step: plan and approval recorded; coding next
+Lifecycle phase: handoff and improve
+Workflow step: complete
 
 ## Outcome and exit gate
 
@@ -36,12 +36,17 @@ Excluded: real server-side movement proof/anti-cheat, combat, second encounter, 
 
 ## Handoff
 
-Pending implementation and evidence.
+- Baseline `8c434a2`; implementation arrived in commit `344802f`. Final verification/fixes and docs are uncommitted above that baseline. Dirty paths are limited to T07 React/Phaser lifecycle fixes, README and handoff files; local SQLite data and `.tools` remain ignored.
+- React/Phaser/API/domain/SQLite slice now provides the physical meeting checkpoint, scanner patrol, bounded dodge/cooldown, detection retry, two-failure assist eligibility, atomic idempotent encounter progress, E03 unlock and Q03 availability. Private answers remain server-only.
+- Visible Chrome at 1280×800 exercised a fresh session, physical checkpoint save (revision 1), two detections without lost progress (revision 3), assist selection, encounter clear (revision 4), E03 collection and Q03 availability (revision 5). Reload at a 1100×720 outer window resumed checkpoint/clear/assist/E03 with no alerts, console exceptions or 5xx responses.
+- Browser confirmation initially exposed two canvases plus closed `AudioContext` exceptions during React StrictMode replay. `GameHost` now removes the old parent children synchronously, a StrictMode regression test covers the replay, and Phaser audio is disabled while the game has no audio. Final reload had exactly one canvas and no recorded browser issues.
+- `./scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe` passed after stopping preview processes: agent docs, npm clean install/audit (118 packages, 0 vulnerabilities), lint, typecheck, 10 frontend tests, Vite build, locked .NET restore/build (0 warnings/errors), and 7 API tests. The first retries correctly failed while Vite held the Rolldown binding and while the API held its apphost; both passed after those preview processes stopped.
+- `dotnet ef migrations has-pending-model-changes` reported no drift and `git diff --check` passed. The known ~1.39 MB lazy Phaser chunk warning remains non-blocking. Next product slice is T08 conclusion/review; admin implementation remains deferred.
 
 ## Improvement review
 
-- Result: pending
-- Observation/evidence: pending
-- Mechanism changed or no-change reason: pending
-- Validation: pending
-- Follow-up trigger: pending
+- Result: candidate
+- Observation/evidence: visible Chrome reload exposed duplicate canvases and Phaser audio promise exceptions during React StrictMode effect replay even though ordinary component tests passed.
+- Mechanism changed or no-change reason: added L006, synchronous parent cleanup, `noAudio` while audio is unused, and a StrictMode regression test; no broad rule was promoted from one incident.
+- Validation: focused lint/typecheck and 7 frontend tests passed after the fix; final visible reload at 1100×720 showed one canvas and no console/network issues; full verify passed with 10 frontend and 7 API tests.
+- Follow-up trigger: verify the candidate again when T09 adds/remounts Phaser presentation or when audio is introduced; then either promote a scoped lifecycle checklist/test pattern or retire the `noAudio` part.
