@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: c7e71d7
-Dirty workspace: T10 planning/index/current-memory documentation only; Git was clean and synchronized with `origin/main` before planning.
+Baseline: T10 completion commit on `main` (parent `c80336e`)
+Dirty workspace: none expected after the T10 handoff commit and push.
 
 ## Confirmed scope
 
@@ -20,7 +20,7 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T10 browser/E2E/playtest plan 1.0 is drafted and awaiting approval; T01–T09, T13 and T14 are complete. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T10 browser/E2E/playtest is complete; T01–T10, T13 and T14 are complete. T11 handoff verification is next. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
@@ -31,6 +31,8 @@ T09 plan 1.0 was drafted after the user's 2026-09-25 instruction to continue and
 The user approved T09 implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”. Frontend-only implementation and visible browser verification are authorized within that recorded scope; audio, external raster assets, backend/storage changes and deployment remain excluded.
 
 The user's 2026-09-25 instruction “làm bước tiếp theo” authorizes drafting T10 plan 1.0, not installing Playwright or implementing the unreviewed suite. T10 proposes headed Chromium, a temporary isolated SQLite database, dedicated local ports, a full critical journey, manual visible playtest and an environment-qualified performance sample. Coding awaits approval of `docs/tasks/T10-browser-e2e-playtest.md`.
+
+The user approved T10 implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”. The scoped Playwright dependency/browser, isolated local runner, headed E2E journey, manual playtest, performance sample and defect fixes within existing MVP behavior are authorized. New gameplay/contracts/schema, admin implementation, Docker/CI, deployment and publishing remain excluded.
 
 The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
@@ -57,6 +59,9 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - Replay browser testing found the old Phaser position could instantly save the meeting checkpoint in a new session. Remounting `GameCanvas` when a session is created restored revision 0 at `office-entry`; L006 is now verified across T07 and T08.
 - T09 centralizes code-authored Phaser presentation tokens/variants, adds distinct character and evidence visuals plus movement/dodge pose feedback, and layers a semantic objective/checkpoint/scanner/assist/interaction HUD over the canvas. Narrow screens retain readable content and explicitly require a desktop keyboard for gameplay.
 - T09 visible Chrome fallback confirmed live keyboard movement to the meeting checkpoint, HUD updates, overlay Escape/focus recovery, one canvas, 1100×720 without horizontal overflow and the 390px desktop notice. A fresh-session focus race was fixed in GameHost and regression-tested; L006 is promoted as the complete React/Phaser session boundary.
+- T10 adds a pinned Playwright 1.63 headed Chromium journey plus an isolated PowerShell runner with dedicated ports, unique temporary SQLite data, explicit migration/readiness, owned-process cleanup and performance output. The full case passes real keyboard movement, retry/idempotency, checkpoint/scanner recovery, conclusion/review, reload and fresh replay with one canvas.
+- Final T10 measurements on Windows/Chromium were 7,063 ms total readiness, approximately 60 FPS over 1.607 seconds, p95/longest frame interval 17 ms, and 35.7 seconds for the complete journey. Visible Chrome separately confirmed pause/resume and responsive shell behavior. The production bundle excludes the E2E hook/private solution/token strings.
+- L007 promotes the validated Windows integration-runner pattern: quote paths, set working directories, fail on occupied ports, wait through the browser-facing proxy, and clean only owned processes plus validated unique data.
 
 ## Last checks
 
@@ -69,14 +74,15 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - T07 final visible Chrome at 1280×800 and a 1100×720 outer window passed physical checkpoint, two detections, assist, encounter clear, E03/Q03, reload/resume, single-canvas StrictMode cleanup and no console/network issues. Final `verify.ps1` passed 22 task checks, npm ci/audit (118 packages, 0 advisories), lint/typecheck/build, 10 web tests, locked .NET restore/build with 0 warnings/errors and 7 API tests. EF migration drift and `git diff --check` passed.
 - T08 final visible Chrome at 1280×800 and 1100×720 passed conclusion confirmation, 100/100 result, assist-neutral messaging, wrong/correct review retry, 5/5 reload persistence, single canvas and fresh replay revision 0. `verify.ps1` passed 23 task checks, npm audit 0, lint/typecheck/build, 13 web tests and 9 API tests; .NET build had 0 warnings/errors. EF migration drift, privacy/bundle search and `git diff --check` passed.
 - T09 visible Chrome at 1280×800 and 1100×720 plus a 390px emulated viewport passed layout, live checkpoint movement, HUD, overlay focus and single-canvas checks. The visible Codex in-app browser was retried first but failed with `windows sandbox failed: helper_unknown_error`; visible Chrome remained the documented fallback. Final `verify.ps1` passed 24 task checks, npm audit with 0 advisories, lint/typecheck/build, 18 web tests, .NET build with 0 warnings/errors and 9 API tests. Frontend bundle privacy scan, agent-doc check and `git diff --check` passed; only the known ~1.39 MB lazy Phaser chunk warning remains.
+- T10 final headed Chromium passed 1/1 complete journeys in 35.7 seconds after explicit migration/readiness; occupied-port rejection also passed. Separate visible Chrome confirmation passed movement/collision, pause/resume, one canvas, 1100×720 and 390px layout. Final `verify.ps1` passed 25 task checks, npm audit with 0 advisories, lint/typecheck/build, 18 web tests and 9 API tests; .NET build had 0 warnings/errors. The rebuilt bundle privacy scan and E2E listing passed.
 
 ## Blockers and known issues
 
-T10 coding is intentionally blocked on approval of plan 1.0. TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio and external raster assets remain outside the MVP. The visible Codex browser failed during both T09 planning and implementation with the same Windows sandbox helper error; visible Chrome is the verified local fallback until the host issue is fixed.
+TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal; `verify.ps1` currently inherits shell Node 22/npm 10 and reports an engine warning even though the approved Node 24/npm 11 path passes. Audio and external raster assets remain outside the MVP. The visible Codex browser failed again during T10 with the same Windows sandbox helper error; visible Chrome is the verified local fallback until the host issue is fixed.
 
 ## Next action
 
-Ask the user to approve or revise `docs/tasks/T10-browser-e2e-playtest.md` plan 1.0. After approval, install only the scoped Playwright dependency/browser and implement the isolated headed E2E runner. Keep admin implementation stopped and do not deploy or publish.
+Plan T11 handoff verification: have a fresh agent/context identify the active task, commands, evidence and known limits without relying on this session. Keep T12, admin implementation, Docker/CI, deployment and publishing stopped until their applicable checkpoint.
 
 ## Relevant references
 

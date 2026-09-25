@@ -1,12 +1,12 @@
 # T10 — Browser gameplay, E2E and playtest
 
-Status: awaiting_approval
+Status: done
 Owner: Codex
 Depends on: T08, T09
 Plan version: PROJECT_PLAN.md 1.4, T10 implementation 1.0
-Approval: pending user approval of this exact scope
-Lifecycle phase: define/design
-Workflow step: plan drafted; approval required before dependency installation or implementation
+Approval: user approved implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”
+Lifecycle phase: handoff complete
+Workflow step: implementation, visible browser verification, scripts and completion evidence passed
 
 ## Outcome and success signal
 
@@ -96,12 +96,16 @@ Expected affected areas: `apps/web/package.json`, `apps/web/package-lock.json`, 
 
 ## Handoff
 
-Planning only. Baseline `c7e71d7` was clean and synchronized with `origin/main`. No dependency, browser binary, E2E runner, test artifact, runtime code or database was created in this slice. Next action: user approves or revises T10 implementation plan 1.0.
+Implemented the pinned Playwright dependency, headed Chromium config, read-only E2E scene observability, isolated PowerShell runner, complete critical journey and README instructions. The runner validates dedicated ports, uses a unique temporary SQLite database, owns and cleans only its child processes/data, and records migration/readiness timings. Vitest explicitly excludes E2E specs while preserving its defaults.
+
+Final headed E2E passed the complete case, idempotent replay, detection/retry, conclusion/review, reload and replay in 35.7 seconds. A separate visible Chrome confirmation passed movement/collision, pause/resume, one-canvas ownership, 1100×720 layout and the 390px desktop notice. The Codex in-app browser was retried first and failed with the documented Windows sandbox helper error. Full evidence and limitations are in `docs/quality/T10-browser-playtest.md`.
+
+`scripts/verify.ps1` passed 18 frontend tests and 9 API tests with zero .NET warnings/errors. The final production bundle scan contains no E2E hook/private solution/token strings. The known lazy Phaser chunk warning remains. Next phase: plan T11 handoff verification; do not begin T12, admin implementation, Docker/CI or deployment without their applicable checkpoint.
 
 ## Improvement review
 
-- Result: none
-- Observation/evidence: the plan reuses promoted L003 fail-fast scripting and L006 React/Phaser lifecycle ownership. The repeated Codex browser sandbox failure is already documented with a verified visible fallback.
-- Mechanism changed or no-change reason: no rule, skill or script changed during planning; proposed test isolation and headed-browser mechanics remain task scope until approved and validated.
-- Validation: scope was checked against PROJECT_PLAN.md 1.4, current scripts/package layout, browser rules and official Playwright browser/web-server/trace guidance; documentation checks and `git diff --check` will run before the planning commit.
-- Follow-up trigger: reassess after the first isolated headed E2E run; create or promote a lesson only for an observed reusable failure mode.
+- Result: promoted
+- Observation/evidence: early Windows runs split DLL/script paths containing spaces, started the API without its content root, and could reach Vite before its API proxy was usable. These failures reproduced in the real repository and prevented deterministic E2E startup.
+- Mechanism changed or no-change reason: L007 records the reusable rule; `scripts/e2e.ps1` now quotes child arguments, sets explicit working directories, rejects occupied ports, waits for direct and proxied health, tracks owned PIDs and cleans only a validated unique run directory/database.
+- Validation: occupied-port rejection passed; repeated isolated success runs cleaned their databases/processes; the final headed journey and full repository verification passed.
+- Follow-up trigger: T12 should reuse the ownership/path/readiness pattern for storage round-trip processes; revisit only if the runner gains another service or cross-platform shell.

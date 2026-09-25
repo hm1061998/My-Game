@@ -6,6 +6,15 @@ import { advancePatrol, CHECKPOINT, DODGE_COOLDOWN_MS, DODGE_DURATION_MS,
 import { characterStyle, evidenceStyle, interactionLabel, movementPose, OFFICE_PALETTE,
   type CharacterStyle } from '../presentation'
 
+declare global {
+  interface Window {
+    __officeCaseFilesE2E?: { snapshot: () => {
+      position: Point; paused: boolean; overlayPaused: boolean; nearestId: string | null
+      checkpointId: string; encounterCleared: boolean; dodgeRemainingMs: number
+    } }
+  }
+}
+
 const WORLD_WIDTH = 1600
 const WORLD_HEIGHT = 1000
 const FLOOR: Rect = { x: 64, y: 142, width: 1472, height: 796 }
@@ -97,6 +106,13 @@ export class OfficeScene extends Phaser.Scene {
 
     this.cameras.main.startFollow(this.player!, true, 0.12, 0.12)
     this.cameras.main.setDeadzone(80, 60)
+    if (import.meta.env.VITE_E2E_OBSERVABILITY === '1') {
+      window.__officeCaseFilesE2E = { snapshot: () => ({
+        position: { ...this.position }, paused: this.paused, overlayPaused: this.overlayPaused,
+        nearestId: this.nearestId, checkpointId: this.checkpointId,
+        encounterCleared: this.encounterCleared, dodgeRemainingMs: this.dodgeRemainingMs,
+      }) }
+    }
     this.emit({ type: 'play-state', state: 'playing' })
 
     window.addEventListener('blur', this.pauseForFocusLoss)
@@ -109,6 +125,9 @@ export class OfficeScene extends Phaser.Scene {
       keyboard.off('keydown-SPACE', this.tryDodge)
       this.scale.off(Phaser.Scale.Events.RESIZE, this.positionCanvasLabels)
       keyboard.resetKeys()
+      if (import.meta.env.VITE_E2E_OBSERVABILITY === '1') {
+        delete window.__officeCaseFilesE2E
+      }
     })
   }
 

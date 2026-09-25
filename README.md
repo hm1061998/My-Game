@@ -135,6 +135,28 @@ Script cài dependencies theo lockfile, rồi chạy frontend lint/typecheck/tes
 ./scripts/verify.ps1 -DotnetCommand "./.tools/dotnet/dotnet.exe"
 ```
 
+### Chạy browser E2E
+
+Sau `npm ci`, cài Chromium đúng phiên bản Playwright một lần cho máy hiện tại:
+
+```powershell
+npm --prefix apps/web exec -- playwright install chromium
+```
+
+Chạy hành trình tích hợp bằng cửa sổ Chromium hiển thị, API thật và SQLite tạm cô lập:
+
+```powershell
+./scripts/e2e.ps1
+```
+
+Nếu dùng SDK .NET local của repository:
+
+```powershell
+./scripts/e2e.ps1 -DotnetCommand "./.tools/dotnet/dotnet.exe"
+```
+
+Runner dùng cổng test 5063/5174, dừng nếu cổng đã bị chiếm, migrate database riêng dưới `.tools/e2e`, rồi chỉ dừng các process do chính nó tạo. Database tạm luôn được xóa; log của lần lỗi được giữ trong thư mục run tương ứng để chẩn đoán. Browser luôn chạy headed theo quy tắc kiểm thử của dự án. `verify.ps1` không tự mở browser; E2E là gate riêng để việc chạy verification thông thường không bất ngờ chiếm focus.
+
 ## Xử lý lỗi thường gặp
 
 - `dotnet` không được nhận diện: mở terminal mới sau khi cài toàn máy, hoặc thiết lập lại `DOTNET_ROOT`/`PATH` cho SDK local như trên.
