@@ -2,39 +2,138 @@
 
 Web game nhập vai hành động trinh thám 2.5D kết hợp học tiếng Anh A2-B1. React quản lý UI, Phaser quản lý gameplay theo frame, và ASP.NET Core quản lý tiến độ đáng tin cậy.
 
-## Yêu cầu
+Repository hiện có nền tảng React/Phaser và API health check. SQLite, Docker và cấu hình GitHub chưa cần cho giai đoạn hiện tại; chúng chỉ được bổ sung theo các mốc trong `PROJECT_PLAN.md`.
 
-- Node 24 và pnpm 11.19.
-- .NET SDK 10.0.401 theo `global.json`.
+## Công cụ cần cài
+
+| Công cụ | Phiên bản | Bắt buộc | Ghi chú |
+| --- | --- | --- | --- |
+| Git | Bản đang được hỗ trợ | Có | Clone và quản lý source |
+| PowerShell | 7 trở lên | Có trên Windows | Chạy `scripts/verify.ps1` |
+| Node.js | 24.x; máy hiện tại đã kiểm tra với 24.15.0 | Có | Bao gồm npm; chạy Vite, React, Phaser và frontend tests |
+| npm | 11.12.1 | Có | Package manager duy nhất của dự án, được khóa trong `apps/web/package.json` |
+| .NET SDK | 10.0.401 hoặc patch tương thích theo `global.json` | Có | SDK đã bao gồm ASP.NET Core runtime; không cần cài runtime riêng |
+| Trình duyệt hiện đại | Chrome, Edge hoặc Firefox | Có | Chạy và kiểm tra game |
+
+Không cần cài riêng SQLite ở thời điểm này. Visual Studio/VS Code là tùy chọn. Docker cũng chưa cần cho local development hiện tại.
+
+## Kiểm tra môi trường
+
+Chạy tại PowerShell:
+
+```powershell
+git --version
+pwsh --version
+node --version
+npm --version
+dotnet --version
+```
+
+Kết quả mong đợi là Node `v24.x`, npm `11.12.1`, và `dotnet --version` không báo lỗi khi đứng tại thư mục repository. `global.json` sẽ tự kiểm tra SDK .NET phù hợp.
+
+## Cài đặt trên Windows
+
+### 1. Git và PowerShell
+
+Nếu máy chưa có hai công cụ này và có Windows Package Manager:
+
+```powershell
+winget install --exact --id Git.Git
+winget install --exact --id Microsoft.PowerShell
+```
+
+Sau khi cài, mở một cửa sổ PowerShell mới. Có thể tải thủ công từ [Git for Windows](https://git-scm.com/download/win) và [PowerShell](https://learn.microsoft.com/powershell/scripting/install/installing-powershell-on-windows).
+
+### 2. Node.js 24 và npm
+
+Cài Node.js 24 LTS từ [trang tải chính thức](https://nodejs.org/en/download/archive/v24). npm được cài cùng Node.js, không cần cài pnpm hoặc Yarn:
+
+```powershell
+node --version
+npm --version
+```
+
+Nếu đang dùng trình quản lý phiên bản Node, chọn một bản Node 24.x thay vì bản `latest` không cố định. Dự án dùng `package-lock.json`; không chạy pnpm hoặc Yarn vì chúng sẽ tạo lockfile khác.
+
+### 3. .NET SDK 10
+
+Cách cài toàn máy, phù hợp cho môi trường phát triển thông thường:
+
+```powershell
+winget install --exact --id Microsoft.DotNet.SDK.10
+dotnet --version
+```
+
+Nếu `dotnet --version` vẫn không dùng được với `global.json`, hoặc không có quyền admin/WinGet, cài chính xác SDK vào thư mục local đã được Git ignore:
+
+```powershell
+Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile '.dotnet-install.ps1'
+pwsh -NoProfile -ExecutionPolicy Bypass -File ./.dotnet-install.ps1 `
+  -Version 10.0.401 `
+  -InstallDir ./.tools/dotnet
+
+$env:DOTNET_ROOT = (Resolve-Path './.tools/dotnet').Path
+$env:PATH = "$env:DOTNET_ROOT;$env:PATH"
+dotnet --version
+```
+
+Hai biến môi trường trên chỉ áp dụng cho terminal hiện tại; chạy lại hai dòng đó khi mở terminal mới. Đây là cách cài không cần quyền admin theo [hướng dẫn `dotnet-install`](https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script). Với cài đặt toàn máy, xem thêm [hướng dẫn .NET trên Windows](https://learn.microsoft.com/dotnet/core/install/windows).
+
+## Khôi phục dependencies
+
+Từ thư mục gốc repository:
+
+```powershell
+npm --prefix apps/web ci
+dotnet restore OfficeCaseFiles.slnx --locked-mode --configfile NuGet.Config
+```
+
+Lần chạy đầu cần kết nối tới npm registry và NuGet. Dependencies frontend nằm trong `apps/web/node_modules`; NuGet packages được đặt tại `.packages/nuget`. Cả hai đều đã được Git ignore.
 
 ## Chạy local
 
-Terminal 1:
+Mở hai terminal tại thư mục gốc repository.
+
+Terminal 1 — API:
 
 ```powershell
-dotnet restore OfficeCaseFiles.slnx --locked-mode --configfile NuGet.Config
 dotnet run --project services/api --launch-profile http
 ```
 
-Terminal 2:
+API chạy tại `http://127.0.0.1:5062`; có thể kiểm tra `http://127.0.0.1:5062/api/v1/health`.
+
+Terminal 2 — web:
 
 ```powershell
-pnpm --dir apps/web install --frozen-lockfile
-pnpm --dir apps/web dev
+npm --prefix apps/web run dev
 ```
 
-Mở `http://127.0.0.1:5173`. Vite chuyển tiếp `/api` tới API tại `http://127.0.0.1:5062`.
+Mở `http://127.0.0.1:5173`. Vite chuyển tiếp `/api` tới API tại cổng 5062. Dừng mỗi tiến trình bằng `Ctrl+C`.
 
-## Kiểm tra
+## Chạy toàn bộ kiểm tra
 
 ```powershell
 ./scripts/verify.ps1
 ```
 
-Nếu `dotnet` chưa có trong PATH nhưng SDK nằm ở vị trí khác:
+Script cài dependencies theo lockfile, rồi chạy frontend lint/typecheck/test/build và backend restore/build/test. Nếu dùng SDK .NET local nhưng không thêm vào `PATH`:
 
 ```powershell
-./scripts/verify.ps1 -DotnetCommand "C:/path/to/dotnet.exe"
+./scripts/verify.ps1 -DotnetCommand "./.tools/dotnet/dotnet.exe"
 ```
 
-Đọc `AGENTS.md`, `docs/agent/protocol.md`, `docs/memory/current.md` và task hiện tại trước khi dùng AI agent. Docker và GitHub được cấu hình sau mốc `code_complete` theo `PROJECT_PLAN.md`.
+## Xử lý lỗi thường gặp
+
+- `dotnet` không được nhận diện: mở terminal mới sau khi cài toàn máy, hoặc thiết lập lại `DOTNET_ROOT`/`PATH` cho SDK local như trên.
+- `A compatible .NET SDK was not found`: chạy `dotnet --list-sdks`; cài SDK 10.0.401 hoặc patch tương thích với `global.json`.
+- npm sai phiên bản: dùng Node 24.x với npm 11.12.1 như `packageManager` trong `apps/web/package.json`; không cài pnpm hoặc Yarn cho repository này.
+- Cổng 5062 hoặc 5173 đang bận: dừng tiến trình đang dùng cổng đó; cấu hình Vite hiện giả định API ở đúng cổng 5062.
+- PowerShell chặn script cài .NET: chỉ dùng `-ExecutionPolicy Bypass` cho lệnh cài local được ghi ở trên; không cần đổi policy toàn máy.
+
+Trước khi dùng AI agent, đọc `AGENTS.md`, `docs/agent/protocol.md`, `docs/memory/current.md` và task hiện tại. Docker và GitHub được cấu hình sau mốc `code_complete` theo `PROJECT_PLAN.md`.
+
+## Vòng đời làm việc của agents
+
+Agents có thể thực hiện discovery, yêu cầu, thiết kế, kiến trúc, coding, nội dung, kiểm thử, tài liệu, đóng gói và release readiness. Deploy/publish/push hoặc thay đổi production chưa thuộc phạm vi được phép.
+
+Mỗi task phải kết thúc bằng `Improvement review`: ghi `none` nếu không có bài học bền vững, hoặc đưa bài học qua candidate → verified → promoted/retired theo `docs/agent/improvement.md`. `./scripts/verify.ps1` chạy structural check để bảo đảm task và agent foundation không bỏ qua bước này.

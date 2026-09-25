@@ -13,6 +13,14 @@ The current approved defaults are: Phaser sprite-based 2.5D, desktop keyboard co
 3. Read the closest nested `AGENTS.md` for directories you will edit.
 4. Confirm the workflow checkpoint and approval recorded in the task. Do not ask again for an approval that still covers the same scope.
 5. Load only the relevant project skill from `docs/agent/skills-index.md`.
+6. Read `docs/agent/improvement.md` and inspect open lessons relevant to the task in `docs/agent/lessons.md`.
+
+## Product lifecycle mandate
+
+- Agents may own work from discovery and requirements through product/design decisions, architecture, implementation, content, QA, security/privacy review, packaging, documentation, release readiness, and handoff.
+- Use the smallest lifecycle slice that fits the request, but state the current phase, entry evidence, exit gate, and next phase in the task.
+- Release readiness may create local artifacts, runbooks, Docker/CI configuration, and rollback plans when its prerequisite gate is approved. It does not authorize deployment, publishing, pushing, production mutation, account creation, or secret use.
+- Deployment is outside the current agent lifecycle until the user adds and approves a deployment phase.
 
 ## Working rules
 
@@ -25,7 +33,8 @@ The current approved defaults are: Phaser sprite-based 2.5D, desktop keyboard co
 - Add dependencies only for a present task and update the lockfile.
 - Record decisions as proposed or accepted accurately. Memory never outranks the user's current instruction.
 - Update the task and `docs/memory/current.md` at a meaningful checkpoint or handoff.
-- Promote a lesson or skill only after evidence supports reuse; do not create one for every small fix.
+- Run the improvement review in `docs/agent/improvement.md` before every task handoff. Record `none` with a reason when no durable lesson exists.
+- Promote a lesson into a rule, skill, script, template, or ADR only after evidence supports reuse; validate the changed mechanism and avoid creating one for every small fix.
 - Docker and GitHub configuration begin only after the `code_complete` gate in `PROJECT_PLAN.md`.
 
 ## Quality and safety
@@ -34,3 +43,4 @@ The current approved defaults are: Phaser sprite-based 2.5D, desktop keyboard co
 - Run focused checks while coding and the agreed full gates on the final revision.
 - Do not reset, delete, or overwrite unrelated user work.
 - Do not deploy, publish an image, make a repository public, or push to an unknown remote without the missing destination and authority.
+- Never let a self-improvement change broaden permissions, weaken approvals/tests, rewrite product intent, or authorize deployment.

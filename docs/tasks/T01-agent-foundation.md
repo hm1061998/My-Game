@@ -25,3 +25,11 @@ N/A: documentation and agent workflow only; T02 owns the first browser preview.
 ## Handoff
 
 Foundation files are present. Keep them short; add evidence to tasks/memory rather than accumulating generic rules here.
+
+## Improvement review
+
+- Result: none (retrospective record added by T14).
+- Observation/evidence: T01 established the original rules, memory, tasks, and two validated skills; no separate reusable lesson was recorded at that time.
+- Mechanism changed or no-change reason: T14 supersedes the informal learning convention with the mandatory repository-wide improvement loop.
+- Validation: T14 agent-foundation structural check includes this task.
+- Follow-up trigger: use the T14 mechanism for all future work.

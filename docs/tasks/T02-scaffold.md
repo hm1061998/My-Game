@@ -43,3 +43,11 @@ Included: pinned toolchain, root scripts/docs, client runtime bridge/lifecycle, 
 ## Handoff
 
 T02 meets its acceptance. T03 should replace the static foundation scene with a small office map, player movement, collision, foot-based depth, camera bounds, and pause/focus behavior. Keep the existing React/Phaser lifecycle boundary.
+
+## Improvement review
+
+- Result: none (retrospective record added by T14).
+- Observation/evidence: lifecycle cleanup, API proxy, and verification behavior were captured in code/tests and the existing vertical-slice skill; the Phaser chunk warning remains a measured backlog item rather than an agent rule.
+- Mechanism changed or no-change reason: no new rule or skill was warranted from the completed scaffold alone.
+- Validation: T14 agent-foundation structural check includes this task.
+- Follow-up trigger: revisit the chunk only after T03 supplies representative gameplay/assets.

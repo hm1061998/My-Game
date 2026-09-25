@@ -5,13 +5,15 @@ param(
 $ErrorActionPreference = "Stop"
 $repositoryRoot = Split-Path -Parent $PSScriptRoot
 
+& (Join-Path $PSScriptRoot "check-agent-docs.ps1")
+
 Push-Location (Join-Path $repositoryRoot "apps/web")
 try {
-    pnpm install --frozen-lockfile
-    pnpm lint
-    pnpm typecheck
-    pnpm test:run
-    pnpm build
+    npm ci
+    npm run lint
+    npm run typecheck
+    npm run test:run
+    npm run build
 }
 finally {
     Pop-Location
