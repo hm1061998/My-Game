@@ -40,6 +40,7 @@ The current approved defaults are: Phaser sprite-based 2.5D, desktop keyboard co
 ## Quality and safety
 
 - Test gameplay behavior in the real canvas: input, collision, depth, pause/focus, interactions, retry, and checkpoints where relevant.
+- For every browser preview or browser test, show the browser window to the user. Do not run browser checks headlessly or in a hidden tab.
 - Run focused checks while coding and the agreed full gates on the final revision.
 - Do not reset, delete, or overwrite unrelated user work.
 - Do not deploy, publish an image, make a repository public, or push to an unknown remote without the missing destination and authority.

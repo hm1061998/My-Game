@@ -24,8 +24,8 @@ Deployment is not a lifecycle phase in the current repository. Do not deploy, pu
 2. **Approval:** record the user's approval source, time, scope, and plan version in the task. A clear instruction to execute an existing plan approves that plan. Silence does not.
 3. **Code:** implement only the approved scope in reviewable increments.
 4. **Quick checks:** run the smallest useful type/build/test checks so the application can start.
-5. **Preview:** start real frontend/backend services and open the changed route in a browser. Record URL and revision.
-6. **Browser test:** exercise the acceptance scenarios, including relevant failure and recovery paths; inspect visible output and console/network errors.
+5. **Preview:** start real frontend/backend services and open the changed route in a visible browser window. Record URL and revision; do not use a hidden tab or headless browser.
+6. **Browser test:** keep the browser visible to the user while exercising acceptance scenarios, including relevant failure and recovery paths; inspect visible output and console/network errors.
 7. **Fix/retest:** reproduce, find the cause, fix, then repeat affected quick and browser checks.
 8. **Browser confirmation:** reload/rebuild the final revision and repeat the main scenario. Evidence from an older revision does not count.
 9. **Script gates:** run all required lint, type, build, domain/API, content/contract, and E2E scripts for the scope.
