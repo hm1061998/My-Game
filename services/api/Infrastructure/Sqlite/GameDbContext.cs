@@ -10,6 +10,10 @@ public sealed class GameDbContext(DbContextOptions<GameDbContext> options) : DbC
     public DbSet<QuestionProgressRow> Questions => Set<QuestionProgressRow>();
     public DbSet<AnswerReceiptRow> AnswerReceipts => Set<AnswerReceiptRow>();
     public DbSet<EncounterReceiptRow> EncounterReceipts => Set<EncounterReceiptRow>();
+    public DbSet<ConclusionRow> Conclusions => Set<ConclusionRow>();
+    public DbSet<ConclusionReceiptRow> ConclusionReceipts => Set<ConclusionReceiptRow>();
+    public DbSet<ReviewProgressRow> Reviews => Set<ReviewProgressRow>();
+    public DbSet<ReviewReceiptRow> ReviewReceipts => Set<ReviewReceiptRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,7 +60,83 @@ public sealed class GameDbContext(DbContextOptions<GameDbContext> options) : DbC
         encounterReceipts.HasKey(row => new { row.SessionId, row.SubmissionId });
         encounterReceipts.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId).OnDelete(DeleteBehavior.Cascade);
         encounterReceipts.Property(row => row.Outcome).HasMaxLength(20);
+
+        var conclusions = modelBuilder.Entity<ConclusionRow>();
+        conclusions.ToTable("Conclusions");
+        conclusions.HasKey(row => row.SessionId);
+        conclusions.HasOne<SessionRow>().WithOne().HasForeignKey<ConclusionRow>(row => row.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+        conclusions.Property(row => row.SuspectId).HasMaxLength(80);
+        conclusions.Property(row => row.ReasonId).HasMaxLength(80);
+        conclusions.Property(row => row.EvidenceId1).HasMaxLength(80);
+        conclusions.Property(row => row.EvidenceId2).HasMaxLength(80);
+
+        var conclusionReceipts = modelBuilder.Entity<ConclusionReceiptRow>();
+        conclusionReceipts.ToTable("ConclusionReceipts");
+        conclusionReceipts.HasKey(row => new { row.SessionId, row.SubmissionId });
+        conclusionReceipts.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        var reviews = modelBuilder.Entity<ReviewProgressRow>();
+        reviews.ToTable("ReviewProgress");
+        reviews.HasKey(row => new { row.SessionId, row.ReviewItemId });
+        reviews.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+        reviews.Property(row => row.ReviewItemId).HasMaxLength(80);
+
+        var reviewReceipts = modelBuilder.Entity<ReviewReceiptRow>();
+        reviewReceipts.ToTable("ReviewReceipts");
+        reviewReceipts.HasKey(row => new { row.SessionId, row.SubmissionId });
+        reviewReceipts.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
+}
+
+public sealed class ConclusionRow
+{
+    public Guid SessionId { get; set; }
+    public string SuspectId { get; set; } = string.Empty;
+    public string ReasonId { get; set; } = string.Empty;
+    public string EvidenceId1 { get; set; } = string.Empty;
+    public string EvidenceId2 { get; set; } = string.Empty;
+    public int ReadingScore { get; set; }
+    public int InvestigationScore { get; set; }
+    public int Revision { get; set; }
+    public DateTime SubmittedAtUtc { get; set; }
+}
+
+public sealed class ConclusionReceiptRow
+{
+    public Guid SessionId { get; set; }
+    public Guid SubmissionId { get; set; }
+    public string SuspectId { get; set; } = string.Empty;
+    public string ReasonId { get; set; } = string.Empty;
+    public string EvidenceId1 { get; set; } = string.Empty;
+    public string EvidenceId2 { get; set; } = string.Empty;
+    public int RequestedRevision { get; set; }
+    public int RevisionAfter { get; set; }
+}
+
+public sealed class ReviewProgressRow
+{
+    public Guid SessionId { get; set; }
+    public string ReviewItemId { get; set; } = string.Empty;
+    public int Attempts { get; set; }
+    public bool IsCompleted { get; set; }
+    public DateTime? CompletedAtUtc { get; set; }
+}
+
+public sealed class ReviewReceiptRow
+{
+    public Guid SessionId { get; set; }
+    public Guid SubmissionId { get; set; }
+    public string ReviewItemId { get; set; } = string.Empty;
+    public string ChoiceId { get; set; } = string.Empty;
+    public int RequestedRevision { get; set; }
+    public int RevisionAfter { get; set; }
+    public int AttemptsAfter { get; set; }
+    public bool IsCorrect { get; set; }
+    public bool IsCompleted { get; set; }
 }
 
 public sealed class EncounterReceiptRow

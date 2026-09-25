@@ -5,6 +5,7 @@ using OfficeCaseFiles.Api.Features.Sessions;
 using OfficeCaseFiles.Api.Features.Cases;
 using OfficeCaseFiles.Api.Features.Interactions;
 using OfficeCaseFiles.Api.Features.Questions;
+using OfficeCaseFiles.Api.Features.Conclusions;
 using OfficeCaseFiles.Api.Infrastructure.Content;
 using OfficeCaseFiles.Api.Infrastructure.Sqlite;
 
@@ -16,6 +17,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<InteractionService>();
 builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<ConclusionService>();
 builder.Services.AddSingleton<ICaseCatalog, JsonCaseCatalog>();
 
 var provider = builder.Configuration["Storage:Provider"];
@@ -69,6 +71,7 @@ app.MapSessionEndpoints();
 app.MapCaseEndpoints();
 app.MapInteractionEndpoints();
 app.MapQuestionEndpoints();
+app.MapConclusionEndpoints();
 
 _ = app.Services.GetRequiredService<ICaseCatalog>();
 

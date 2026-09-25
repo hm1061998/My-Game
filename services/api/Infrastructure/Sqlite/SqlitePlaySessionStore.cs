@@ -225,6 +225,123 @@ public sealed class SqlitePlaySessionStore(GameDbContext db) : IPlaySessionStore
         return new EncounterSaveResult(EncounterSaveStatus.Saved, ToDomain(row));
     }
 
+    public async Task<ConclusionRecord?> GetConclusionAsync(Guid sessionId, CancellationToken cancellationToken)
+    {
+        var row = await db.Conclusions.AsNoTracking()
+            .SingleOrDefaultAsync(item => item.SessionId == sessionId, cancellationToken);
+        return row is null ? null : ToConclusion(row);
+    }
+
+    public async Task<ConclusionSaveResult> SaveConclusionAsync(string tokenHash, int expectedRevision,
+        Guid submissionId, string suspectId, string reasonId, IReadOnlyList<string> evidenceIds,
+        int readingScore, int investigationScore, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        var orderedEvidence = evidenceIds.Order(StringComparer.Ordinal).ToArray();
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var session = await db.Sessions.SingleOrDefaultAsync(item => item.TokenHash == tokenHash, cancellationToken);
+        if (session is null || session.ExpiresAtUtc <= now.UtcDateTime)
+            return new ConclusionSaveResult(ConclusionSaveStatus.NotFound, null, 0);
+
+        var receipt = await db.ConclusionReceipts.AsNoTracking().SingleOrDefaultAsync(
+            item => item.SessionId == session.Id && item.SubmissionId == submissionId, cancellationToken);
+        if (receipt is not null)
+        {
+            var same = receipt.SuspectId == suspectId && receipt.ReasonId == reasonId &&
+                receipt.EvidenceId1 == orderedEvidence[0] && receipt.EvidenceId2 == orderedEvidence[1] &&
+                receipt.RequestedRevision == expectedRevision;
+            var existing = await db.Conclusions.AsNoTracking()
+                .SingleOrDefaultAsync(item => item.SessionId == session.Id, cancellationToken);
+            return same && existing is not null
+                ? new ConclusionSaveResult(ConclusionSaveStatus.AlreadyApplied, ToConclusion(existing), receipt.RevisionAfter)
+                : new ConclusionSaveResult(ConclusionSaveStatus.Conflict, null, session.Revision);
+        }
+        if (session.Status == "Completed")
+            return new ConclusionSaveResult(ConclusionSaveStatus.AlreadyCompleted,
+                await GetConclusionAsync(session.Id, cancellationToken), session.Revision);
+        if (session.Revision != expectedRevision)
+            return new ConclusionSaveResult(ConclusionSaveStatus.Conflict, null, session.Revision);
+
+        session.Revision++;
+        session.Status = "Completed";
+        session.UpdatedAtUtc = now.UtcDateTime;
+        session.ExpiresAtUtc = now.AddDays(30).UtcDateTime;
+        var conclusion = new ConclusionRow
+        {
+            SessionId = session.Id, SuspectId = suspectId, ReasonId = reasonId,
+            EvidenceId1 = orderedEvidence[0], EvidenceId2 = orderedEvidence[1],
+            ReadingScore = readingScore, InvestigationScore = investigationScore,
+            Revision = session.Revision, SubmittedAtUtc = now.UtcDateTime,
+        };
+        db.Conclusions.Add(conclusion);
+        db.ConclusionReceipts.Add(new ConclusionReceiptRow
+        {
+            SessionId = session.Id, SubmissionId = submissionId, SuspectId = suspectId,
+            ReasonId = reasonId, EvidenceId1 = orderedEvidence[0], EvidenceId2 = orderedEvidence[1],
+            RequestedRevision = expectedRevision, RevisionAfter = session.Revision,
+        });
+        await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new ConclusionSaveResult(ConclusionSaveStatus.Saved, ToConclusion(conclusion), session.Revision);
+    }
+
+    public async Task<IReadOnlyList<ReviewProgress>> ListReviewProgressAsync(
+        Guid sessionId, CancellationToken cancellationToken) =>
+        await db.Reviews.AsNoTracking().Where(item => item.SessionId == sessionId)
+            .OrderBy(item => item.ReviewItemId)
+            .Select(item => new ReviewProgress(item.ReviewItemId, item.Attempts, item.IsCompleted,
+                item.CompletedAtUtc == null ? null : new DateTimeOffset(item.CompletedAtUtc.Value, TimeSpan.Zero)))
+            .ToArrayAsync(cancellationToken);
+
+    public async Task<ReviewSaveResult> SaveReviewAsync(string tokenHash, int expectedRevision,
+        Guid submissionId, string reviewItemId, string choiceId, bool isCorrect, DateTimeOffset now,
+        CancellationToken cancellationToken)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var session = await db.Sessions.SingleOrDefaultAsync(item => item.TokenHash == tokenHash, cancellationToken);
+        if (session is null || session.ExpiresAtUtc <= now.UtcDateTime)
+            return new ReviewSaveResult(ReviewSaveStatus.NotFound, 0);
+        if (session.Status != "Completed")
+            return new ReviewSaveResult(ReviewSaveStatus.Locked, session.Revision);
+
+        var receipt = await db.ReviewReceipts.AsNoTracking().SingleOrDefaultAsync(
+            item => item.SessionId == session.Id && item.SubmissionId == submissionId, cancellationToken);
+        if (receipt is not null)
+            return receipt.ReviewItemId == reviewItemId && receipt.ChoiceId == choiceId &&
+                receipt.RequestedRevision == expectedRevision
+                ? new ReviewSaveResult(ReviewSaveStatus.AlreadyApplied, receipt.RevisionAfter,
+                    receipt.AttemptsAfter, receipt.IsCorrect, receipt.IsCompleted)
+                : new ReviewSaveResult(ReviewSaveStatus.Conflict, session.Revision);
+        if (session.Revision != expectedRevision)
+            return new ReviewSaveResult(ReviewSaveStatus.Conflict, session.Revision);
+
+        var progress = await db.Reviews.SingleOrDefaultAsync(
+            item => item.SessionId == session.Id && item.ReviewItemId == reviewItemId, cancellationToken);
+        if (progress?.IsCompleted == true)
+            return new ReviewSaveResult(ReviewSaveStatus.AlreadyCompleted, session.Revision,
+                progress.Attempts, false, true);
+        if (progress is null)
+        {
+            progress = new ReviewProgressRow { SessionId = session.Id, ReviewItemId = reviewItemId };
+            db.Reviews.Add(progress);
+        }
+        progress.Attempts++;
+        progress.IsCompleted = isCorrect;
+        if (isCorrect) progress.CompletedAtUtc = now.UtcDateTime;
+        session.Revision++;
+        session.UpdatedAtUtc = now.UtcDateTime;
+        session.ExpiresAtUtc = now.AddDays(30).UtcDateTime;
+        db.ReviewReceipts.Add(new ReviewReceiptRow
+        {
+            SessionId = session.Id, SubmissionId = submissionId, ReviewItemId = reviewItemId,
+            ChoiceId = choiceId, RequestedRevision = expectedRevision, RevisionAfter = session.Revision,
+            AttemptsAfter = progress.Attempts, IsCorrect = isCorrect, IsCompleted = progress.IsCompleted,
+        });
+        await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new ReviewSaveResult(ReviewSaveStatus.Saved, session.Revision,
+            progress.Attempts, isCorrect, progress.IsCompleted);
+    }
+
     private static PlaySession ToDomain(SessionRow row) => new(
         row.Id, row.CaseId, row.CaseVersion, row.Status, row.Revision,
         new DateTimeOffset(row.CreatedAtUtc, TimeSpan.Zero),
@@ -232,4 +349,9 @@ public sealed class SqlitePlaySessionStore(GameDbContext db) : IPlaySessionStore
         new DateTimeOffset(row.ExpiresAtUtc, TimeSpan.Zero),
         new WorldProgress(row.MapId, row.CheckpointId, row.EncounterCleared,
             row.EncounterFailures, row.AssistanceUsed));
+
+    private static ConclusionRecord ToConclusion(ConclusionRow row) => new(
+        row.SuspectId, row.ReasonId, [row.EvidenceId1, row.EvidenceId2],
+        row.ReadingScore, row.InvestigationScore, row.Revision,
+        new DateTimeOffset(row.SubmittedAtUtc, TimeSpan.Zero));
 }

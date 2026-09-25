@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: 03259b4
-Dirty workspace: T08 planning/index/memory documentation only; Git was clean and synchronized with `origin/main` before planning.
+Baseline: a22489b
+Dirty workspace: completed T08 implementation and handoff awaiting final commit/push; Git was clean and synchronized with `origin/main` when approval was recorded.
 
 ## Confirmed scope
 
@@ -20,11 +20,11 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T08 conclusion/review implementation 1.0 is planned and awaiting approval; T01–T07, T13 and T14 are complete. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T08 conclusion/review implementation 1.0 is complete; T01–T08, T13 and T14 are done. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
-T08 plan 1.0 was drafted after the user's 2026-09-25 “tiếp tục làm bước tiếp theo”. Coding is not approved yet because the detailed scope and the existing proposed case truth must be confirmed. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
+The user approved T08 plan 1.0 and its case-v1 truth on 2026-09-25 with “ok tôi duyệt”. Coding, local migration, tests and visible-browser verification are authorized within that scope. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
 
 The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
@@ -46,6 +46,9 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - L005 is verified by T05 failure/fix and T06 visible Chrome Escape→canvas focus→movement path. No broader rule or skill was added.
 - T07 replaces the prototype checkpoint button with a physical meeting marker, adds a Phaser scanner patrol/dodge/retry loop and a two-failure slow-assist option, and persists encounter failures/clear/assist plus idempotent receipts atomically in SQLite. Completion makes E03 collectible; collecting it exposes Q03 without leaking the correct choice.
 - Visible Chrome covered checkpoint revision 1, two detections, assist, clear, E03/Q03 and reload at 1100×720. Browser verification found and fixed StrictMode duplicate canvases and unused Phaser audio-context exceptions; final reload had one canvas and no console/network issues. L006 records this as a candidate lifecycle lesson.
+- T08 adds server-owned readiness and 0/33/67/100 first-try reading scoring, independent investigation scoring, one immutable/idempotent conclusion, post-submit explanation, five retryable review items and SQLite persistence. Pre-disclosure endpoints omit solution sets, correct review choices and explanations.
+- React now owns conclusion/confirmation/result/review/replay overlays. Visible Chrome produced 100/100 for Nora + misunderstanding + E03/E06, completed one wrong-then-correct review and all 5 items, persisted through reload at 1100×720, and retained one canvas without runtime errors.
+- Replay browser testing found the old Phaser position could instantly save the meeting checkpoint in a new session. Remounting `GameCanvas` when a session is created restored revision 0 at `office-entry`; L006 is now verified across T07 and T08.
 
 ## Last checks
 
@@ -56,14 +59,15 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - T05 final `verify.ps1` passed agent structural check (20 tasks), npm ci/audit (0 advisories), lint/typecheck/build, 6 web tests, .NET locked restore/build (0 warnings/errors) and 5 API tests. EF T05 migration drift check found none.
 - T06 final headed Chrome at 1280×800 passed E01, wrong/correct Q01, Maya E05, Escape focus, reload with explanation and 1100×720 layout. `verify.ps1` passed 21 structural task checks, npm ci/audit 0, lint/typecheck/build, 6 web tests and 6 API tests; .NET build had 0 warnings/errors. T06 EF migration drift check and `git diff --check` passed.
 - T07 final visible Chrome at 1280×800 and a 1100×720 outer window passed physical checkpoint, two detections, assist, encounter clear, E03/Q03, reload/resume, single-canvas StrictMode cleanup and no console/network issues. Final `verify.ps1` passed 22 task checks, npm ci/audit (118 packages, 0 advisories), lint/typecheck/build, 10 web tests, locked .NET restore/build with 0 warnings/errors and 7 API tests. EF migration drift and `git diff --check` passed.
+- T08 final visible Chrome at 1280×800 and 1100×720 passed conclusion confirmation, 100/100 result, assist-neutral messaging, wrong/correct review retry, 5/5 reload persistence, single canvas and fresh replay revision 0. `verify.ps1` passed 23 task checks, npm audit 0, lint/typecheck/build, 13 web tests and 9 API tests; .NET build had 0 warnings/errors. EF migration drift, privacy/bundle search and `git diff --check` passed.
 
 ## Blockers and known issues
 
-T08 coding is intentionally blocked on approval of plan 1.0 and the case-v1 truth (Nora misunderstood the instruction; E03 + E06 accepted). TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio is intentionally disabled until a later approved slice introduces an audio feature.
+TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio is intentionally disabled until a later approved slice introduces an audio feature. T09 art/audio/presentation decisions are not yet approved.
 
 ## Next action
 
-Ask the user to approve or revise `docs/tasks/T08-conclusion-review.md` plan 1.0, explicitly including the existing case-v1 truth. After approval, load `implement-vertical-slice` and begin contract/domain design before migration or UI work. Keep admin implementation stopped.
+Plan the next product slice T09 presentation/HUD polish and request approval before material art/audio decisions. Keep admin implementation stopped.
 
 ## Relevant references
 

@@ -21,6 +21,17 @@ public enum EncounterSaveStatus { Saved, AlreadyApplied, AlreadyCleared, Invalid
 
 public sealed record EncounterSaveResult(EncounterSaveStatus Status, PlaySession? Session);
 
+public sealed record ConclusionRecord(string SuspectId, string ReasonId,
+    IReadOnlyList<string> EvidenceIds, int ReadingScore, int InvestigationScore,
+    int Revision, DateTimeOffset SubmittedAtUtc);
+public enum ConclusionSaveStatus { Saved, AlreadyApplied, AlreadyCompleted, Conflict, NotFound }
+public sealed record ConclusionSaveResult(ConclusionSaveStatus Status, ConclusionRecord? Conclusion, int Revision);
+
+public sealed record ReviewProgress(string ReviewItemId, int Attempts, bool IsCompleted, DateTimeOffset? CompletedAtUtc);
+public enum ReviewSaveStatus { Saved, AlreadyApplied, AlreadyCompleted, Conflict, NotFound, Locked }
+public sealed record ReviewSaveResult(ReviewSaveStatus Status, int Revision, int Attempts = 0,
+    bool IsCorrect = false, bool IsCompleted = false);
+
 public interface IPlaySessionStore
 {
     Task CreateAsync(PlaySession session, string tokenHash, CancellationToken cancellationToken);
@@ -37,5 +48,13 @@ public interface IPlaySessionStore
         string questionId, string choiceId, bool isCorrect, DateTimeOffset now, CancellationToken cancellationToken);
     Task<EncounterSaveResult> SaveEncounterAsync(string tokenHash, int expectedRevision,
         Guid submissionId, string outcome, bool assistanceUsed, DateTimeOffset now,
+        CancellationToken cancellationToken);
+    Task<ConclusionRecord?> GetConclusionAsync(Guid sessionId, CancellationToken cancellationToken);
+    Task<ConclusionSaveResult> SaveConclusionAsync(string tokenHash, int expectedRevision,
+        Guid submissionId, string suspectId, string reasonId, IReadOnlyList<string> evidenceIds,
+        int readingScore, int investigationScore, DateTimeOffset now, CancellationToken cancellationToken);
+    Task<IReadOnlyList<ReviewProgress>> ListReviewProgressAsync(Guid sessionId, CancellationToken cancellationToken);
+    Task<ReviewSaveResult> SaveReviewAsync(string tokenHash, int expectedRevision, Guid submissionId,
+        string reviewItemId, string choiceId, bool isCorrect, DateTimeOffset now,
         CancellationToken cancellationToken);
 }

@@ -249,6 +249,22 @@ kbd {
 .question-card label { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0; cursor: pointer; }
 .question-card button:disabled { opacity: .55; cursor: not-allowed; }
 .answer-feedback { padding: 10px; margin: 12px 0 0; border-left: 4px solid #5b926b; background: #e5f1e5; }
+.resolution-panel { clear: both; padding-top: 8px; }
+.resolution-tabs, .review-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.resolution-tabs button, .review-list button, .resolution-panel section > button,
+.confirmation-box button, .review-card button { padding: 9px 12px; border: 1px solid #8d7258; border-radius: 6px; background: #fffaf0; color: #263842; cursor: pointer; }
+.resolution-tabs button[aria-current="true"], .review-list button[aria-current="true"] { border-color: #c76e40; background: #f5d9bd; }
+.resolution-panel fieldset { display: grid; gap: 8px; margin: 14px 0; padding: 14px; border: 1px solid #d9ccb8; border-radius: 8px; }
+.resolution-panel legend { padding: 0 6px; font-weight: 750; }
+.resolution-panel label { display: flex; gap: 9px; align-items: flex-start; cursor: pointer; }
+.resolution-panel button:disabled { opacity: .55; cursor: not-allowed; }
+.confirmation-box { padding: 14px; margin-top: 14px; border: 2px solid #b65f38; border-radius: 8px; background: #fff4e5; }
+.score-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.score-grid p { display: grid; margin: 0; padding: 18px; border-radius: 9px; background: #263842; color: #f7f0df; text-align: center; }
+.score-grid strong { font-size: 2.3rem; color: #f2b277; }
+.score-grid span { font-size: .85rem; }
+.review-card { padding: 14px; border: 1px solid #d9ccb8; border-radius: 8px; background: #fffaf0; }
+.session-panel button + button { margin-top: 8px; }
 
 @media (max-width: 860px) {
   .app-shell {
@@ -268,4 +284,5 @@ kbd {
     height: 440px;
   }
   .notebook-layout { grid-template-columns: 1fr; }
+  .score-grid { grid-template-columns: 1fr; }
 }

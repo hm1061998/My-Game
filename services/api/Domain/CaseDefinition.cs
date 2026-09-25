@@ -12,6 +12,8 @@ public sealed record CaseDefinition(
     IReadOnlyList<GlossaryDefinition> Glossary,
     IReadOnlyList<QuestionDefinition> Questions,
     IReadOnlyList<InteractionDefinition> Interactions,
+    ConclusionOptionsDefinition ConclusionOptions,
+    IReadOnlyList<ReviewItemDefinition> ReviewItems,
     SolutionDefinition Solution);
 
 public sealed record EvidenceDefinition(
@@ -47,6 +49,19 @@ public sealed record InteractionDefinition(
     int X,
     int Y,
     int Radius);
+
+public sealed record ConclusionOptionsDefinition(
+    IReadOnlyList<ConclusionOptionDefinition> Suspects,
+    IReadOnlyList<ConclusionOptionDefinition> Reasons);
+
+public sealed record ConclusionOptionDefinition(string Id, string Label);
+
+public sealed record ReviewItemDefinition(
+    string Id,
+    string Prompt,
+    IReadOnlyList<ChoiceDefinition> Choices,
+    string CorrectChoiceId,
+    string Explanation);
 
 public sealed record SolutionDefinition(
     string SuspectId,

@@ -15,6 +15,9 @@ public sealed class CaseContentTests
         Assert.Equal(3, definition.Npcs.Count);
         Assert.InRange(definition.Glossary.Count, 12, 15);
         Assert.Equal(3, definition.Questions.Count);
+        Assert.Equal(3, definition.ConclusionOptions.Suspects.Count);
+        Assert.Equal(3, definition.ConclusionOptions.Reasons.Count);
+        Assert.Equal(5, definition.ReviewItems.Count);
     }
 
     [Fact]

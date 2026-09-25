@@ -134,6 +134,75 @@
     { "id": "npc-leo", "kind": "npc", "targetId": "leo", "evidenceId": null, "labelVi": "Nói chuyện với Leo", "x": 900, "y": 630, "radius": 80 },
     { "id": "npc-nora", "kind": "npc", "targetId": "nora", "evidenceId": "E06", "labelVi": "Nói chuyện với Nora", "x": 1450, "y": 760, "radius": 80 }
   ],
+  "conclusionOptions": {
+    "suspects": [
+      { "id": "maya", "label": "Maya" },
+      { "id": "leo", "label": "Leo" },
+      { "id": "nora", "label": "Nora" }
+    ],
+    "reasons": [
+      { "id": "misread-previous-version", "label": "Misunderstood “previous version”" },
+      { "id": "uploaded-wrong-figures", "label": "Uploaded the wrong figures" },
+      { "id": "intentional-replacement", "label": "Replaced the file on purpose" }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "R01",
+      "prompt": "Which word means accepted officially?",
+      "choices": [
+        { "id": "R01-A", "text": "approved" },
+        { "id": "R01-B", "text": "previous" },
+        { "id": "R01-C", "text": "instead" }
+      ],
+      "correctChoiceId": "R01-A",
+      "explanation": "Approved means accepted officially."
+    },
+    {
+      "id": "R02",
+      "prompt": "What does previous mean?",
+      "choices": [
+        { "id": "R02-A", "text": "coming next" },
+        { "id": "R02-B", "text": "happening before" },
+        { "id": "R02-C", "text": "working together" }
+      ],
+      "correctChoiceId": "R02-B",
+      "explanation": "Previous describes something that came before."
+    },
+    {
+      "id": "R03",
+      "prompt": "Choose the best verb: Nora ___ version three with version two.",
+      "choices": [
+        { "id": "R03-A", "text": "presented" },
+        { "id": "R03-B", "text": "confirmed" },
+        { "id": "R03-C", "text": "replaced" }
+      ],
+      "correctChoiceId": "R03-C",
+      "explanation": "Replaced means put one thing in the place of another."
+    },
+    {
+      "id": "R04",
+      "prompt": "Complete the sentence: She used version two ___ of version three.",
+      "choices": [
+        { "id": "R04-A", "text": "instead" },
+        { "id": "R04-B", "text": "account" },
+        { "id": "R04-C", "text": "meeting" }
+      ],
+      "correctChoiceId": "R04-A",
+      "explanation": "‘Instead of’ introduces the choice that was not used."
+    },
+    {
+      "id": "R05",
+      "prompt": "Which record shows who changed the file at 8:50?",
+      "choices": [
+        { "id": "R05-A", "text": "The meeting minutes" },
+        { "id": "R05-B", "text": "The version history" },
+        { "id": "R05-C", "text": "Maya's email" }
+      ],
+      "correctChoiceId": "R05-B",
+      "explanation": "The version history records Nora's account at 8:50."
+    }
+  ],
   "solution": {
     "suspectId": "nora",
     "reasonId": "misread-previous-version",

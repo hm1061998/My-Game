@@ -1,12 +1,12 @@
 # T08 — Conclusion, scores and review
 
-Status: planning
+Status: done
 Owner: Codex
 Depends on: T06, T07
 Plan version: PROJECT_PLAN.md 1.4, T08 implementation 1.0
-Approval: pending user approval of this exact scope and the existing case truth
-Lifecycle phase: define/design
-Workflow step: plan drafted; approval required before coding
+Approval: user approved implementation plan 1.0 and the existing case-v1 truth on 2026-09-25 with “ok tôi duyệt”
+Lifecycle phase: handoff complete
+Workflow step: implementation, visible browser confirmation and full gates complete
 
 ## Outcome and success signal
 
@@ -93,12 +93,22 @@ Expected affected areas: `services/api/Domain`, `Application`, `Contracts`, `Fea
 
 ## Handoff
 
-Baseline `03259b4`, clean `main` synchronized with `origin/main`. This planning slice changes only T08 planning/index/current-memory documentation. Coding, migrations, dependencies and browser execution are not started until approval. Next action: user approves or revises T08 implementation 1.0, including the case v1 truth above.
+Implemented the approved case-v1 conclusion and review slice from baseline `a22489b`. The server now owns readiness, first-try reading score, evidence-based investigation score, immutable/idempotent conclusion persistence, review correctness and disclosure. SQLite migration `ConclusionReview` preserves result/review state; React supplies accessible conclusion, confirmation, result, review and replay views while Phaser remains paused behind the overlay.
+
+Visible Chrome evidence:
+
+- At a 1280×800 outer window, the ready form exposed only public choices and collected evidence. Nora + misunderstanding + E03/E06 required an explicit irreversible confirmation and produced reading 100 / investigation 100 with the post-submit explanation and neutral assist note.
+- One R01 answer was submitted incorrectly and remained retryable; the correct retry and R02–R05 completed 5/5. Reload at a 1100×720 outer window restored result/review, kept one canvas and reported no captured runtime errors.
+- Replay initially exposed a lifecycle bug: the retained Phaser position touched the meeting checkpoint and advanced the new session to revision 1. Keying/remounting the game host on new-session creation fixed it; the repeated visible replay stayed `Investigating`, revision 0, `office-entry`, with one canvas. API integration coverage verifies the prior conclusion remains stored.
+
+Final gates: `scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe` passed 23 task checks, npm audit with zero advisories, lint, typecheck, 13 frontend tests, production build, locked .NET restore/build with zero warnings/errors and 9 API tests. EF reported no pending model changes. Private solution fields/correct review choices remain absent from pre-disclosure DTOs and the frontend bundle. `git diff --check` passed. The existing ~1.39 MB lazy Phaser chunk warning remains non-blocking.
+
+Next product slice is T09 presentation/HUD polish; it requires its own plan/approval before material art/audio decisions.
 
 ## Improvement review
 
-- Result: none
-- Observation/evidence: this slice formalizes an existing product-plan increment; no new failure mode or repeated friction was observed.
-- Mechanism changed or no-change reason: no lesson/rule/skill change; the existing product-lifecycle and vertical-slice workflows cover implementation.
-- Validation: task structure, links/statuses and `git diff --check` will be run before the planning commit.
-- Follow-up trigger: run a new improvement review after T08 implementation/browser verification.
+- Result: verified (L006)
+- Observation/evidence: visible replay showed that replacing the server session alone did not reset Phaser state; the old meeting-zone player position immediately advanced a fresh session to revision 1. This is a second lifecycle boundary failure after T07's StrictMode duplicate-canvas issue.
+- Mechanism changed or no-change reason: `App` now keys/remounts `GameCanvas` whenever session creation succeeds, and L006 records session identity changes as an explicit Phaser remount boundary. API regression coverage proves replay creates revision 0 while preserving the old conclusion.
+- Validation: repeated visible replay returned `Investigating` revision 0 at `office-entry`, one canvas and no captured runtime errors; full frontend/API gates passed.
+- Follow-up trigger: reuse this boundary in T09 and promote it into the Phaser integration skill if presentation/audio changes create another lifecycle variant.

@@ -52,7 +52,29 @@ public static partial class CaseValidator
             }, $"Interaction {interaction.Id} has an invalid target.");
         }
 
-        Require(npcs.Contains(caseFile.Solution.SuspectId), "Solution suspect is missing.");
+        var suspects = Unique(caseFile.ConclusionOptions.Suspects.Select(item => item.Id), "conclusion suspect");
+        var reasons = Unique(caseFile.ConclusionOptions.Reasons.Select(item => item.Id), "conclusion reason");
+        Require(caseFile.ConclusionOptions.Suspects.Count >= 2 && caseFile.ConclusionOptions.Reasons.Count >= 2,
+            "Conclusion needs at least two suspect and reason choices.");
+        Require(caseFile.ConclusionOptions.Suspects.All(item => !string.IsNullOrWhiteSpace(item.Label)) &&
+            caseFile.ConclusionOptions.Reasons.All(item => !string.IsNullOrWhiteSpace(item.Label)),
+            "Conclusion choices need labels.");
+
+        var reviewIds = Unique(caseFile.ReviewItems.Select(item => item.Id), "review item");
+        Require(reviewIds.Count == 5, "Case needs exactly five review items.");
+        foreach (var item in caseFile.ReviewItems)
+        {
+            var choices = Unique(item.Choices.Select(choice => choice.Id), $"review choice for {item.Id}");
+            Require(choices.Count >= 2 && choices.Contains(item.CorrectChoiceId),
+                $"Review item {item.Id} needs one valid correct choice.");
+            Require(!string.IsNullOrWhiteSpace(item.Prompt) && !string.IsNullOrWhiteSpace(item.Explanation) &&
+                item.Choices.All(choice => !string.IsNullOrWhiteSpace(choice.Text)),
+                $"Review item {item.Id} has empty content.");
+        }
+
+        Require(npcs.Contains(caseFile.Solution.SuspectId) && suspects.Contains(caseFile.Solution.SuspectId),
+            "Solution suspect is missing.");
+        Require(reasons.Contains(caseFile.Solution.ReasonId), "Solution reason is missing.");
         Require(caseFile.Solution.AcceptedEvidenceSets.Count > 0 &&
             caseFile.Solution.AcceptedEvidenceSets.All(set => set.Count == 2 && set.Distinct(StringComparer.Ordinal).Count() == 2 && set.All(evidence.Contains)),
             "Solution evidence set must contain two distinct existing IDs.");

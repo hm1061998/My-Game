@@ -10,6 +10,7 @@ import {
   type SessionProgress,
 } from "./api/session";
 import type { GameLifecycleEvent, WorldInteraction } from "./game/bridge/events";
+import { ResolutionPanel } from "./ResolutionPanel";
 import "./App.css";
 
 const GameCanvas = lazy(async () => {
@@ -29,7 +30,7 @@ async function getHealth(): Promise<HealthResponse> {
 export default function App() {
   const [gameStatus, setGameStatus] = useState("Đang khởi tạo hiện trường…");
   const [nearby, setNearby] = useState<WorldInteraction | null>(null);
-  const [overlay, setOverlay] = useState<"notebook" | "dialogue" | "retry" | null>(null);
+  const [overlay, setOverlay] = useState<"notebook" | "dialogue" | "retry" | "resolution" | null>(null);
   const [dialogue, setDialogue] = useState<InteractionResult | null>(null);
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
@@ -40,6 +41,7 @@ export default function App() {
   const [assistEnabled, setAssistEnabled] = useState(false);
   const [encounterError, setEncounterError] = useState<string | null>(null);
   const [encounterOutcome, setEncounterOutcome] = useState<"detected" | "cleared" | null>(null);
+  const [gameGeneration, setGameGeneration] = useState(0);
   const dialogRef = useRef<HTMLElement>(null);
   const retryRef = useRef<{ id: string; submissionId: string; revision: number } | null>(null);
   const answerRetryRef = useRef<{ id: string; choiceId: string; submissionId: string; revision: number } | null>(null);
@@ -69,8 +71,16 @@ export default function App() {
   });
   const started = useMutation({
     mutationFn: startSession,
-    onSuccess: (progress) =>
-      queryClient.setQueryData<SessionProgress>(["session"], progress),
+    onSuccess: (progress) => {
+      queryClient.setQueryData<SessionProgress>(["session"], progress);
+      void queryClient.invalidateQueries({ queryKey: ["notebook"] });
+      void queryClient.invalidateQueries({ queryKey: ["questions"] });
+      void queryClient.removeQueries({ queryKey: ["result"] });
+      void queryClient.removeQueries({ queryKey: ["review"] });
+      void queryClient.removeQueries({ queryKey: ["conclusion"] });
+      setGameGeneration(value => value + 1);
+      setOverlay(null); setSelectedEvidenceId(null); setSelectedQuestionId(null);
+    },
   });
   const checkpoint = useMutation({
     mutationFn: () => saveMeetingCheckpoint(session.data!.revision),
@@ -320,6 +330,9 @@ export default function App() {
                   `${session.data.encounterFailures} lần bị phát hiện`}</p>
                 {session.data.assistanceUsed && <p>Đã dùng chế độ hỗ trợ quét chậm.</p>}
                 <button type="button" onClick={openNotebook}>Mở sổ tay điều tra</button>
+                <button type="button" onClick={() => setOverlay("resolution")}>
+                  {session.data.status === "Completed" ? "Xem kết quả vụ án" : "Kết luận vụ án"}
+                </button>
               </>
             )}
             {started.isError && (
@@ -344,7 +357,7 @@ export default function App() {
               <div className="game-loading">Đang dựng hiện trường…</div>
             }
           >
-            <GameCanvas onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
+            <GameCanvas key={gameGeneration} onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
               overlayOpen={!!overlay} worldState={worldState} />
           </Suspense>
         </div>
@@ -352,7 +365,7 @@ export default function App() {
 
       {overlay && <div className="investigation-backdrop">
         <section ref={dialogRef} tabIndex={-1} className="investigation-dialog" role="dialog" aria-modal="true"
-          aria-label={overlay === "notebook" ? "Sổ tay điều tra" : overlay === "retry" ? "Kết quả máy quét" : "Hội thoại"}>
+          aria-label={overlay === "notebook" ? "Sổ tay điều tra" : overlay === "retry" ? "Kết quả máy quét" : overlay === "resolution" ? "Hoàn tất vụ án" : "Hội thoại"}>
           <button className="close-dialog" type="button" onClick={() => setOverlay(null)}>Đóng (Esc)</button>
           {overlay === "retry" && <>
             <h2>{encounterOutcome === "cleared" ?
@@ -434,6 +447,8 @@ export default function App() {
               </article>
             </div>}
           </>}
+          {overlay === "resolution" && session.data && <ResolutionPanel session={session.data}
+            replayPending={started.isPending} onReplay={() => started.mutate()} />}
         </section>
       </div>}
 
