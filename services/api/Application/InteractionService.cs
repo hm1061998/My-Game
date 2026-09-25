@@ -39,14 +39,15 @@ public sealed class InteractionService(
 
         var collectedIds = await store.ListEvidenceIdsAsync(session.Id, cancellationToken);
         var collected = collectedIds.ToHashSet(StringComparer.Ordinal);
+        var passed = (await store.ListQuestionProgressAsync(session.Id, cancellationToken))
+            .Where(item => item.IsPassed).Select(item => item.QuestionId).ToHashSet(StringComparer.Ordinal);
         var evidenceId = interaction.Kind == "evidence" ? interaction.TargetId : interaction.EvidenceId;
         var npc = interaction.Kind == "npc" ? definition.Npcs.Single(item => item.Id == interaction.TargetId) : null;
         if (evidenceId is null)
             return new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc?.Name, npc?.Dialogue);
 
         var evidence = definition.Evidence.Single(item => item.Id == evidenceId);
-        var unlocked = !evidence.RequiresEncounter && evidence.RequiredCorrectQuestionIds.Count == 0 &&
-            evidence.SourceEvidenceIds.All(collected.Contains);
+        var unlocked = QuestionRules.IsEvidenceAvailable(evidence, collected, passed);
         if (!unlocked)
             return npc is not null
                 ? new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc.Name, npc.Dialogue,

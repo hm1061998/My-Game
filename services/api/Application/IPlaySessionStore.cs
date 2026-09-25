@@ -10,6 +10,13 @@ public enum EvidenceCollectStatus { Collected, AlreadyApplied, AlreadyCollected,
 
 public sealed record EvidenceCollectResult(EvidenceCollectStatus Status, int Revision);
 
+public sealed record QuestionProgress(string QuestionId, string FirstChoiceId, int Attempts, bool IsPassed);
+
+public enum AnswerSaveStatus { Saved, AlreadyApplied, AlreadyPassed, Conflict, NotFound }
+
+public sealed record AnswerSaveResult(AnswerSaveStatus Status, int Revision, int Attempts = 0,
+    bool IsCorrect = false, bool IsPassed = false, bool FirstTryCorrect = false);
+
 public interface IPlaySessionStore
 {
     Task CreateAsync(PlaySession session, string tokenHash, CancellationToken cancellationToken);
@@ -21,4 +28,7 @@ public interface IPlaySessionStore
     Task<EvidenceCollectResult> CollectEvidenceAsync(
         string tokenHash, int expectedRevision, Guid submissionId, string interactionId,
         string evidenceId, DateTimeOffset now, CancellationToken cancellationToken);
+    Task<IReadOnlyList<QuestionProgress>> ListQuestionProgressAsync(Guid sessionId, CancellationToken cancellationToken);
+    Task<AnswerSaveResult> SaveAnswerAsync(string tokenHash, int expectedRevision, Guid submissionId,
+        string questionId, string choiceId, bool isCorrect, DateTimeOffset now, CancellationToken cancellationToken);
 }

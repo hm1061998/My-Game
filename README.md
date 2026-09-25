@@ -2,7 +2,7 @@
 
 Web game nhập vai hành động trinh thám 2.5D kết hợp học tiếng Anh A2-B1. React quản lý UI, Phaser quản lý gameplay theo frame, và ASP.NET Core quản lý tiến độ đáng tin cậy.
 
-Repository hiện có bản đồ văn phòng trong Phaser, nội dung vụ án và sổ tay trong React, cùng API lưu lượt chơi/checkpoint/manh mối bằng SQLite. Docker và cấu hình GitHub chỉ được bổ sung sau mốc `code_complete` trong `PROJECT_PLAN.md`.
+Repository hiện có bản đồ văn phòng trong Phaser, sổ tay/câu hỏi trong React, cùng API lưu lượt chơi, manh mối và câu trả lời bằng SQLite. Docker và cấu hình GitHub chỉ được bổ sung sau mốc `code_complete` trong `PROJECT_PLAN.md`.
 
 ## Công cụ cần cài
 
@@ -115,9 +115,9 @@ Terminal 2 — web:
 npm --prefix apps/web run dev
 ```
 
-Mở `http://127.0.0.1:5173`. Vite chuyển tiếp `/api` tới API tại cổng 5062. Bấm “Bắt đầu lượt điều tra”, đi tới email trên bàn, thiết bị chat hoặc biên bản họp; khi thấy gợi ý thì nhấn `E` để thu thập. Mở “Sổ tay điều tra” để đọc nội dung tiếng Anh và từ vựng tiếng Việt. Tải lại trang để thấy manh mối vẫn còn. Nút “Lưu thử mốc khu họp” vẫn là thao tác thử nghiệm, chưa gắn với vị trí nhân vật trong canvas. Dừng mỗi tiến trình bằng `Ctrl+C`.
+Mở `http://127.0.0.1:5173`. Vite chuyển tiếp `/api` tới API tại cổng 5062. Bấm “Bắt đầu lượt điều tra”, đi tới email trên bàn, thiết bị chat hoặc biên bản họp; khi thấy gợi ý thì nhấn `E` để thu thập. Mở “Sổ tay điều tra” để đọc nội dung tiếng Anh, từ vựng tiếng Việt và câu hỏi đọc hiểu vừa mở. Trả lời sai có thể thử lại; trả lời đúng Q01 rồi quay lại Maya để lấy lời khai E05. Tải lại trang vẫn giữ manh mối và tiến độ câu hỏi. Nút “Lưu thử mốc khu họp” vẫn là thao tác thử nghiệm, chưa gắn với vị trí nhân vật trong canvas. Dừng mỗi tiến trình bằng `Ctrl+C`.
 
-Trong bản đồ, dùng `WASD` hoặc phím mũi tên để di chuyển, giữ `Shift` để chạy, nhấn `E` khi đứng gần một điểm để tương tác và `Esc` để tạm dừng/tiếp tục. Có thể nói chuyện với Maya, Leo và Nora; lời khai chi tiết vẫn bị khóa cho đến các bước học tiếp theo. Mở sổ tay/hội thoại sẽ dừng di chuyển và đóng sẽ trả focus về canvas. Khi cửa sổ hoặc tab mất focus, game tự tạm dừng; nhấn `Esc` để tiếp tục sau khi quay lại. Bàn và tủ là vật cản, còn camera theo nhân vật trong giới hạn bản đồ. E03 cần encounter ở T07; E05/E06 cần trả lời câu hỏi ở T06, nên hiện chưa mở được. Nội dung câu hỏi, đáp án và kết luận chỉ nằm ở JSON phía server, không đưa vào frontend.
+Trong bản đồ, dùng `WASD` hoặc phím mũi tên để di chuyển, giữ `Shift` để chạy, nhấn `E` khi đứng gần một điểm để tương tác và `Esc` để tạm dừng/tiếp tục. Có thể nói chuyện với Maya, Leo và Nora; E05 mở sau Q01 đúng, còn E06 cần Q02 và Q03 đúng cùng các chứng cứ nguồn. Mở sổ tay/hội thoại sẽ dừng di chuyển và đóng sẽ trả focus về canvas. Khi cửa sổ hoặc tab mất focus, game tự tạm dừng; nhấn `Esc` để tiếp tục sau khi quay lại. Bàn và tủ là vật cản, còn camera theo nhân vật trong giới hạn bản đồ. E03 và do đó Q03 vẫn cần encounter ở T07. Đáp án đúng và lời giải chỉ nằm trong JSON phía server; API chỉ trả giải thích của câu hỏi sau khi đã trả lời đúng.
 
 API Development công bố OpenAPI tại `http://127.0.0.1:5062/openapi/v1.json`. Nội dung nguồn vụ án nằm trong `services/api/Content/Cases/swapped-report.v1.json` và được kiểm tra khi API khởi động. Frontend kiểm tra response session/map/notebook tại runtime; cơ chế sinh TypeScript types từ OpenAPI chưa được thêm vì các công cụ đã thử chưa đồng thời tương thích TypeScript 6 và đạt npm audit sạch.
 

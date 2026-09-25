@@ -4,6 +4,7 @@ using OfficeCaseFiles.Api.Application;
 using OfficeCaseFiles.Api.Features.Sessions;
 using OfficeCaseFiles.Api.Features.Cases;
 using OfficeCaseFiles.Api.Features.Interactions;
+using OfficeCaseFiles.Api.Features.Questions;
 using OfficeCaseFiles.Api.Infrastructure.Content;
 using OfficeCaseFiles.Api.Infrastructure.Sqlite;
 
@@ -14,6 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<InteractionService>();
+builder.Services.AddScoped<QuestionService>();
 builder.Services.AddSingleton<ICaseCatalog, JsonCaseCatalog>();
 
 var provider = builder.Configuration["Storage:Provider"];
@@ -66,6 +68,7 @@ app.MapGet("/api/v1/health", () => Results.Ok(HealthResponse.Create()))
 app.MapSessionEndpoints();
 app.MapCaseEndpoints();
 app.MapInteractionEndpoints();
+app.MapQuestionEndpoints();
 
 _ = app.Services.GetRequiredService<ICaseCatalog>();
 

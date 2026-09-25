@@ -239,6 +239,14 @@ kbd {
 .glossary-list div { padding: 8px 0; border-top: 1px solid #d9ccb8; }
 .glossary-list dt { font-weight: 700; }
 .glossary-list dd { margin: 3px 0 0; color: #52626b; }
+.question-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.question-list button, .question-card button { padding: 8px 11px; border: 1px solid #a08467; border-radius: 6px; background: #fffaf0; color: #263842; cursor: pointer; }
+.question-list button[aria-current="true"] { border-color: #c76e40; background: #f5d9bd; }
+.question-card { padding: 14px; margin-bottom: 20px; border: 1px solid #d9ccb8; border-radius: 8px; background: #fffaf0; }
+.question-card h4 { margin: 0 0 8px; }
+.question-card label { display: flex; align-items: flex-start; gap: 8px; margin: 8px 0; cursor: pointer; }
+.question-card button:disabled { opacity: .55; cursor: not-allowed; }
+.answer-feedback { padding: 10px; margin: 12px 0 0; border-left: 4px solid #5b926b; background: #e5f1e5; }
 
 @media (max-width: 860px) {
   .app-shell {

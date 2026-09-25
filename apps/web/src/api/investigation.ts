@@ -9,6 +9,10 @@ export type InteractionResult = {
   interactionId: string; kind: 'evidence' | 'npc'; revision: number; title: string | null
   dialogue: string[] | null; collectedEvidenceId: string | null; statementLocked: boolean
 }
+export type Question = { id: string; prompt: string; choices: { id: string; text: string }[];
+  attempts: number; isPassed: boolean; explanation: string | null }
+export type AnswerResult = { questionId: string; revision: number; attempts: number; isCorrect: boolean;
+  isPassed: boolean; firstTryCorrect: boolean; explanation: string | null }
 
 export class InvestigationError extends Error {
   readonly status: number
@@ -88,4 +92,33 @@ export async function interact(id: string, submissionId: string, revision: numbe
   return { interactionId: string(value.interactionId), kind: value.kind, revision: value.revision,
     title: value.title, dialogue: value.dialogue, collectedEvidenceId: value.collectedEvidenceId,
     statementLocked: value.statementLocked } as InteractionResult
+}
+
+export async function getQuestions(): Promise<Question[]> {
+  const value = await readJson(await fetch('/api/v1/session/questions'))
+  return list(value).map(item => {
+    if (typeof item.attempts !== 'number' || typeof item.isPassed !== 'boolean' ||
+        (item.explanation !== null && typeof item.explanation !== 'string'))
+      throw new Error('Invalid question response')
+    return { id: string(item.id), prompt: string(item.prompt), attempts: item.attempts,
+      isPassed: item.isPassed, explanation: item.explanation,
+      choices: list(item.choices).map(choice =>
+        ({ id: string(choice.id), text: string(choice.text) })) }
+  })
+}
+
+export async function answerQuestion(id: string, choiceId: string, submissionId: string,
+  revision: number): Promise<AnswerResult> {
+  const value = record(await readJson(await fetch(`/api/v1/session/questions/${encodeURIComponent(id)}/answers`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Office-Request': '1' },
+    body: JSON.stringify({ choiceId, submissionId, revision }),
+  })))
+  if (typeof value.revision !== 'number' || typeof value.attempts !== 'number' ||
+      typeof value.isCorrect !== 'boolean' || typeof value.isPassed !== 'boolean' ||
+      typeof value.firstTryCorrect !== 'boolean' ||
+      (value.explanation !== null && typeof value.explanation !== 'string'))
+    throw new Error('Invalid answer response')
+  return { questionId: string(value.questionId), revision: value.revision, attempts: value.attempts,
+    isCorrect: value.isCorrect, isPassed: value.isPassed, firstTryCorrect: value.firstTryCorrect,
+    explanation: value.explanation } as AnswerResult
 }

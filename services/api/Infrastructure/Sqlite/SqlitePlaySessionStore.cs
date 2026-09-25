@@ -106,6 +106,68 @@ public sealed class SqlitePlaySessionStore(GameDbContext db) : IPlaySessionStore
         return new EvidenceCollectResult(EvidenceCollectStatus.Collected, row.Revision);
     }
 
+    public async Task<IReadOnlyList<QuestionProgress>> ListQuestionProgressAsync(
+        Guid sessionId, CancellationToken cancellationToken) =>
+        await db.Questions.AsNoTracking().Where(row => row.SessionId == sessionId)
+            .OrderBy(row => row.QuestionId)
+            .Select(row => new QuestionProgress(row.QuestionId, row.FirstChoiceId, row.Attempts, row.IsPassed))
+            .ToArrayAsync(cancellationToken);
+
+    public async Task<AnswerSaveResult> SaveAnswerAsync(
+        string tokenHash, int expectedRevision, Guid submissionId, string questionId,
+        string choiceId, bool isCorrect, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var session = await db.Sessions.SingleOrDefaultAsync(row => row.TokenHash == tokenHash, cancellationToken);
+        if (session is null || session.ExpiresAtUtc <= now.UtcDateTime)
+            return new AnswerSaveResult(AnswerSaveStatus.NotFound, 0);
+
+        var receipt = await db.AnswerReceipts.AsNoTracking().SingleOrDefaultAsync(
+            row => row.SessionId == session.Id && row.SubmissionId == submissionId, cancellationToken);
+        if (receipt is not null)
+            return receipt.QuestionId == questionId && receipt.ChoiceId == choiceId &&
+                receipt.RequestedRevision == expectedRevision
+                ? new AnswerSaveResult(AnswerSaveStatus.AlreadyApplied, receipt.RevisionAfter,
+                    receipt.AttemptsAfter, receipt.IsCorrect, receipt.IsPassed, receipt.FirstTryCorrect)
+                : new AnswerSaveResult(AnswerSaveStatus.Conflict, session.Revision);
+
+        if (session.Revision != expectedRevision)
+            return new AnswerSaveResult(AnswerSaveStatus.Conflict, session.Revision);
+
+        var progress = await db.Questions.SingleOrDefaultAsync(
+            row => row.SessionId == session.Id && row.QuestionId == questionId, cancellationToken);
+        if (progress?.IsPassed == true)
+            return new AnswerSaveResult(AnswerSaveStatus.AlreadyPassed, session.Revision,
+                progress.Attempts, false, true, progress.Attempts == 1);
+
+        if (progress is null)
+        {
+            progress = new QuestionProgressRow
+            {
+                SessionId = session.Id, QuestionId = questionId, FirstChoiceId = choiceId,
+            };
+            db.Questions.Add(progress);
+        }
+        progress.Attempts++;
+        progress.IsPassed = isCorrect;
+        if (isCorrect) progress.PassedAtUtc = now.UtcDateTime;
+        session.Revision++;
+        session.UpdatedAtUtc = now.UtcDateTime;
+        session.ExpiresAtUtc = now.AddDays(30).UtcDateTime;
+        var firstTryCorrect = progress.Attempts == 1 && isCorrect;
+        db.AnswerReceipts.Add(new AnswerReceiptRow
+        {
+            SessionId = session.Id, SubmissionId = submissionId, QuestionId = questionId,
+            ChoiceId = choiceId, RequestedRevision = expectedRevision, RevisionAfter = session.Revision,
+            AttemptsAfter = progress.Attempts, IsCorrect = isCorrect, IsPassed = progress.IsPassed,
+            FirstTryCorrect = firstTryCorrect,
+        });
+        await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new AnswerSaveResult(AnswerSaveStatus.Saved, session.Revision,
+            progress.Attempts, isCorrect, progress.IsPassed, firstTryCorrect);
+    }
+
     private static PlaySession ToDomain(SessionRow row) => new(
         row.Id, row.CaseId, row.CaseVersion, row.Status, row.Revision,
         new DateTimeOffset(row.CreatedAtUtc, TimeSpan.Zero),

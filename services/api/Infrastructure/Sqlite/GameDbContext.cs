@@ -7,6 +7,8 @@ public sealed class GameDbContext(DbContextOptions<GameDbContext> options) : DbC
     public DbSet<SessionRow> Sessions => Set<SessionRow>();
     public DbSet<EvidenceRow> Evidence => Set<EvidenceRow>();
     public DbSet<InteractionReceiptRow> InteractionReceipts => Set<InteractionReceiptRow>();
+    public DbSet<QuestionProgressRow> Questions => Set<QuestionProgressRow>();
+    public DbSet<AnswerReceiptRow> AnswerReceipts => Set<AnswerReceiptRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,7 +35,45 @@ public sealed class GameDbContext(DbContextOptions<GameDbContext> options) : DbC
         receipts.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId).OnDelete(DeleteBehavior.Cascade);
         receipts.Property(row => row.InteractionId).HasMaxLength(80);
         receipts.Property(row => row.EvidenceId).HasMaxLength(80);
+
+        var questions = modelBuilder.Entity<QuestionProgressRow>();
+        questions.ToTable("QuestionProgress");
+        questions.HasKey(row => new { row.SessionId, row.QuestionId });
+        questions.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId).OnDelete(DeleteBehavior.Cascade);
+        questions.Property(row => row.QuestionId).HasMaxLength(80);
+        questions.Property(row => row.FirstChoiceId).HasMaxLength(80);
+
+        var answers = modelBuilder.Entity<AnswerReceiptRow>();
+        answers.ToTable("AnswerReceipts");
+        answers.HasKey(row => new { row.SessionId, row.SubmissionId });
+        answers.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId).OnDelete(DeleteBehavior.Cascade);
+        answers.Property(row => row.QuestionId).HasMaxLength(80);
+        answers.Property(row => row.ChoiceId).HasMaxLength(80);
     }
+}
+
+public sealed class QuestionProgressRow
+{
+    public Guid SessionId { get; set; }
+    public string QuestionId { get; set; } = string.Empty;
+    public string FirstChoiceId { get; set; } = string.Empty;
+    public int Attempts { get; set; }
+    public bool IsPassed { get; set; }
+    public DateTime? PassedAtUtc { get; set; }
+}
+
+public sealed class AnswerReceiptRow
+{
+    public Guid SessionId { get; set; }
+    public Guid SubmissionId { get; set; }
+    public string QuestionId { get; set; } = string.Empty;
+    public string ChoiceId { get; set; } = string.Empty;
+    public int RequestedRevision { get; set; }
+    public int RevisionAfter { get; set; }
+    public int AttemptsAfter { get; set; }
+    public bool IsCorrect { get; set; }
+    public bool IsPassed { get; set; }
+    public bool FirstTryCorrect { get; set; }
 }
 
 public sealed class EvidenceRow

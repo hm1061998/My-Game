@@ -7,7 +7,7 @@
 | [T03](T03-map-movement.md) map and movement | done | Codex | T02 |
 | [T04](T04-storage-session.md) storage/session foundation | done | Codex | T02 |
 | [T05](T05-case-npc-notebook.md) case/NPC/notebook | done | Codex | T03, T04 |
-| T06 questions/unlocks | todo | unassigned | T05 |
+| [T06](T06-questions-unlocks.md) questions/unlocks | done | Codex | T05 |
 | T07 encounter/checkpoint | todo | unassigned | T03, T04, T05 |
 | T08 conclusion/review | todo | unassigned | T06, T07 |
 | T09 art/HUD/focus | todo | unassigned | T08 |

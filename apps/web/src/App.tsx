@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { getCaseMap, getEvidence, getNotebook, interact, InvestigationError, type Evidence, type InteractionResult } from "./api/investigation";
+import { answerQuestion, getCaseMap, getEvidence, getNotebook, getQuestions, interact, InvestigationError,
+  type AnswerResult, type Evidence, type InteractionResult } from "./api/investigation";
 import {
   resumeSession,
   saveMeetingCheckpoint,
@@ -30,9 +31,14 @@ export default function App() {
   const [overlay, setOverlay] = useState<"notebook" | "dialogue" | null>(null);
   const [dialogue, setDialogue] = useState<InteractionResult | null>(null);
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
+  const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
+  const [answerFeedback, setAnswerFeedback] = useState<AnswerResult | null>(null);
+  const [answerError, setAnswerError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const retryRef = useRef<{ id: string; submissionId: string; revision: number } | null>(null);
+  const answerRetryRef = useRef<{ id: string; choiceId: string; submissionId: string; revision: number } | null>(null);
   const queryClient = useQueryClient();
   const health = useQuery({
     queryKey: ["api-health"],
@@ -50,6 +56,7 @@ export default function App() {
     enabled: !!session.data,
   });
   const notebook = useQuery({ queryKey: ["notebook"], queryFn: getNotebook, enabled: !!session.data });
+  const questions = useQuery({ queryKey: ["questions"], queryFn: getQuestions, enabled: !!session.data });
   const evidence = useQuery({
     queryKey: ["evidence", selectedEvidenceId], queryFn: () => getEvidence(selectedEvidenceId!),
     enabled: !!selectedEvidenceId && overlay === "notebook",
@@ -74,6 +81,7 @@ export default function App() {
       queryClient.setQueryData<SessionProgress>(["session"], previous =>
         previous ? { ...previous, revision: result.revision } : previous);
       void queryClient.invalidateQueries({ queryKey: ["notebook"] });
+      void queryClient.invalidateQueries({ queryKey: ["questions"] });
       setNotice(null);
       if (result.dialogue) {
         setDialogue(result);
@@ -92,6 +100,29 @@ export default function App() {
       if (error instanceof InvestigationError) {
         retryRef.current = null;
         void queryClient.invalidateQueries({ queryKey: ["session"] });
+      }
+    },
+  });
+  const answer = useMutation({
+    mutationFn: ({ id, choiceId, submissionId, revision }:
+      { id: string; choiceId: string; submissionId: string; revision: number }) =>
+      answerQuestion(id, choiceId, submissionId, revision),
+    onSuccess: (result) => {
+      answerRetryRef.current = null;
+      queryClient.setQueryData<SessionProgress>(["session"], previous =>
+        previous ? { ...previous, revision: result.revision } : previous);
+      void queryClient.invalidateQueries({ queryKey: ["questions"] });
+      setAnswerFeedback(result);
+      setAnswerError(null);
+    },
+    onError: (error) => {
+      setAnswerError(error instanceof InvestigationError && error.code === "revision_conflict"
+        ? "Tiến độ đã thay đổi. Hãy tải lại sổ tay rồi thử lại."
+        : "Không gửi được câu trả lời. Hãy kiểm tra kết nối rồi thử lại.");
+      if (error instanceof InvestigationError) {
+        answerRetryRef.current = null;
+        void queryClient.invalidateQueries({ queryKey: ["session"] });
+        void queryClient.invalidateQueries({ queryKey: ["questions"] });
       }
     },
   });
@@ -131,6 +162,19 @@ export default function App() {
   }, [overlay]);
 
   const openNotebook = () => { setSelectedEvidenceId(null); setOverlay("notebook"); };
+  const selectQuestion = (id: string) => {
+    setSelectedQuestionId(id); setSelectedChoiceId(null); setAnswerFeedback(null); setAnswerError(null);
+  };
+  const submitAnswer = () => {
+    if (!session.data || !selectedQuestionId || !selectedChoiceId || answer.isPending) return;
+    const previous = answerRetryRef.current;
+    const request = previous?.id === selectedQuestionId && previous.choiceId === selectedChoiceId ? previous :
+      { id: selectedQuestionId, choiceId: selectedChoiceId,
+        submissionId: crypto.randomUUID(), revision: session.data.revision };
+    answerRetryRef.current = request;
+    answer.mutate(request);
+  };
+  const activeQuestion = questions.data?.find(item => item.id === selectedQuestionId);
 
   return (
     <main className="app-shell">
@@ -281,6 +325,39 @@ export default function App() {
                 {selectedEvidenceId && evidence.isError && <p role="alert">Không đọc được manh mối này.</p>}
                 {selectedEvidenceId && evidence.data && <EvidenceDetail evidence={evidence.data} />}
                 {!selectedEvidenceId && <p>Chọn một manh mối để đọc.</p>}
+                <h3>Câu hỏi đọc hiểu</h3>
+                {questions.isPending && <p>Đang tải câu hỏi…</p>}
+                {questions.isError && <p role="alert">Không tải được câu hỏi.</p>}
+                {questions.data?.length === 0 && <p>Thu thập manh mối để mở câu hỏi.</p>}
+                <div className="question-list">{questions.data?.map(item => <button type="button" key={item.id}
+                  onClick={() => selectQuestion(item.id)} aria-current={selectedQuestionId === item.id ? "true" : undefined}>
+                  {item.id} · {item.isPassed ? "Đã hoàn thành" : "Cần trả lời"}
+                </button>)}</div>
+                {activeQuestion && <section className="question-card" aria-label={`Câu hỏi ${activeQuestion.id}`}>
+                  <h4>{activeQuestion.id}</h4><p lang="en">{activeQuestion.prompt}</p>
+                  <p>Số lần trả lời: {activeQuestion.attempts}</p>
+                  {!activeQuestion.isPassed && <>
+                    <div role="radiogroup" aria-label="Chọn câu trả lời">
+                      {activeQuestion.choices.map(choice => <label key={choice.id}>
+                        <input type="radio" name="answer-choice" value={choice.id}
+                          checked={selectedChoiceId === choice.id}
+                          onChange={() => { setSelectedChoiceId(choice.id); setAnswerError(null); }} />
+                        <span lang="en">{choice.text}</span>
+                      </label>)}
+                    </div>
+                    <button type="button" disabled={!selectedChoiceId || answer.isPending} onClick={submitAnswer}>
+                      {answer.isPending ? "Đang gửi…" : "Trả lời"}
+                    </button>
+                  </>}
+                  {answerFeedback?.questionId === activeQuestion.id && <p role="status" className="answer-feedback">
+                    {answerFeedback.isCorrect ? "Chính xác! Hãy kiểm tra hồ sơ vừa mở tại điểm điều tra." :
+                      "Chưa đúng. Hãy đọc lại manh mối và thử lần nữa."}
+                    {answerFeedback.explanation && <span lang="en"> {answerFeedback.explanation}</span>}
+                  </p>}
+                  {activeQuestion.isPassed && !answerFeedback && activeQuestion.explanation &&
+                    <p lang="en" className="answer-feedback">{activeQuestion.explanation}</p>}
+                  {answerError && <p role="alert">{answerError}</p>}
+                </section>}
                 <h3>Từ vựng đã gặp</h3>
                 {notebook.data.glossary.length === 0 && <p>Chưa có từ vựng.</p>}
                 <dl className="glossary-list">{notebook.data.glossary.map(item => <div key={item.id}>
