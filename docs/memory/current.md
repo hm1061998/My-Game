@@ -12,7 +12,7 @@ Browser-based 2.5D action detective RPG teaching A2–B1 English in an office se
 
 Accepted defaults: Phaser sprite-based 2.5D, desktop keyboard controls, stealth/dodge action, bright stylized office, Vietnamese navigation with English case content, SQLite behind storage ports, server-side JSON case content. Visual direction A "editorial detective" with original AI-assisted SVG art authored in-repo (T27). Record a decision before materially changing a default.
 
-Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adapter timing, OpenAPI → TypeScript codegen (two generators rejected: TypeScript 6 incompatibility / npm audit advisories; runtime response validation used instead), and the admin-portal production choices that T16 must record.
+Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adapter timing, OpenAPI → TypeScript codegen (two generators rejected: TypeScript 6 incompatibility / npm audit advisories; runtime response validation used instead), and the admin-portal production choices that T16 must record. Future comprehensive graphics upgrade options (proposed, not approved): `docs/design/graphics-technology-options.md`.
 
 ## Task state
 
