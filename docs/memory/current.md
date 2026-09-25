@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: T09 completion revision (this handoff)
-Dirty workspace: none expected after the required scoped commit and push.
+Baseline: c7e71d7
+Dirty workspace: T10 planning/index/current-memory documentation only; Git was clean and synchronized with `origin/main` before planning.
 
 ## Confirmed scope
 
@@ -20,7 +20,7 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T09 art/HUD/focus implementation 1.0 is done; T01–T09, T13 and T14 are complete. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T10 browser/E2E/playtest plan 1.0 is drafted and awaiting approval; T01–T09, T13 and T14 are complete. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
@@ -29,6 +29,8 @@ The user approved T08 plan 1.0 and its case-v1 truth on 2026-09-25 with “ok t�
 T09 plan 1.0 was drafted after the user's 2026-09-25 instruction to continue and to try previewing in Codex's browser. That instruction authorizes planning, not unreviewed art/HUD implementation. T09 coding awaits approval of `docs/tasks/T09-art-hud-focus.md`. The visible Codex in-app browser was attempted twice during planning, but its trusted Node kernel reset immediately; implementation must retry it first and use a visible Chrome fallback only if the tool remains unavailable.
 
 The user approved T09 implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”. Frontend-only implementation and visible browser verification are authorized within that recorded scope; audio, external raster assets, backend/storage changes and deployment remain excluded.
+
+The user's 2026-09-25 instruction “làm bước tiếp theo” authorizes drafting T10 plan 1.0, not installing Playwright or implementing the unreviewed suite. T10 proposes headed Chromium, a temporary isolated SQLite database, dedicated local ports, a full critical journey, manual visible playtest and an environment-qualified performance sample. Coding awaits approval of `docs/tasks/T10-browser-e2e-playtest.md`.
 
 The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
@@ -70,11 +72,11 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 
 ## Blockers and known issues
 
-TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio and external raster assets remain outside T09. The visible Codex browser failed during both planning and implementation with the same Windows sandbox helper error; visible Chrome is the verified local fallback until the host issue is fixed.
+T10 coding is intentionally blocked on approval of plan 1.0. TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio and external raster assets remain outside the MVP. The visible Codex browser failed during both T09 planning and implementation with the same Windows sandbox helper error; visible Chrome is the verified local fallback until the host issue is fixed.
 
 ## Next action
 
-Draft and seek approval for T10 browser/E2E/playtest. Keep admin implementation stopped and do not deploy or publish.
+Ask the user to approve or revise `docs/tasks/T10-browser-e2e-playtest.md` plan 1.0. After approval, install only the scoped Playwright dependency/browser and implement the isolated headed E2E runner. Keep admin implementation stopped and do not deploy or publish.
 
 ## Relevant references
 
@@ -86,6 +88,7 @@ Draft and seek approval for T10 browser/E2E/playtest. Keep admin implementation 
 - `docs/tasks/T07-encounter-checkpoint.md`
 - `docs/tasks/T08-conclusion-review.md`
 - `docs/tasks/T09-art-hud-focus.md`
+- `docs/tasks/T10-browser-e2e-playtest.md`
 - `docs/tasks/T15-admin-console.md`
 - `docs/tasks/index.md`
 - `docs/agent/lessons.md`
