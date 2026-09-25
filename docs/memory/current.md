@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: a22489b
-Dirty workspace: completed T08 implementation and handoff awaiting final commit/push; Git was clean and synchronized with `origin/main` when approval was recorded.
+Baseline: 1c30ba0
+Dirty workspace: T09 planning/index/current-memory documentation only; Git was clean and synchronized with `origin/main` before planning.
 
 ## Confirmed scope
 
@@ -20,11 +20,13 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T08 conclusion/review implementation 1.0 is complete; T01–T08, T13 and T14 are done. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T09 art/HUD/focus implementation 1.0 is planned and awaiting approval; T01–T08, T13 and T14 are done. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
 The user approved T08 plan 1.0 and its case-v1 truth on 2026-09-25 with “ok tôi duyệt”. Coding, local migration, tests and visible-browser verification are authorized within that scope. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
+
+T09 plan 1.0 was drafted after the user's 2026-09-25 instruction to continue and to try previewing in Codex's browser. That instruction authorizes planning, not unreviewed art/HUD implementation. T09 coding awaits approval of `docs/tasks/T09-art-hud-focus.md`. The visible Codex in-app browser was attempted twice during planning, but its trusted Node kernel reset immediately; implementation must retry it first and use a visible Chrome fallback only if the tool remains unavailable.
 
 The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
@@ -63,11 +65,11 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 
 ## Blockers and known issues
 
-TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio is intentionally disabled until a later approved slice introduces an audio feature. T09 art/audio/presentation decisions are not yet approved.
+T09 coding is intentionally blocked on approval of plan 1.0. TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio and external raster assets remain outside the proposed T09 slice. The visible Codex browser kernel reset twice during planning.
 
 ## Next action
 
-Plan the next product slice T09 presentation/HUD polish and request approval before material art/audio decisions. Keep admin implementation stopped.
+Ask the user to approve or revise `docs/tasks/T09-art-hud-focus.md` plan 1.0. After approval, load `implement-vertical-slice` and implement the frontend-only presentation increment, retrying the visible Codex browser first. Keep admin implementation stopped.
 
 ## Relevant references
 
@@ -78,6 +80,7 @@ Plan the next product slice T09 presentation/HUD polish and request approval bef
 - `docs/tasks/T06-questions-unlocks.md`
 - `docs/tasks/T07-encounter-checkpoint.md`
 - `docs/tasks/T08-conclusion-review.md`
+- `docs/tasks/T09-art-hud-focus.md`
 - `docs/tasks/T15-admin-console.md`
 - `docs/tasks/index.md`
 - `docs/agent/lessons.md`
