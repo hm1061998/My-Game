@@ -9,3 +9,5 @@ Load only the skill relevant to the current task.
 | Implement vertical slice | A feature crosses API, React, Phaser, or storage boundaries | `.agents/skills/implement-vertical-slice/SKILL.md` |
 
 Planned specialist skills such as 2.5D gameplay, case authoring, storage migration, and release verification are created after their first real workflow supplies evidence. Do not treat planned names as existing skills.
+
+Claude Code discovers these through pointer skills in `.claude/skills/<name>/SKILL.md` and loads rules through `CLAUDE.md` → `@AGENTS.md`. Keep `.agents/skills` as the only source; when adding or renaming a skill here, add or update its pointer with the same `name` and `description`.
