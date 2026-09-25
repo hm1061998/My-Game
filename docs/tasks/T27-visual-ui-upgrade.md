@@ -6,7 +6,7 @@ Depends on: T10
 Plan version: 1.0
 Approval: approved by user 2026-09-25 — option (b): full V0→V5 sequence with the mandatory V0 visual checkpoint; art direction and asset-source choice remain pending at V0 exit gate
 Lifecycle phase: define/design
-Workflow step: V0 direction boards and wireframes delivered in `docs/design/t27-v0/direction-boards.html` (SVG placeholders, no product code); awaiting V0 exit-gate choice
+Workflow step: V0 exit gate passed — user chose direction A and original AI-assisted assets; next is V1 game-first shell and design system
 
 ## Outcome and success signal
 
@@ -43,6 +43,12 @@ Use a hybrid pipeline:
 - CSS/SVG-style local icons, tokens and semantic HTML for React UI; do not rasterize text or form controls.
 - One consistent source strategy per asset family. Recommended: original AI-assisted concept/source art with manual cleanup and atlas normalization. Alternative: one licensed coherent asset pack with documented license. Mixing unrelated packs is excluded.
 - Generate style frames before production assets. Approval of plan 1.0 authorizes the style-frame/design phase only; the chosen style frame and source/provenance strategy require a second visual checkpoint before runtime assets are bundled.
+
+### Accepted V0 decision (2026-09-25)
+
+- **Direction: A · Editorial detective**, as specified in `docs/design/t27-v0/direction-boards.html` (palette ink `#1d3b3a`, wall `#2f6f6a`, desk `#8fd3c1`, paper `#efe3cc`, coral `#e76f51`, amber `#f4a261`; 3 px ink outline; 3/4 top-down ~35°, 64 px tiles; soft contact shadow; light halftone/paper grain; ~2.6-head characters; Fraunces display + system sans UI; idle 4f / walk 6f / run 6f × 4 directions).
+- **Asset source: original AI-assisted art** with manual cleanup and atlas normalization. No third-party asset packs. Every generated asset records tool, prompt summary, date, cleanup and license/terms note in `docs/assets/manifest.md` before it is bundled.
+- Directions B and C are rejected. V0 exit gate passed; V1 may start.
 
 ## Scope
 
@@ -141,7 +147,7 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: user selects direction A, B or C and an asset-source method (original AI-assisted or licensed-pack search); then V1 starts.
+Next action: start V1 (viewport-first shell, shared CSS/Phaser tokens) on direction A.
 
 ## Improvement review
 
