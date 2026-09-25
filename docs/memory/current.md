@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: 344802f
-Dirty workspace: approved, uncommitted T07 browser-found React/Phaser lifecycle fixes plus README, rule, task, memory and lesson handoff updates. Git was clean when T07 verification resumed.
+Baseline: 03259b4
+Dirty workspace: T08 planning/index/memory documentation only; Git was clean and synchronized with `origin/main` before planning.
 
 ## Confirmed scope
 
@@ -20,11 +20,11 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T07 encounter/checkpoint is complete in the working tree; T01–T06, T13 and T14 are complete. T08 conclusion/review is the next game slice. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T08 conclusion/review implementation 1.0 is planned and awaiting approval; T01–T07, T13 and T14 are complete. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
-T07 was approved by the user's 2026-09-25 “tiếp tục” under PROJECT_PLAN.md 1.4. It reached visible Chrome confirmation, scripts, improvement review and handoff. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
+T08 plan 1.0 was drafted after the user's 2026-09-25 “tiếp tục làm bước tiếp theo”. Coding is not approved yet because the detailed scope and the existing proposed case truth must be confirmed. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
 
 The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
@@ -59,11 +59,11 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 
 ## Blockers and known issues
 
-No blocker for T07. Final conclusion/scoring awaits T08. TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio is intentionally disabled until a later approved slice introduces an audio feature.
+T08 coding is intentionally blocked on approval of plan 1.0 and the case-v1 truth (Nora misunderstood the instruction; E03 + E06 accepted). TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio is intentionally disabled until a later approved slice introduces an audio feature.
 
 ## Next action
 
-Continue T08 conclusion/review if the user asks for the next game step, with a newly recorded approved task plan and visible browser testing. Keep admin implementation stopped. When the user later authorizes admin coding, start T16 only: confirm the T05–T08 contract baseline and write approved identity/privacy/publishing/analytics decisions before T17–T24 implementation.
+Ask the user to approve or revise `docs/tasks/T08-conclusion-review.md` plan 1.0, explicitly including the existing case-v1 truth. After approval, load `implement-vertical-slice` and begin contract/domain design before migration or UI work. Keep admin implementation stopped.
 
 ## Relevant references
 
@@ -73,6 +73,7 @@ Continue T08 conclusion/review if the user asks for the next game step, with a n
 - `docs/tasks/T05-case-npc-notebook.md`
 - `docs/tasks/T06-questions-unlocks.md`
 - `docs/tasks/T07-encounter-checkpoint.md`
+- `docs/tasks/T08-conclusion-review.md`
 - `docs/tasks/T15-admin-console.md`
 - `docs/tasks/index.md`
 - `docs/agent/lessons.md`
