@@ -20,8 +20,8 @@ h1 { margin-bottom: 8px; color: #f5f1e8; font-family: Georgia, 'Times New Roman'
 kbd { display: inline-block; min-width: 54px; margin-right: 8px; padding: 5px 7px; border: 1px solid #4d5669; border-radius: 5px; background: #232834; color: #f5f1e8; font: inherit; text-align: center; }
 .scene-toolbar { display: flex; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid #303643; color: #858ea2; font-size: .72rem; font-weight: 700; letter-spacing: .12em; }
 .prototype-tag { color: #db7949; }
-.game-canvas { position: relative; width: 100%; min-height: 520px; background: #202633; }
+.game-canvas { position: relative; width: 100%; height: 520px; background: #202633; }
 .game-canvas canvas { display: block; width: 100%; height: 100%; }
 .game-loading { display: grid; min-height: 520px; place-items: center; color: #aeb6c8; background: #202633; }
 .api-warning { margin: 16px 0 0; padding: 12px 16px; border: 1px solid #724337; border-radius: 9px; background: #291e1b; color: #f0a58e; }
-@media (max-width: 860px) { .app-shell { padding: 20px; } .case-header, .workspace { grid-template-columns: 1fr; } .status-panel { min-width: 0; } .game-canvas { min-height: 440px; } }
+@media (max-width: 860px) { .app-shell { padding: 20px; } .case-header, .workspace { grid-template-columns: 1fr; } .status-panel { min-width: 0; } .game-canvas { height: 440px; } }

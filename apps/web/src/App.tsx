@@ -20,7 +20,9 @@ export default function App() {
   const [gameStatus, setGameStatus] = useState('Đang khởi tạo hiện trường…')
   const health = useQuery({ queryKey: ['api-health'], queryFn: getHealth, retry: 1 })
   const handleLifecycle = useCallback((event: GameLifecycleEvent) => {
-    setGameStatus(event.type === 'ready' ? 'Hiện trường đã sẵn sàng' : 'Hiện trường đã đóng')
+    if (event.type === 'ready') setGameStatus('Hiện trường đã sẵn sàng')
+    if (event.type === 'destroyed') setGameStatus('Hiện trường đã đóng')
+    if (event.type === 'play-state') setGameStatus(event.state === 'paused' ? 'Đã tạm dừng' : 'Đang khám phá')
   }, [])
 
   return (
@@ -48,19 +50,19 @@ export default function App() {
       <section className="workspace" aria-label="Khu vực điều tra">
         <aside className="mission-card">
           <p className="label">NHIỆM VỤ HIỆN TẠI</p>
-          <h2>Meet Maya in the lobby</h2>
-          <p>Gặp Maya tại sảnh để nhận thông tin đầu tiên về bản báo cáo.</p>
-          <div className="controls" aria-label="Điều khiển dự kiến">
-            <span><kbd>WASD</kbd> Di chuyển</span>
-            <span><kbd>E</kbd> Tương tác</span>
-            <span><kbd>Space</kbd> Né</span>
+          <h2>Explore the office</h2>
+          <p>Khám phá mặt bằng văn phòng. Thử đi vòng qua bàn, tủ và khu họp trước khi bắt đầu điều tra.</p>
+          <div className="controls" aria-label="Điều khiển">
+            <span><kbd>WASD</kbd> hoặc phím mũi tên: di chuyển</span>
+            <span><kbd>Shift</kbd> Chạy</span>
+            <span><kbd>Esc</kbd> Tạm dừng / tiếp tục</span>
           </div>
         </aside>
 
         <div className="scene-card">
           <div className="scene-toolbar">
             <span>FLOOR 08 · MAIN OFFICE</span>
-            <span className="prototype-tag">2.5D FOUNDATION</span>
+            <span className="prototype-tag">OFFICE MAP · MOVEMENT</span>
           </div>
           <Suspense fallback={<div className="game-loading">Đang dựng hiện trường…</div>}>
             <GameCanvas onLifecycle={handleLifecycle} />

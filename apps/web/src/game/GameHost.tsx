@@ -15,7 +15,7 @@ export function GameHost({ factory, onLifecycle }: GameHostProps) {
   useEffect(() => {
     const parent = parentRef.current
     if (!parent) return
-    const game = factory(parent)
+    const game = factory(parent, (event) => lifecycleRef.current?.(event))
     lifecycleRef.current?.({ type: 'ready' })
     return () => {
       game.destroy(true)

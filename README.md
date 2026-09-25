@@ -2,7 +2,7 @@
 
 Web game nhập vai hành động trinh thám 2.5D kết hợp học tiếng Anh A2-B1. React quản lý UI, Phaser quản lý gameplay theo frame, và ASP.NET Core quản lý tiến độ đáng tin cậy.
 
-Repository hiện có nền tảng React/Phaser và API health check. SQLite, Docker và cấu hình GitHub chưa cần cho giai đoạn hiện tại; chúng chỉ được bổ sung theo các mốc trong `PROJECT_PLAN.md`.
+Repository hiện có một bản đồ văn phòng có thể khám phá trong Phaser, giao diện React và API health check. SQLite, Docker và cấu hình GitHub chưa cần cho giai đoạn hiện tại; chúng chỉ được bổ sung theo các mốc trong `PROJECT_PLAN.md`.
 
 ## Công cụ cần cài
 
@@ -109,6 +109,8 @@ npm --prefix apps/web run dev
 ```
 
 Mở `http://127.0.0.1:5173`. Vite chuyển tiếp `/api` tới API tại cổng 5062. Dừng mỗi tiến trình bằng `Ctrl+C`.
+
+Trong bản đồ, dùng `WASD` hoặc phím mũi tên để di chuyển, giữ `Shift` để chạy và nhấn `Esc` để tạm dừng/tiếp tục. Khi cửa sổ hoặc tab mất focus, game tự tạm dừng; nhấn `Esc` để tiếp tục sau khi quay lại. Bàn và tủ là vật cản, còn camera theo nhân vật trong giới hạn bản đồ. Tương tác NPC và lưu tiến độ sẽ được bổ sung ở các task sau.
 
 ## Chạy toàn bộ kiểm tra
 
