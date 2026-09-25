@@ -2,6 +2,9 @@ using OfficeCaseFiles.Api.Contracts;
 using Microsoft.EntityFrameworkCore;
 using OfficeCaseFiles.Api.Application;
 using OfficeCaseFiles.Api.Features.Sessions;
+using OfficeCaseFiles.Api.Features.Cases;
+using OfficeCaseFiles.Api.Features.Interactions;
+using OfficeCaseFiles.Api.Infrastructure.Content;
 using OfficeCaseFiles.Api.Infrastructure.Sqlite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<SessionService>();
+builder.Services.AddScoped<InteractionService>();
+builder.Services.AddSingleton<ICaseCatalog, JsonCaseCatalog>();
 
 var provider = builder.Configuration["Storage:Provider"];
 if (provider != "Sqlite")
@@ -26,8 +31,8 @@ app.UseExceptionHandler();
 
 app.Use(async (context, next) =>
 {
-    if (context.Request.Path.StartsWithSegments("/api/v1/sessions") ||
-        context.Request.Path.StartsWithSegments("/api/v1/session/checkpoint"))
+    if (context.Request.Path.StartsWithSegments("/api/v1") &&
+        context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE")
     {
         var fetchSite = context.Request.Headers["Sec-Fetch-Site"].ToString();
         var origin = context.Request.Headers.Origin.ToString();
@@ -59,6 +64,10 @@ app.MapGet("/api/v1/health", () => Results.Ok(HealthResponse.Create()))
     .Produces<HealthResponse>();
 
 app.MapSessionEndpoints();
+app.MapCaseEndpoints();
+app.MapInteractionEndpoints();
+
+_ = app.Services.GetRequiredService<ICaseCatalog>();
 
 using (var scope = app.Services.CreateScope())
 {

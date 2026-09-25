@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "id": "swapped-report",
+  "version": "1",
+  "title": "The Swapped Report",
+  "level": "A2-B1",
+  "brief": "The approved report was replaced before a client meeting. Explore the office, read the records, and find out what happened.",
+  "evidence": [
+    {
+      "id": "E01",
+      "kind": "email",
+      "title": "Maya's email",
+      "body": "At 8:40, Maya sent a short email to the team. She asked everyone to use the approved report, version three, for the client meeting. She also wrote, 'Do not use the previous version.' The attachment name ended in v3.",
+      "glossaryIds": ["approved", "previous", "attachment", "version"],
+      "sourceEvidenceIds": [],
+      "requiredCorrectQuestionIds": [],
+      "requiresEncounter": false
+    },
+    {
+      "id": "E02",
+      "kind": "chat",
+      "title": "Team chat",
+      "body": "At 8:45, Nora asked in the team chat, 'Should I send the previous version?' Maya was preparing the meeting and did not answer at once. Nora wrote that she would check the shared folder. The chat does not show which file she finally chose.",
+      "glossaryIds": ["previous", "confirm", "version"],
+      "sourceEvidenceIds": [],
+      "requiredCorrectQuestionIds": [],
+      "requiresEncounter": false
+    },
+    {
+      "id": "E03",
+      "kind": "history",
+      "title": "File version history",
+      "body": "The archive log shows that Leo uploaded version three at 8:30. At 8:50, Nora's account replaced the meeting file with version two. The log records an account and a time, but it cannot tell us why the change happened.",
+      "glossaryIds": ["upload", "replace", "account", "version"],
+      "sourceEvidenceIds": [],
+      "requiredCorrectQuestionIds": [],
+      "requiresEncounter": true
+    },
+    {
+      "id": "E04",
+      "kind": "minutes",
+      "title": "Meeting minutes",
+      "body": "The internal meeting began at 8:45. The minutes say Leo joined the call and presented the new figures from 8:47 to 8:55. This record supports his account of where he was, but it does not prove who changed the client file.",
+      "glossaryIds": ["meeting", "present", "confirm"],
+      "sourceEvidenceIds": [],
+      "requiredCorrectQuestionIds": [],
+      "requiresEncounter": false
+    },
+    {
+      "id": "E05",
+      "kind": "statement",
+      "title": "Maya's statement",
+      "body": "Maya says she meant the newly approved report, version three. She did not ask anyone to return to an older file. She was busy before the meeting and missed Nora's question in the chat. Later, she saw that the client file was different.",
+      "glossaryIds": ["approved", "instruction", "instead"],
+      "sourceEvidenceIds": ["E01"],
+      "requiredCorrectQuestionIds": ["Q01"],
+      "requiresEncounter": false
+    },
+    {
+      "id": "E06",
+      "kind": "statement",
+      "title": "Nora's statement",
+      "body": "Nora says she thought 'previous version' meant the file to send, not the file to avoid. She found version two in the shared folder and used it instead of version three. When she learned about the mistake, she told the team immediately.",
+      "glossaryIds": ["previous", "instead", "version"],
+      "sourceEvidenceIds": ["E02", "E03"],
+      "requiredCorrectQuestionIds": ["Q02", "Q03"],
+      "requiresEncounter": false
+    }
+  ],
+  "npcs": [
+    { "id": "maya", "name": "Maya", "dialogue": ["Please check the report instructions on the desk.", "The exact version matters. Come back when you have read the email."] },
+    { "id": "leo", "name": "Leo", "dialogue": ["I uploaded a revised report before the meeting.", "The meeting notes may help you check the time."] },
+    { "id": "nora", "name": "Nora", "dialogue": ["I prepared the file for the client meeting.", "Please look at the records before we discuss what changed."] }
+  ],
+  "glossary": [
+    { "id": "approved", "term": "approved", "meaningVi": "đã được phê duyệt", "exampleEn": "Use the approved report." },
+    { "id": "revised", "term": "revised", "meaningVi": "đã được chỉnh sửa", "exampleEn": "Leo uploaded a revised report." },
+    { "id": "previous", "term": "previous", "meaningVi": "trước đó", "exampleEn": "Do not use the previous version." },
+    { "id": "attachment", "term": "attachment", "meaningVi": "tệp đính kèm", "exampleEn": "The attachment is in Maya's email." },
+    { "id": "replace", "term": "replace", "meaningVi": "thay thế", "exampleEn": "Do not replace the new file." },
+    { "id": "upload", "term": "upload", "meaningVi": "tải lên", "exampleEn": "Please upload version three." },
+    { "id": "account", "term": "account", "meaningVi": "tài khoản", "exampleEn": "The log shows an account name." },
+    { "id": "meeting", "term": "meeting", "meaningVi": "cuộc họp", "exampleEn": "The meeting starts at nine." },
+    { "id": "present", "term": "present", "meaningVi": "trình bày", "exampleEn": "Leo will present the figures." },
+    { "id": "confirm", "term": "confirm", "meaningVi": "xác nhận", "exampleEn": "Can you confirm the file name?" },
+    { "id": "instruction", "term": "instruction", "meaningVi": "chỉ dẫn", "exampleEn": "Read the instruction carefully." },
+    { "id": "version", "term": "version", "meaningVi": "phiên bản", "exampleEn": "This is version three." },
+    { "id": "instead", "term": "instead", "meaningVi": "thay vào đó", "exampleEn": "Use this file instead." }
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "sourceEvidenceIds": ["E01"],
+      "prompt": "Which report did Maya ask the team to use?",
+      "choices": [
+        { "id": "Q01-A", "text": "The approved version three" },
+        { "id": "Q01-B", "text": "The previous version two" },
+        { "id": "Q01-C", "text": "Any report in the folder" }
+      ],
+      "correctChoiceId": "Q01-A",
+      "explanation": "Maya's email says to use the approved version three."
+    },
+    {
+      "id": "Q02",
+      "sourceEvidenceIds": ["E02"],
+      "prompt": "What did Nora ask in the chat?",
+      "choices": [
+        { "id": "Q02-A", "text": "Whether she should send the previous version" },
+        { "id": "Q02-B", "text": "When the meeting would end" },
+        { "id": "Q02-C", "text": "Who uploaded version three" }
+      ],
+      "correctChoiceId": "Q02-A",
+      "explanation": "Nora asked whether she should send the previous version."
+    },
+    {
+      "id": "Q03",
+      "sourceEvidenceIds": ["E03"],
+      "prompt": "What does the version history show at 8:50?",
+      "choices": [
+        { "id": "Q03-A", "text": "Nora's account replaced the file with version two" },
+        { "id": "Q03-B", "text": "Leo uploaded version three" },
+        { "id": "Q03-C", "text": "Maya approved version two" }
+      ],
+      "correctChoiceId": "Q03-A",
+      "explanation": "The log records Nora's account replacing the meeting file at 8:50."
+    }
+  ],
+  "interactions": [
+    { "id": "desk-email", "kind": "evidence", "targetId": "E01", "evidenceId": null, "labelVi": "Email trên bàn", "x": 455, "y": 535, "radius": 75 },
+    { "id": "chat-device", "kind": "evidence", "targetId": "E02", "evidenceId": null, "labelVi": "Thiết bị chat", "x": 785, "y": 570, "radius": 75 },
+    { "id": "archive-terminal", "kind": "evidence", "targetId": "E03", "evidenceId": null, "labelVi": "Terminal lưu trữ", "x": 1400, "y": 470, "radius": 75 },
+    { "id": "meeting-minutes", "kind": "evidence", "targetId": "E04", "evidenceId": null, "labelVi": "Biên bản họp", "x": 1160, "y": 770, "radius": 75 },
+    { "id": "npc-maya", "kind": "npc", "targetId": "maya", "evidenceId": "E05", "labelVi": "Nói chuyện với Maya", "x": 320, "y": 250, "radius": 80 },
+    { "id": "npc-leo", "kind": "npc", "targetId": "leo", "evidenceId": null, "labelVi": "Nói chuyện với Leo", "x": 900, "y": 630, "radius": 80 },
+    { "id": "npc-nora", "kind": "npc", "targetId": "nora", "evidenceId": "E06", "labelVi": "Nói chuyện với Nora", "x": 1450, "y": 760, "radius": 80 }
+  ],
+  "solution": {
+    "suspectId": "nora",
+    "reasonId": "misread-previous-version",
+    "acceptedEvidenceSets": [["E03", "E06"]],
+    "explanation": "Nora used version two because she misunderstood Maya's instruction. The version history and her statement support that conclusion."
+  }
+}

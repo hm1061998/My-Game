@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-import type { GameLifecycleEvent } from '../bridge/events'
+import type { GameLifecycleEvent, WorldInteraction } from '../bridge/events'
 import { moveWithCollision, movementDelta, type Point, type Rect } from '../movement'
 
 const WORLD_WIDTH = 1600
@@ -31,6 +31,10 @@ export class OfficeScene extends Phaser.Scene {
   private keys?: MovementKeys
   private pauseLabel?: Phaser.GameObjects.Text
   private paused = false
+  private overlayPaused = false
+  private interactions: WorldInteraction[] = []
+  private markers: Phaser.GameObjects.Container[] = []
+  private nearestId: string | null = null
 
   constructor(emit: (event: GameLifecycleEvent) => void) {
     super('office')
@@ -43,6 +47,7 @@ export class OfficeScene extends Phaser.Scene {
     this.drawOffice()
     this.drawFurniture()
     this.createPlayer()
+    this.renderInteractions()
 
     const keyboard = this.input.keyboard
     if (!keyboard) throw new Error('Keyboard input is required for desktop gameplay')
@@ -52,6 +57,7 @@ export class OfficeScene extends Phaser.Scene {
       shift: 'SHIFT',
     }, true) as MovementKeys
     keyboard.on('keydown-ESC', this.togglePause)
+    keyboard.on('keydown-E', this.tryInteract)
 
     this.pauseLabel = this.add.text(22, 58, 'TẠM DỪNG  ·  ESC để tiếp tục', {
       color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
@@ -68,6 +74,7 @@ export class OfficeScene extends Phaser.Scene {
       window.removeEventListener('blur', this.pauseForFocusLoss)
       document.removeEventListener('visibilitychange', this.onVisibilityChange)
       keyboard.off('keydown-ESC', this.togglePause)
+      keyboard.off('keydown-E', this.tryInteract)
       keyboard.resetKeys()
     })
   }
@@ -76,7 +83,7 @@ export class OfficeScene extends Phaser.Scene {
     const keys = this.keys
     if (!keys) return
 
-    if (this.paused) return
+    if (this.paused || this.overlayPaused) return
 
     const input = {
       x: Number(keys.d.isDown || keys.right.isDown) - Number(keys.a.isDown || keys.left.isDown),
@@ -86,6 +93,50 @@ export class OfficeScene extends Phaser.Scene {
     this.position = moveWithCollision(this.position, movement, FLOOR, OBSTACLES)
     this.player?.setPosition(this.position.x, this.position.y).setDepth(this.position.y)
     this.shadow?.setPosition(this.position.x, this.position.y + 1).setDepth(this.position.y - 1)
+    this.updateNearby()
+  }
+
+  setInteractions(interactions: WorldInteraction[]) {
+    this.interactions = interactions
+    if (this.sys.isActive()) this.renderInteractions()
+  }
+
+  setOverlayPaused(paused: boolean) {
+    this.overlayPaused = paused
+    this.input?.keyboard?.resetKeys()
+  }
+
+  private renderInteractions() {
+    this.markers.forEach(marker => marker.destroy())
+    this.markers = this.interactions.map(interaction => {
+      const marker = this.add.container(interaction.x, interaction.y).setDepth(interaction.y - 2)
+      const color = interaction.kind === 'npc' ? 0x4a7da2 : 0xf4bd64
+      marker.add([
+        this.add.ellipse(0, 0, 52, 17, 0x29434e, 0.25),
+        this.add.circle(0, -25, 16, color).setStrokeStyle(3, 0xffffff),
+        this.add.text(0, -58, interaction.labelVi, {
+          color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
+          fontSize: '14px', padding: { x: 5, y: 3 },
+        }).setOrigin(0.5),
+      ])
+      return marker
+    })
+    this.updateNearby()
+  }
+
+  private updateNearby() {
+    const nearest = this.interactions
+      .filter(item => Math.hypot(this.position.x - item.x, this.position.y - item.y) <= item.radius)
+      .sort((a, b) => Math.hypot(this.position.x - a.x, this.position.y - a.y) -
+        Math.hypot(this.position.x - b.x, this.position.y - b.y))[0] ?? null
+    if (nearest?.id === this.nearestId || (!nearest && !this.nearestId)) return
+    this.nearestId = nearest?.id ?? null
+    this.emit({ type: 'interaction-nearby', interaction: nearest })
+  }
+
+  private readonly tryInteract = (event: KeyboardEvent) => {
+    if (event.repeat || this.paused || this.overlayPaused || !this.nearestId) return
+    this.emit({ type: 'interaction-requested', interactionId: this.nearestId })
   }
 
   private readonly pauseForFocusLoss = () => {
@@ -94,7 +145,7 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   private readonly togglePause = (event: KeyboardEvent) => {
-    if (event.repeat) return
+    if (event.repeat || this.overlayPaused) return
     this.setPaused(!this.paused)
     this.input.keyboard?.resetKeys()
   }

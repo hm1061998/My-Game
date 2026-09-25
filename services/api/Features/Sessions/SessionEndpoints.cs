@@ -5,7 +5,7 @@ namespace OfficeCaseFiles.Api.Features.Sessions;
 
 public static class SessionEndpoints
 {
-    private const string CookieName = "ocf_session";
+    internal const string CookieName = "ocf_session";
 
     public static void MapSessionEndpoints(this WebApplication app)
     {

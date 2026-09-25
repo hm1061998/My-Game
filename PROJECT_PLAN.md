@@ -1,6 +1,6 @@
 # Kế hoạch web game nhập vai hành động trinh thám 2.5D kết hợp học tiếng Anh
 
-> Ngày lập: 23/09/2026 · Phiên bản: 1.3 · Trạng thái: kế hoạch để triển khai bằng AI.
+> Ngày lập: 23/09/2026 · Cập nhật: 25/09/2026 · Phiên bản: 1.4 · Trạng thái: kế hoạch để triển khai bằng AI.
 > Tên làm việc: **Office Case Files**. Tên này và các mặc định đề xuất chưa phải lựa chọn được người dùng xác nhận.
 > Tài liệu này là đặc tả triển khai; các thư mục, scripts, rules và skills bên dưới **chưa được tạo hoặc chạy** chỉ bằng việc có bản kế hoạch này.
 
@@ -17,6 +17,7 @@
 - Lưu trữ có khả năng mở rộng, thay database/nơi lưu nội dung với ảnh hưởng nhỏ tới gameplay; có phương án chuyển dữ liệu và kiểm chứng, không chỉ đổi connection string.
 - Sau khi code ứng dụng hoàn tất và vượt kiểm thử, bổ sung cấu hình Docker và GitHub. Scripts kiểm tra local và Git vẫn chuẩn bị từ đầu; Docker/GitHub thực hiện ở giai đoạn đóng gói sau code.
 - Trước mắt bàn giao kế hoạch chi tiết dạng Markdown.
+- Phát triển song song một cổng quản trị toàn hệ thống: nội dung vụ án, tài khoản/người chơi, phiên và tiến độ hỗ trợ, thống kê, phân quyền quản trị, audit và trạng thái vận hành an toàn. Plan quản trị 1.0 được duyệt ngày 25/09/2026; triển khai chia stage và không được làm yếu bảo mật để giữ deadline cũ.
 
 ### 1.2. Các lựa chọn còn mở
 
@@ -38,6 +39,8 @@ Các mặc định dưới đây giúp kế hoạch có thể thực hiện đư
 
 **D05 cập nhật theo yêu cầu mở rộng:** SQLite lưu lượt chơi, JSON lưu nội dung qua hai adapter độc lập. localStorage chỉ giữ tùy chọn UI/cache có thể bỏ, không là nguồn tiến độ chính. SQLite là điểm khởi đầu đề xuất, không ràng buộc domain/API. PostgreSQL là đích đầu tiên để kiểm chứng portability khi được chọn; document database/object storage cần adapter và đánh giá transaction riêng, không hứa thay bằng cấu hình là đủ.
 
+**D04 cập nhật cho cổng quản trị:** JSON server hiện tại là nguồn bootstrap/chuyển tiếp cho case v1. Cổng quản trị dùng draft có revision và snapshot đã publish bất biến qua application ports; `ICaseCatalog` chỉ phục vụ đúng `(caseId, caseVersion)`. Lượt đang chạy không đổi version khi admin publish bản mới.
+
 ### 1.3. Điều kiện thời gian và phạm vi thành công
 
 - Ước tính 35 giờ: 30 giờ triển khai, 5 giờ dự phòng. Đây là ngân sách công việc, không phải cam kết AI hoàn thành theo thời gian cố định.
@@ -48,6 +51,7 @@ Các mặc định dưới đây giúp kế hoạch có thể thực hiện đư
 - 35 giờ chỉ nhắm prototype có thể chơi bằng asset có sẵn/placeholder đồng nhất; không bao gồm sản xuất bộ đồ họa riêng hoàn chỉnh. Nếu chọn 3D thật hoặc combat sâu, cần giảm scope hoặc tăng thời gian trước coding.
 - Agent mới có thể tiếp nhận repository mà không cần lịch sử chat trước đó.
 - Ngân sách 35 giờ dành cho gameplay MVP và nền tảng lưu trữ. Docker/GitHub sau code dự kiến thêm 4–6 giờ; kiểm chứng chuyển sang provider thứ hai dự kiến thêm 3–5 giờ nếu chọn làm ngay. Không âm thầm lấy hết buffer sửa lỗi để thêm hạ tầng; nếu phải giữ đúng một tuần, người dùng duyệt giảm scope hoặc tăng giờ làm.
+- Chương trình quản trị T15–T26 được duyệt với ước tính riêng 68–106 giờ, không nằm trong ngân sách gameplay 35 giờ. Với một người thực hiện, “song song” là xen kẽ workstream theo contract gates, không phải hoàn thành đồng thời trong cùng một tuần.
 
 ## 2. Thiết kế sản phẩm
 
@@ -713,7 +717,7 @@ Người chơi trả lời câu hỏi để mở hồ sơ theo case definition.
 - Cuối ngày 5 chưa có end-to-end: tập trung đúng một vụ án, không thêm tính năng.
 - Không cắt movement, chiều sâu 2.5D, một đoạn hành động và tương tác NPC rồi gọi bản game hồ sơ cũ là hoàn thành yêu cầu mới. Nếu không đủ thời gian, trình trade-off để người dùng quyết định.
 - Không cắt lời giải có căn cứ, validation đầu vào, bảo vệ nội dung đáp án, checkpoint đã hứa hoặc checks của scoring/unlock.
-- Âm thanh, AI hội thoại, login, leaderboard, CMS, nhiều vụ án, nhiều map, skill tree, combat sâu và mobile controls thuộc sau MVP trừ khi người dùng đổi ưu tiên.
+- Âm thanh, AI hội thoại, leaderboard, nhiều vụ án/map, skill tree, combat sâu và mobile controls vẫn thuộc sau MVP. Login và CMS đã được đưa vào chương trình quản trị T15–T26 theo thay đổi ưu tiên ngày 25/09/2026.
 
 ### 9.3. Giai đoạn sau code — Docker và GitHub
 
@@ -727,6 +731,26 @@ Người chơi trả lời câu hỏi để mở hồ sơ theo case definition.
 | P04 | 3–5 giờ, tùy chọn | Adapter/provider thứ hai và migration rehearsal | storage MVP đạt, provider đích được chọn | Contract tests và browser resume đạt trên DB đích thật |
 
 P01–P03 là yêu cầu bàn giao mới, tổng 4–6 giờ. P04 chỉ cần để công bố đã hỗ trợ provider thứ hai; không được mô tả nó đã xong vì có interface. Cấu hình GitHub có thể tạo local, nhưng CI remote chỉ xác nhận được khi có repository, quyền và push được cho phép. Không dùng việc thiếu remote để bỏ qua P01 hoặc phần cấu hình local của P02.
+
+### 9.4. Workstream quản trị toàn hệ thống — đã duyệt, chưa bắt đầu code
+
+Nguồn duyệt: người dùng ngày 25/09/2026, “duyệt plan, hãy lập task chi tiết vào tài liệu, chưa tiến hành code”. Approval bao phủ Admin plan 1.0 trong `docs/tasks/T15-admin-console.md`; chỉ cho phép lập backlog trong lượt hiện tại, chưa cho task chuyển sang coding.
+
+| Task | Slice | Ước tính | Phụ thuộc | Exit gate |
+| --- | --- | ---: | --- | --- |
+| T16 | Quyết định sản phẩm, privacy và kiến trúc | 4–6 giờ | T05 contract baseline | ADRs, role/capability matrix, data inventory/retention và metric glossary được chốt |
+| T17 | Admin shell và authorization | 6–9 giờ | T16 | SPA riêng, login/logout, deny-by-default policies, CSRF và bootstrap audit đạt |
+| T18 | Player identity và guest linking | 8–12 giờ | T16, T17 | Guest save claim idempotent; account/session lifecycle và migration đạt |
+| T19 | Case authoring foundation | 8–12 giờ | T16, T17, T05 | Draft store, import và editors nền có revision/conflict/audit |
+| T20 | Rules, preview và immutable publish | 8–12 giờ | T19, T06, T08 contracts | Validation dùng chung, preview cô lập, publish nguyên tử và version pinning đạt |
+| T21 | Player/session administration | 8–12 giờ | T18, T07/T08 progress contracts | Search/detail và support actions có confirmation, invariant và audit |
+| T22 | Analytics vocabulary và read model | 6–10 giờ | T16, T06–T08 event semantics | Metric fixture đúng, không double-count và có retention/privacy boundary |
+| T23 | Dashboard và reports | 6–10 giờ | T22 | Dashboard version-aware đúng date/timezone, freshness và error states |
+| T24 | Admin roles, audit và safe settings | 5–8 giờ | T17, T21 | Capability management, audit viewer và allowlisted non-secret settings đạt |
+| T25 | Integrated browser/security verification | 6–10 giờ | T18–T24, T10 | Admin + player E2E, accessibility, privacy/security matrix và recovery đạt |
+| T26 | Handoff và release readiness | 3–5 giờ | T25, T11/T12 | Runbooks, backup/export/anonymization, known limits và improvement review đầy đủ |
+
+Tổng 68–106 giờ, chưa gồm deployment, production email/SSO, visual map/asset editor hoặc data warehouse. Thứ tự stage: T16–T18 → T19–T20 → T21 → T22–T24 → T25–T26. Các task có thể xen kẽ với client khi dependency đã đạt, nhưng một integration owner phải kiểm soát contracts/migrations và central memory.
 
 ## 10. Kiểm thử, CI và tiêu chí hoàn thành
 

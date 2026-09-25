@@ -61,6 +61,51 @@ public sealed class SqlitePlaySessionStore(GameDbContext db) : IPlaySessionStore
         return new CheckpointSaveResult(CheckpointSaveStatus.Conflict, session);
     }
 
+    public async Task<IReadOnlyList<string>> ListEvidenceIdsAsync(Guid sessionId, CancellationToken cancellationToken) =>
+        await db.Evidence.AsNoTracking().Where(row => row.SessionId == sessionId)
+            .OrderBy(row => row.EvidenceId).Select(row => row.EvidenceId).ToArrayAsync(cancellationToken);
+
+    public async Task<EvidenceCollectResult> CollectEvidenceAsync(
+        string tokenHash, int expectedRevision, Guid submissionId, string interactionId,
+        string evidenceId, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var row = await db.Sessions.SingleOrDefaultAsync(item => item.TokenHash == tokenHash, cancellationToken);
+        if (row is null || row.ExpiresAtUtc <= now.UtcDateTime)
+            return new EvidenceCollectResult(EvidenceCollectStatus.NotFound, 0);
+
+        var receipt = await db.InteractionReceipts.AsNoTracking()
+            .SingleOrDefaultAsync(item => item.SessionId == row.Id && item.SubmissionId == submissionId, cancellationToken);
+        if (receipt is not null)
+            return receipt.InteractionId == interactionId && receipt.EvidenceId == evidenceId &&
+                receipt.RequestedRevision == expectedRevision
+                ? new EvidenceCollectResult(EvidenceCollectStatus.AlreadyApplied, receipt.RevisionAfter)
+                : new EvidenceCollectResult(EvidenceCollectStatus.Conflict, row.Revision);
+
+        if (row.Revision != expectedRevision)
+            return new EvidenceCollectResult(EvidenceCollectStatus.Conflict, row.Revision);
+
+        if (await db.Evidence.AnyAsync(item => item.SessionId == row.Id && item.EvidenceId == evidenceId, cancellationToken))
+            return new EvidenceCollectResult(EvidenceCollectStatus.AlreadyCollected, row.Revision);
+
+        row.Revision++;
+        row.UpdatedAtUtc = now.UtcDateTime;
+        row.ExpiresAtUtc = now.AddDays(30).UtcDateTime;
+        db.Evidence.Add(new EvidenceRow { SessionId = row.Id, EvidenceId = evidenceId, CollectedAtUtc = now.UtcDateTime });
+        db.InteractionReceipts.Add(new InteractionReceiptRow
+        {
+            SessionId = row.Id,
+            SubmissionId = submissionId,
+            InteractionId = interactionId,
+            EvidenceId = evidenceId,
+            RequestedRevision = expectedRevision,
+            RevisionAfter = row.Revision,
+        });
+        await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new EvidenceCollectResult(EvidenceCollectStatus.Collected, row.Revision);
+    }
+
     private static PlaySession ToDomain(SessionRow row) => new(
         row.Id, row.CaseId, row.CaseVersion, row.Status, row.Revision,
         new DateTimeOffset(row.CreatedAtUtc, TimeSpan.Zero),
