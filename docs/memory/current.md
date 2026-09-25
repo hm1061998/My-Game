@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: T10 completion commit on `main` (parent `c80336e`)
-Dirty workspace: none expected after the T10 handoff commit and push.
+Baseline: `6af49c0` on `main`
+Dirty workspace: T27 visual/UI planning documentation only; no runtime code or asset change.
 
 ## Confirmed scope
 
@@ -20,7 +20,7 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T10 browser/E2E/playtest is complete; T01–T10, T13 and T14 are complete. T11 handoff verification is next. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T27 game-first visual/UI upgrade plan 1.0 is awaiting approval after a user-requested audit. T10 browser/E2E/playtest is complete; T01–T10, T13 and T14 are complete. T11 handoff verification remains queued behind this explicit visual-planning detour. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
@@ -33,6 +33,8 @@ The user approved T09 implementation plan 1.0 on 2026-09-25 with “duyệt kế
 The user's 2026-09-25 instruction “làm bước tiếp theo” authorizes drafting T10 plan 1.0, not installing Playwright or implementing the unreviewed suite. T10 proposes headed Chromium, a temporary isolated SQLite database, dedicated local ports, a full critical journey, manual visible playtest and an environment-qualified performance sample. Coding awaits approval of `docs/tasks/T10-browser-e2e-playtest.md`.
 
 The user approved T10 implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”. The scoped Playwright dependency/browser, isolated local runner, headed E2E journey, manual playtest, performance sample and defect fixes within existing MVP behavior are authorized. New gameplay/contracts/schema, admin implementation, Docker/CI, deployment and publishing remain excluded.
+
+The user's instruction “trước khi bắt đầu làm tiếp, hãy xem xét giúp tôi lên kế hoạch cải thiện đồ họa và giao diện game” authorizes the T27 audit and planning documentation only. T27 recommends a bright editorial detective direction and a staged V0–V5 upgrade, but no style frame, generated/licensed runtime asset or product implementation is authorized until the applicable visual checkpoint is approved.
 
 The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
@@ -62,6 +64,7 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - T10 adds a pinned Playwright 1.63 headed Chromium journey plus an isolated PowerShell runner with dedicated ports, unique temporary SQLite data, explicit migration/readiness, owned-process cleanup and performance output. The full case passes real keyboard movement, retry/idempotency, checkpoint/scanner recovery, conclusion/review, reload and fresh replay with one canvas.
 - Final T10 measurements on Windows/Chromium were 7,063 ms total readiness, approximately 60 FPS over 1.607 seconds, p95/longest frame interval 17 ms, and 35.7 seconds for the complete journey. Visible Chrome separately confirmed pause/resume and responsive shell behavior. The production bundle excludes the E2E hook/private solution/token strings.
 - L007 promotes the validated Windows integration-runner pattern: quote paths, set working directories, fail on occupied ports, wait through the browser-facing proxy, and clean only owned processes plus validated unique data.
+- T27 planning audit found that the current accessible prototype remains code-authored only: at 1280×800 the canvas measured 896×496, the mission rail 285×765 and the document 979px high. Plan 1.0 proposes a game-first shell, a single approved local asset pipeline, richer environment/character presentation and purpose-specific investigative UI without changing gameplay/backend truth.
 
 ## Last checks
 
@@ -82,7 +85,7 @@ TypeScript type generation from OpenAPI remains open. Vite still warns about the
 
 ## Next action
 
-Plan T11 handoff verification: have a fresh agent/context identify the active task, commands, evidence and known limits without relying on this session. Keep T12, admin implementation, Docker/CI, deployment and publishing stopped until their applicable checkpoint.
+User reviews `docs/tasks/T27-visual-ui-upgrade.md` and chooses V0-only direction exploration, the full recommended V0–V5 sequence with a visual checkpoint, or the smaller V1/high-impact-V2 slice. Until approval, do not generate/bundle art or modify runtime UI. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
 
 ## Relevant references
 
@@ -95,6 +98,7 @@ Plan T11 handoff verification: have a fresh agent/context identify the active ta
 - `docs/tasks/T08-conclusion-review.md`
 - `docs/tasks/T09-art-hud-focus.md`
 - `docs/tasks/T10-browser-e2e-playtest.md`
+- `docs/tasks/T27-visual-ui-upgrade.md`
 - `docs/tasks/T15-admin-console.md`
 - `docs/tasks/index.md`
 - `docs/agent/lessons.md`
