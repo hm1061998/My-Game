@@ -1,27 +1,242 @@
-.app-shell { width: min(1440px, 100%); margin: 0 auto; padding: 32px; }
-.case-header { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end; margin-bottom: 24px; }
-.eyebrow, .label { margin: 0 0 8px; color: #db7949; font-size: .72rem; font-weight: 800; letter-spacing: .18em; }
-h1, h2, p { margin-top: 0; }
-h1 { margin-bottom: 8px; color: #f5f1e8; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2.4rem, 6vw, 5.5rem); font-weight: 500; line-height: .95; }
-.case-summary { max-width: 720px; margin-bottom: 0; color: #a9afbd; line-height: 1.65; }
-.status-panel { min-width: 220px; margin: 0; padding: 16px; border: 1px solid #353a47; border-radius: 12px; background: #171a22; }
-.status-panel div { display: flex; justify-content: space-between; gap: 20px; }
-.status-panel div + div { margin-top: 8px; }
-.status-panel dt { color: #747d91; }
-.status-panel dd { margin: 0; color: #d6dae4; }
-.status-panel .online { color: #76d6a1; }
-.status-panel .offline { color: #f08a73; }
-.workspace { display: grid; grid-template-columns: minmax(240px, 310px) minmax(0, 1fr); gap: 18px; }
-.mission-card, .scene-card { overflow: hidden; border: 1px solid #303643; border-radius: 14px; background: #171a22; box-shadow: 0 24px 70px rgb(0 0 0 / 24%); }
-.mission-card { padding: 24px; }
-.mission-card h2 { color: #f5f1e8; font-family: Georgia, 'Times New Roman', serif; font-size: 1.7rem; }
-.mission-card > p:not(.label) { color: #9ca5b7; line-height: 1.6; }
-.controls { display: grid; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #303643; color: #aeb5c3; font-size: .86rem; }
-kbd { display: inline-block; min-width: 54px; margin-right: 8px; padding: 5px 7px; border: 1px solid #4d5669; border-radius: 5px; background: #232834; color: #f5f1e8; font: inherit; text-align: center; }
-.scene-toolbar { display: flex; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid #303643; color: #858ea2; font-size: .72rem; font-weight: 700; letter-spacing: .12em; }
-.prototype-tag { color: #db7949; }
-.game-canvas { position: relative; width: 100%; height: 520px; background: #202633; }
-.game-canvas canvas { display: block; width: 100%; height: 100%; }
-.game-loading { display: grid; min-height: 520px; place-items: center; color: #aeb6c8; background: #202633; }
-.api-warning { margin: 16px 0 0; padding: 12px 16px; border: 1px solid #724337; border-radius: 9px; background: #291e1b; color: #f0a58e; }
-@media (max-width: 860px) { .app-shell { padding: 20px; } .case-header, .workspace { grid-template-columns: 1fr; } .status-panel { min-width: 0; } .game-canvas { height: 440px; } }
+.app-shell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.case-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.label {
+  margin: 0 0 8px;
+  color: #db7949;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  color: #f5f1e8;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.4rem, 6vw, 5.5rem);
+  font-weight: 500;
+  line-height: .95;
+}
+
+.case-summary {
+  max-width: 720px;
+  margin-bottom: 0;
+  color: #a9afbd;
+  line-height: 1.65;
+}
+
+.status-panel {
+  min-width: 220px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #353a47;
+  border-radius: 12px;
+  background: #171a22;
+}
+
+.status-panel div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.status-panel div+div {
+  margin-top: 8px;
+}
+
+.status-panel dt {
+  color: #747d91;
+}
+
+.status-panel dd {
+  margin: 0;
+  color: #d6dae4;
+}
+
+.status-panel .online {
+  color: #76d6a1;
+}
+
+.status-panel .offline {
+  color: #f08a73;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(240px, 310px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.mission-card,
+.scene-card {
+  overflow: hidden;
+  border: 1px solid #303643;
+  border-radius: 14px;
+  background: #171a22;
+  box-shadow: 0 24px 70px rgb(0 0 0 / 24%);
+}
+
+.mission-card {
+  padding: 24px;
+}
+
+.mission-card h2 {
+  color: #f5f1e8;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.7rem;
+}
+
+.mission-card>p:not(.label) {
+  color: #9ca5b7;
+  line-height: 1.6;
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #303643;
+  color: #aeb5c3;
+  font-size: .86rem;
+}
+
+.session-panel {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #303643;
+  color: #aeb5c3;
+  font-size: .9rem;
+}
+
+.session-panel h3 {
+  margin: 0 0 12px;
+  color: #f5f1e8;
+  font-size: 1.1rem;
+}
+
+.session-panel p {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.session-panel strong {
+  color: #f5f1e8;
+}
+
+.session-panel button {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: #db7949;
+  color: #171a22;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.session-panel button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.session-panel button:focus-visible {
+  outline: 3px solid #fff5d6;
+  outline-offset: 3px;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 54px;
+  margin-right: 8px;
+  padding: 5px 7px;
+  border: 1px solid #4d5669;
+  border-radius: 5px;
+  background: #232834;
+  color: #f5f1e8;
+  font: inherit;
+  text-align: center;
+}
+
+.scene-toolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-bottom: 1px solid #303643;
+  color: #858ea2;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+}
+
+.prototype-tag {
+  color: #db7949;
+}
+
+.game-canvas {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  background: #202633;
+}
+
+.game-canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.game-loading {
+  display: grid;
+  min-height: 520px;
+  place-items: center;
+  color: #aeb6c8;
+  background: #202633;
+}
+
+.api-warning {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border: 1px solid #724337;
+  border-radius: 9px;
+  background: #291e1b;
+  color: #f0a58e;
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    padding: 20px;
+  }
+
+  .case-header,
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .status-panel {
+    min-width: 0;
+  }
+
+  .game-canvas {
+    height: 440px;
+  }
+}

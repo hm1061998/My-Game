@@ -5,7 +5,7 @@
 | [T01](T01-agent-foundation.md) | done | Codex | — |
 | [T02](T02-scaffold.md) | done | Codex | T01 |
 | [T03](T03-map-movement.md) map and movement | done | Codex | T02 |
-| T04 storage/session foundation | todo | unassigned | T02 |
+| [T04](T04-storage-session.md) storage/session foundation | done | Codex | T02 |
 | T05 case/NPC/notebook | todo | unassigned | T03, T04 |
 | T06 questions/unlocks | todo | unassigned | T05 |
 | T07 encounter/checkpoint | todo | unassigned | T03, T04, T05 |

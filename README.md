@@ -2,7 +2,7 @@
 
 Web game nhập vai hành động trinh thám 2.5D kết hợp học tiếng Anh A2-B1. React quản lý UI, Phaser quản lý gameplay theo frame, và ASP.NET Core quản lý tiến độ đáng tin cậy.
 
-Repository hiện có một bản đồ văn phòng có thể khám phá trong Phaser, giao diện React và API health check. SQLite, Docker và cấu hình GitHub chưa cần cho giai đoạn hiện tại; chúng chỉ được bổ sung theo các mốc trong `PROJECT_PLAN.md`.
+Repository hiện có bản đồ văn phòng trong Phaser, giao diện React và API lưu lượt chơi/checkpoint bằng SQLite. Docker và cấu hình GitHub chỉ được bổ sung sau mốc `code_complete` trong `PROJECT_PLAN.md`.
 
 ## Công cụ cần cài
 
@@ -15,7 +15,7 @@ Repository hiện có một bản đồ văn phòng có thể khám phá trong P
 | .NET SDK | 10.0.401 hoặc patch tương thích theo `global.json` | Có | SDK đã bao gồm ASP.NET Core runtime; không cần cài runtime riêng |
 | Trình duyệt hiện đại | Chrome, Edge hoặc Firefox | Có | Chạy và kiểm tra game |
 
-Không cần cài riêng SQLite ở thời điểm này. Visual Studio/VS Code là tùy chọn. Docker cũng chưa cần cho local development hiện tại.
+Không cần cài chương trình SQLite riêng: provider được khôi phục qua NuGet. Visual Studio/VS Code là tùy chọn. Docker chưa cần cho local development hiện tại.
 
 ## Kiểm tra môi trường
 
@@ -86,13 +86,20 @@ Từ thư mục gốc repository:
 ```powershell
 npm --prefix apps/web ci
 dotnet restore OfficeCaseFiles.slnx --locked-mode --configfile NuGet.Config
+dotnet tool restore --configfile NuGet.Config
 ```
 
-Lần chạy đầu cần kết nối tới npm registry và NuGet. Dependencies frontend nằm trong `apps/web/node_modules`; NuGet packages được đặt tại `.packages/nuget`. Cả hai đều đã được Git ignore.
+Lần chạy đầu cần kết nối tới npm registry và NuGet. Dependencies frontend nằm trong `apps/web/node_modules`; NuGet packages được đặt tại `.packages/nuget`. Công cụ `dotnet-ef` được pin bởi `.config/dotnet-tools.json`. Các thư mục cài đặt/cache đều đã được Git ignore.
 
 ## Chạy local
 
-Mở hai terminal tại thư mục gốc repository.
+Mở hai terminal tại thư mục gốc repository. Trước lần chạy API đầu tiên hoặc sau khi pull một migration mới, áp dụng migration riêng:
+
+```powershell
+dotnet run --project services/api --no-launch-profile -- --migrate
+```
+
+Lệnh này cập nhật file SQLite `office-case-files.db` tại thư mục gốc; file được Git ignore. API không tự sửa schema khi khởi động, và sẽ báo rõ nếu còn migration chưa áp dụng. Không xóa file database để “sửa lỗi” vì nó chứa tiến độ local của bạn. Có thể đổi vị trí database bằng biến môi trường `ConnectionStrings__Game`; đường dẫn mới phải nằm trên ổ lưu bền vững.
 
 Terminal 1 — API:
 
@@ -108,9 +115,11 @@ Terminal 2 — web:
 npm --prefix apps/web run dev
 ```
 
-Mở `http://127.0.0.1:5173`. Vite chuyển tiếp `/api` tới API tại cổng 5062. Dừng mỗi tiến trình bằng `Ctrl+C`.
+Mở `http://127.0.0.1:5173`. Vite chuyển tiếp `/api` tới API tại cổng 5062. Bấm “Bắt đầu lượt điều tra”, rồi “Lưu thử mốc khu họp”; tải lại trang để thấy mốc vẫn còn. Nút lưu mốc hiện là thao tác thử nghiệm, chưa gắn với vị trí nhân vật trong canvas. Dừng mỗi tiến trình bằng `Ctrl+C`.
 
-Trong bản đồ, dùng `WASD` hoặc phím mũi tên để di chuyển, giữ `Shift` để chạy và nhấn `Esc` để tạm dừng/tiếp tục. Khi cửa sổ hoặc tab mất focus, game tự tạm dừng; nhấn `Esc` để tiếp tục sau khi quay lại. Bàn và tủ là vật cản, còn camera theo nhân vật trong giới hạn bản đồ. Tương tác NPC và lưu tiến độ sẽ được bổ sung ở các task sau.
+Trong bản đồ, dùng `WASD` hoặc phím mũi tên để di chuyển, giữ `Shift` để chạy và nhấn `Esc` để tạm dừng/tiếp tục. Khi cửa sổ hoặc tab mất focus, game tự tạm dừng; nhấn `Esc` để tiếp tục sau khi quay lại. Bàn và tủ là vật cản, còn camera theo nhân vật trong giới hạn bản đồ. Tiến độ checkpoint được lưu phía server; tương tác NPC và tiến độ học sẽ được bổ sung ở các task sau.
+
+API Development công bố OpenAPI tại `http://127.0.0.1:5062/openapi/v1.json`. Frontend hiện kiểm tra response session tại runtime; cơ chế sinh TypeScript types từ OpenAPI chưa được thêm vì các công cụ đã thử chưa đồng thời tương thích TypeScript 6 và đạt npm audit sạch.
 
 ## Chạy toàn bộ kiểm tra
 
@@ -130,6 +139,8 @@ Script cài dependencies theo lockfile, rồi chạy frontend lint/typecheck/tes
 - `A compatible .NET SDK was not found`: chạy `dotnet --list-sdks`; cài SDK 10.0.401 hoặc patch tương thích với `global.json`.
 - npm sai phiên bản: dùng Node 24.x với npm 11.12.1 như `packageManager` trong `apps/web/package.json`; không cài pnpm hoặc Yarn cho repository này.
 - Cổng 5062 hoặc 5173 đang bận: dừng tiến trình đang dùng cổng đó; cấu hình Vite hiện giả định API ở đúng cổng 5062.
+- API báo pending migrations: chạy lệnh `--migrate` ở trên trước khi mở web. Không chạy migration đồng thời từ nhiều tiến trình.
+- Lượt chơi biến mất: kiểm tra cookie còn tồn tại, thời hạn 30 ngày không hoạt động và `ConnectionStrings__Game` có trỏ về cùng file SQLite. Không có khôi phục đa thiết bị trong MVP.
 - PowerShell chặn script cài .NET: chỉ dùng `-ExecutionPolicy Bypass` cho lệnh cài local được ghi ở trên; không cần đổi policy toàn máy.
 
 Trước khi dùng AI agent, đọc `AGENTS.md`, `docs/agent/protocol.md`, `docs/memory/current.md` và task hiện tại. Docker và GitHub được cấu hình sau mốc `code_complete` theo `PROJECT_PLAN.md`.
