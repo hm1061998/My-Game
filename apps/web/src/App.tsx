@@ -341,7 +341,7 @@ export default function App() {
       </section>
 
       {overlay && <div className="investigation-backdrop">
-        <section ref={dialogRef} tabIndex={-1} className="investigation-dialog" role="dialog" aria-modal="true"
+        <section ref={dialogRef} tabIndex={-1} className={`investigation-dialog dialog-${overlay}`} role="dialog" aria-modal="true"
           aria-label={overlay === "notebook" ? "Sổ tay điều tra" : overlay === "retry" ? "Kết quả máy quét" : overlay === "resolution" ? "Hoàn tất vụ án" : "Hội thoại"}>
           <button className="close-dialog" type="button" onClick={() => setOverlay(null)}>Đóng (Esc)</button>
           {overlay === "retry" && <>
@@ -368,9 +368,12 @@ export default function App() {
               {portraitFor(dialogue.interactionId) && <img className="dialogue-portrait" alt="" aria-hidden="true"
                 width={88} height={88} src={portraitUrl(portraitFor(dialogue.interactionId)!, import.meta.env.BASE_URL)}
                 onError={event => { event.currentTarget.hidden = true; }} />}
-              <h2>{dialogue.title ?? "Đồng nghiệp"}</h2>
+              <div><p className="speaker-role">Lời khai · Đồng nghiệp</p>
+                <h2>{dialogue.title ?? "Đồng nghiệp"}</h2></div>
             </div>
-            {dialogue.dialogue?.map((line, index) => <p key={index}>{line}</p>)}
+            <ol className="transcript" lang="en">
+              {dialogue.dialogue?.map((line, index) => <li key={index}>{line}</li>)}
+            </ol>
             {dialogue.statementLocked && <StatusBadge tone="locked">Lời khai chi tiết sẽ mở khi có đủ bằng chứng.</StatusBadge>}
           </>}
           {overlay === "notebook" && <>
@@ -378,19 +381,27 @@ export default function App() {
             {notebook.isPending && <p>Đang tải manh mối…</p>}
             {notebook.isError && <p role="alert">Không tải được sổ tay. Hãy thử lại.</p>}
             {notebook.data && <div className="notebook-layout">
-              <nav aria-label="Manh mối đã thu thập">
+              <nav aria-label="Manh mối đã thu thập" className="evidence-index">
                 <h3>Manh mối ({notebook.data.evidence.length})</h3>
                 {notebook.data.evidence.length === 0 && <p>Chưa thu thập manh mối nào.</p>}
-                {notebook.data.evidence.map(item => <button type="button" key={item.id}
+                {notebook.data.evidence.map(item => <button type="button" key={item.id} className="evidence-tab"
                   onClick={() => setSelectedEvidenceId(item.id)} aria-current={selectedEvidenceId === item.id ? "true" : undefined}>
                   {item.id} · {item.title}</button>)}
               </nav>
-              <article>
+              <article className="case-reader">
+                <div className="case-document">
                 {selectedEvidenceId && evidence.isPending && <p>Đang tải nội dung…</p>}
                 {selectedEvidenceId && evidence.isError && <p role="alert">Không đọc được manh mối này.</p>}
                 {selectedEvidenceId && evidence.data && <EvidenceDetail evidence={evidence.data} />}
-                {!selectedEvidenceId && <p>Chọn một manh mối để đọc.</p>}
-                <h3>Câu hỏi đọc hiểu</h3>
+                {!selectedEvidenceId && <p className="muted">Chọn một manh mối để đọc.</p>}
+                </div>
+                <div className="question-head">
+                  <h3>Câu hỏi đọc hiểu</h3>
+                  {!!questions.data?.length && <label className="progress-label">
+                    {questions.data.filter(item => item.isPassed).length}/{questions.data.length} đã xong
+                    <progress max={questions.data.length} value={questions.data.filter(item => item.isPassed).length} />
+                  </label>}
+                </div>
                 {questions.isPending && <p>Đang tải câu hỏi…</p>}
                 {questions.isError && <p role="alert">Không tải được câu hỏi.</p>}
                 {questions.data?.length === 0 && <p>Thu thập manh mối để mở câu hỏi.</p>}
@@ -423,11 +434,13 @@ export default function App() {
                     <p lang="en" className="answer-feedback">{activeQuestion.explanation}</p>}
                   {answerError && <p role="alert">{answerError}</p>}
                 </section>}
-                <h3>Từ vựng đã gặp</h3>
-                {notebook.data.glossary.length === 0 && <p>Chưa có từ vựng.</p>}
-                <dl className="glossary-list">{notebook.data.glossary.map(item => <div key={item.id}>
-                  <dt>{item.term} — {item.meaningVi}</dt><dd>{item.exampleEn}</dd>
-                </div>)}</dl>
+                <details className="glossary">
+                  <summary>Từ vựng đã gặp ({notebook.data.glossary.length})</summary>
+                  {notebook.data.glossary.length === 0 && <p>Chưa có từ vựng.</p>}
+                  <dl className="glossary-list">{notebook.data.glossary.map(item => <div key={item.id}>
+                    <dt><span lang="en">{item.term}</span> — {item.meaningVi}</dt><dd lang="en">{item.exampleEn}</dd>
+                  </div>)}</dl>
+                </details>
               </article>
             </div>}
           </>}

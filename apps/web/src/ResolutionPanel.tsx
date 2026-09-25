@@ -4,6 +4,7 @@ import { InvestigationError } from './api/investigation'
 import { answerReview, getConclusion, getResult, getReview, submitConclusion,
   type ConclusionResult, type ReviewAnswer } from './api/resolution'
 import type { SessionProgress } from './api/session'
+import { isCharacterId, portraitUrl } from './game/characterArt'
 
 type Props = { session: SessionProgress; replayPending: boolean; onReplay: () => void }
 
@@ -111,17 +112,22 @@ export function ResolutionPanel({ session, replayPending, onReplay }: Props) {
       {conclusion.isError && <p role="alert">Không tải được biểu mẫu kết luận.</p>}
       {conclusion.data && !conclusion.data.isReady && <p role="status">Chưa sẵn sàng: hoàn thành Q01–Q03 và thu thập E03, E06.</p>}
       {conclusion.data?.isReady && <>
-        <fieldset><legend>Ai đã thay tệp?</legend>{conclusion.data.suspects.map(item => <label key={item.id}>
-          <input type="radio" name="suspect" checked={suspectId === item.id} onChange={() => { setSuspectId(item.id); setConfirming(false) }} /> {item.label}
+        <div className="evidence-board">
+        <fieldset className="board-card board-suspects"><legend>① Ai đã thay tệp?</legend>{conclusion.data.suspects.map(item => <label key={item.id} className="suspect-card">
+          <input type="radio" name="suspect" checked={suspectId === item.id} onChange={() => { setSuspectId(item.id); setConfirming(false) }} />
+          {isCharacterId(item.id) && <img alt="" aria-hidden="true" width={56} height={56}
+            src={portraitUrl(item.id, import.meta.env.BASE_URL)} onError={event => { event.currentTarget.hidden = true }} />}
+          {item.label}
         </label>)}</fieldset>
-        <fieldset><legend>Lý do</legend>{conclusion.data.reasons.map(item => <label key={item.id}>
+        <fieldset className="board-card board-reasons"><legend>② Lý do</legend>{conclusion.data.reasons.map(item => <label key={item.id}>
           <input type="radio" name="reason" checked={reasonId === item.id} onChange={() => { setReasonId(item.id); setConfirming(false) }} /> <span lang="en">{item.label}</span>
         </label>)}</fieldset>
-        <fieldset><legend>Chọn đúng 2 bằng chứng</legend>{conclusion.data.evidence.map(item => <label key={item.id}>
+        <fieldset className="board-card board-evidence"><legend>③ Chọn đúng 2 bằng chứng ({evidenceIds.length}/2)</legend>{conclusion.data.evidence.map(item => <label key={item.id} className="evidence-pin">
           <input type="checkbox" checked={evidenceIds.includes(item.id)} disabled={!evidenceIds.includes(item.id) && evidenceIds.length >= 2}
             onChange={() => { setEvidenceIds(ids => ids.includes(item.id) ? ids.filter(id => id !== item.id) : [...ids, item.id]); setConfirming(false) }} />
           {item.id} · {item.title}
         </label>)}</fieldset>
+        </div>
         {!confirming ? <button type="button" disabled={!suspectId || !reasonId || evidenceIds.length !== 2}
           onClick={() => setConfirming(true)}>Kiểm tra kết luận</button> : <div className="confirmation-box" role="alert">
           <p>Kết luận là quyết định cuối cùng và không thể sửa trong lượt này.</p>
@@ -136,9 +142,12 @@ export function ResolutionPanel({ session, replayPending, onReplay }: Props) {
       {result.isPending && <p>Đang tải kết quả…</p>}
       {result.isError && <p role="alert">Không tải được kết quả đã lưu.</p>}
       {result.data && <>
-        <div className="score-grid"><p><strong>{result.data.readingScore}</strong><span>Điểm đọc hiểu</span></p>
-          <p><strong>{result.data.investigationScore}</strong><span>Điểm điều tra</span></p></div>
-        <p lang="en">{result.data.explanation}</p>
+        <div className="score-grid">
+          <p><strong>{result.data.readingScore}</strong><span>Điểm đọc hiểu / 100</span>
+            <meter min={0} max={100} value={result.data.readingScore} aria-hidden="true" /></p>
+          <p><strong>{result.data.investigationScore}</strong><span>Điểm điều tra / 100</span>
+            <meter min={0} max={100} value={result.data.investigationScore} aria-hidden="true" /></p></div>
+        <p lang="en" className="result-explanation">{result.data.explanation}</p>
         <p>{result.data.assistanceUsed ? 'Đã dùng hỗ trợ máy quét; điểm tiếng Anh không bị ảnh hưởng.' : 'Không dùng hỗ trợ máy quét.'}</p>
         <button type="button" onClick={() => setView('review')}>Làm 5 câu ôn tập</button>
         <button type="button" disabled={replayPending} onClick={onReplay}>{replayPending ? 'Đang tạo lượt…' : 'Chơi lại vụ án'}</button>
@@ -150,7 +159,8 @@ export function ResolutionPanel({ session, replayPending, onReplay }: Props) {
       {review.isPending && <p>Đang tải bài ôn tập…</p>}
       {review.isError && <p role="alert">Không tải được bài ôn tập.</p>}
       {review.data && <>
-        <p>Hoàn thành {review.data.filter(item => item.isCompleted).length}/5</p>
+        <label className="progress-label">Hoàn thành {review.data.filter(item => item.isCompleted).length}/5
+          <progress max={5} value={review.data.filter(item => item.isCompleted).length} /></label>
         <div className="review-list">{review.data.map(item => <button type="button" key={item.id}
           aria-current={activeReview?.id === item.id} onClick={() => { setReviewItemId(item.id); setReviewChoiceId(null); setReviewFeedback(null) }}>
           {item.id} · {item.isCompleted ? 'Đã đúng' : 'Chưa xong'}

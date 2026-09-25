@@ -6,7 +6,7 @@ Depends on: T10
 Plan version: 1.0
 Approval: approved by user 2026-09-25 — option (b): full V0→V5 sequence with the mandatory V0 visual checkpoint; art direction and asset-source choice remain pending at V0 exit gate
 Lifecycle phase: define/design
-Workflow step: V3 complete and verified (character sprites, portraits, motion feedback); next is V4 investigative UI surfaces
+Workflow step: V4 complete and verified (dialogue, notebook, evidence board, result/review surfaces); next is V5 integration and visual QA
 
 ## Outcome and success signal
 
@@ -147,7 +147,14 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: start V4 — evidence-board notebook, dialogue and conclusion/result surfaces on direction-A tokens, keeping semantic controls, focus order and E2E names.
+Next action: start V5 — full visual QA pass (grayscale/color-deficiency, 1280×800 and 1440×900, reduced motion, zoom 200%), asset/license and privacy audit, then close T27.
+
+## V4 evidence (2026-09-25)
+
+- Changed: `App.tsx` dialog gets a per-surface class; dialogue is a speaker surface (112 px portrait, role label, `ol.transcript` speech bubbles, locked badge); notebook is a near-full-height workspace (1080×736 at 1280×800) with a tabbed evidence index, lined document reader, question progress (`progress` + "n/3 đã xong") and a collapsible vocabulary `details`. `ResolutionPanel.tsx` conclusion is a cork evidence board with three pinned fieldset cards (suspect portraits, reasons, evidence with n/2 counter) keeping native radios/checkboxes and the confirmation step; result has score cards with `/100` meters and an explanation block; review shows a 0–5 progress bar. All accessible names, headings, `.score-grid`, `role=status` usage and focus/Escape handling kept.
+- Defects found in browser and fixed: floated close button stretched full width inside the flex notebook; notebook stayed two-column at 375 px because the new selector outranked the existing media query (single column now, no horizontal scroll); adjacent result buttons touched.
+- Visible browser 1280×800 with case state prepared through the app's own API modules on the dev server: notebook E03 + Q01 explanation; Esc returns focus to `.game-canvas`; evidence board selection highlight and 1/2 counter; result 100/100 with meters; review 0/5; replay then Maya dialogue surface. 375×812: notebook single column, document width 375.
+- Scripts on final revision: lint pass, typecheck pass, `test:run` 30/30, build pass (pre-existing Phaser chunk warning), headed `scripts/e2e.ps1`: 1 passed, ~60 fps, p95 17 ms.
 
 ## V3 evidence (2026-09-25)
 
@@ -173,7 +180,8 @@ Next action: start V4 — evidence-board notebook, dialogue and conclusion/resul
 
 ## Improvement review
 
-- Result: promoted (L009), candidate (L008)
+- Result: promoted (L009), candidate (L008, L010)
+- V4 observation: reaching late-game UI by hand is slow; preparing state through the app's own API modules from the dev page made conclusion/result/review inspectable in minutes. Recorded as candidate L010.
 - V3 observation: the validated loader handled a second asset family (character sheets) and its missing-file fallback passed in the browser, meeting L009's trigger. Promoted to a rule in `apps/web/AGENTS.md`.
 - V2 observation: a missing static asset can be served as a 200 HTML fallback, which crashes Phaser's SVG loader instead of firing its load-error event. Recorded as candidate L009 with the validate-then-load fix and a unit test.
 - V1 observation: `npm run e2e` hard-codes `pwsh`, absent on this machine, and a running developer API locks the build output the E2E runner needs. Recorded as candidate L008; no script change until it recurs.
