@@ -32,6 +32,7 @@ export function GameHost({ factory, onLifecycle, interactions = EMPTY_INTERACTIO
     game.setInteractions(interactionsRef.current)
     game.setOverlayPaused(overlayRef.current)
     if (worldRef.current) game.setWorldState(worldRef.current)
+    if (!overlayRef.current) parent.focus()
     lifecycleRef.current?.({ type: 'ready' })
     return () => {
       runtimeRef.current = null

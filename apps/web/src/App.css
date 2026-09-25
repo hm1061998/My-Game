@@ -1,7 +1,7 @@
 .app-shell {
   width: min(1440px, 100%);
   margin: 0 auto;
-  padding: 32px;
+  padding: 22px clamp(18px, 2.5vw, 36px) 32px;
 }
 
 .case-header {
@@ -9,13 +9,13 @@
   grid-template-columns: 1fr auto;
   gap: 32px;
   align-items: end;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .eyebrow,
 .label {
   margin: 0 0 8px;
-  color: #db7949;
+  color: var(--amber);
   font-size: .72rem;
   font-weight: 800;
   letter-spacing: .18em;
@@ -31,7 +31,7 @@ h1 {
   margin-bottom: 8px;
   color: #f5f1e8;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(2.4rem, 6vw, 5.5rem);
+  font-size: clamp(2.35rem, 5vw, 4.6rem);
   font-weight: 500;
   line-height: .95;
 }
@@ -39,7 +39,7 @@ h1 {
 .case-summary {
   max-width: 720px;
   margin-bottom: 0;
-  color: #a9afbd;
+  color: var(--muted);
   line-height: 1.65;
 }
 
@@ -47,9 +47,10 @@ h1 {
   min-width: 220px;
   margin: 0;
   padding: 16px;
-  border: 1px solid #353a47;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #171a22;
+  background: rgb(17 40 50 / 88%);
+  box-shadow: inset 0 1px rgb(255 255 255 / 5%);
 }
 
 .status-panel div {
@@ -81,21 +82,21 @@ h1 {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(240px, 310px) minmax(0, 1fr);
+  grid-template-columns: minmax(230px, 285px) minmax(0, 1fr);
   gap: 18px;
 }
 
 .mission-card,
 .scene-card {
   overflow: hidden;
-  border: 1px solid #303643;
-  border-radius: 14px;
-  background: #171a22;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgb(15 35 44 / 94%);
   box-shadow: 0 24px 70px rgb(0 0 0 / 24%);
 }
 
 .mission-card {
-  padding: 24px;
+  padding: 22px;
 }
 
 .mission-card h2 {
@@ -105,25 +106,25 @@ h1 {
 }
 
 .mission-card>p:not(.label) {
-  color: #9ca5b7;
+  color: var(--muted);
   line-height: 1.6;
 }
 
 .controls {
   display: grid;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #303643;
-  color: #aeb5c3;
+  border-top: 1px solid var(--line);
+  color: #bbcacb;
   font-size: .86rem;
 }
 
 .session-panel {
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #303643;
-  color: #aeb5c3;
+  border-top: 1px solid var(--line);
+  color: #bbcacb;
   font-size: .9rem;
 }
 
@@ -147,8 +148,8 @@ h1 {
   padding: 10px 12px;
   border: 0;
   border-radius: 7px;
-  background: #db7949;
-  color: #171a22;
+  background: linear-gradient(135deg, var(--amber), #e68a59);
+  color: #10242c;
   font: inherit;
   font-weight: 750;
   cursor: pointer;
@@ -181,23 +182,27 @@ kbd {
   display: flex;
   justify-content: space-between;
   padding: 11px 16px;
-  border-bottom: 1px solid #303643;
-  color: #858ea2;
+  border-bottom: 1px solid var(--line);
+  color: #9fb3b7;
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .12em;
 }
 
 .prototype-tag {
-  color: #db7949;
+  color: var(--amber);
 }
+
+.scene-stage { position: relative; isolation: isolate; overflow: hidden; background: #a8cbd0; }
 
 .game-canvas {
   position: relative;
   width: 100%;
-  height: 520px;
+  height: clamp(440px, 62vh, 590px);
   background: #202633;
 }
+
+.game-canvas:focus-visible { outline: 4px solid var(--amber); outline-offset: -4px; }
 
 .game-canvas canvas {
   display: block;
@@ -222,15 +227,26 @@ kbd {
   color: #f0a58e;
 }
 
-.scene-notice { margin: 0; padding: 9px 16px; color: #f5e3c8; background: #26323b; }
-.scene-notice kbd { min-width: 28px; }
-.investigation-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgb(8 14 20 / 75%); }
-.investigation-dialog { width: min(780px, 100%); max-height: min(80vh, 760px); overflow: auto; padding: 24px; border: 2px solid #deab74; border-radius: 14px; background: #f7f0df; color: #263842; box-shadow: 0 30px 90px #0008; }
+.scene-hud { position: absolute; inset: 0; z-index: 3; display: grid; align-content: space-between; padding: 14px; pointer-events: none; }
+.hud-objective { justify-self: start; display: grid; max-width: min(520px, 76%); padding: 9px 12px; border: 1px solid rgb(255 255 255 / 42%); border-radius: 9px; background: rgb(17 40 50 / 88%); color: #f7f2e8; box-shadow: 0 8px 24px rgb(18 40 48 / 25%); }
+.hud-objective span { color: var(--amber); font-size: .64rem; font-weight: 850; letter-spacing: .16em; }
+.hud-objective strong { margin-top: 3px; font-size: .82rem; line-height: 1.35; }
+.hud-chips { position: absolute; top: 14px; right: 14px; display: grid; justify-items: end; gap: 6px; }
+.hud-chips span { padding: 6px 9px; border-radius: 999px; background: rgb(255 248 233 / 90%); color: var(--ink); font-size: .7rem; font-weight: 760; box-shadow: 0 5px 16px rgb(18 40 48 / 18%); }
+.hud-messages { align-self: end; display: grid; justify-items: center; gap: 8px; }
+.hud-messages p { margin: 0; padding: 8px 12px; border: 1px solid rgb(255 255 255 / 45%); border-radius: 9px; background: rgb(17 40 50 / 91%); color: #fff8e9; box-shadow: 0 8px 24px rgb(18 40 48 / 25%); font-size: .84rem; }
+.hud-messages .interaction-prompt { display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 8px; }
+.interaction-prompt kbd { min-width: 36px; margin: 0; border-color: #fff4; background: var(--coral); color: #fff; font-weight: 850; }
+.interaction-prompt span { display: grid; color: #bfd3d3; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
+.interaction-prompt strong { color: #fff8e9; font-size: .88rem; letter-spacing: 0; text-transform: none; }
+.desktop-notice { display: none; margin: 0; padding: 10px 14px; color: #ffd9a4; background: #1c3943; font-size: .82rem; }
+.investigation-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgb(6 17 24 / 78%); backdrop-filter: blur(7px); }
+.investigation-dialog { width: min(820px, 100%); max-height: min(86vh, 780px); overflow: auto; padding: 26px; border: 2px solid #e3aa70; border-radius: 18px; background: linear-gradient(145deg, #fffaf0, #f5ead7); color: #263842; box-shadow: 0 30px 90px #0009; scrollbar-color: #b77c58 #eadbc6; }
 .investigation-dialog h2 { font: 2rem Georgia, serif; margin: 0 0 18px; }
 .investigation-dialog h3 { margin: 0 0 12px; }
 .investigation-dialog p { line-height: 1.65; }
 .investigation-dialog .muted { color: #596b70; }
-.close-dialog { float: right; padding: 8px 12px; border: 1px solid #8d7258; border-radius: 6px; background: #fffaf0; color: #263842; cursor: pointer; }
+.close-dialog { position: sticky; top: 0; z-index: 2; float: right; padding: 8px 12px; border: 1px solid #8d7258; border-radius: 999px; background: #fffaf0; color: #263842; cursor: pointer; box-shadow: 0 4px 12px #604a3422; }
 .investigation-dialog > button:not(.close-dialog) { margin: 8px 8px 0 0; padding: 9px 12px; border: 1px solid #8d7258; border-radius: 6px; background: #f5d9bd; color: #263842; cursor: pointer; }
 .investigation-dialog > button:disabled { opacity: .55; cursor: wait; }
 .notebook-layout { display: grid; grid-template-columns: minmax(180px, 230px) 1fr; gap: 24px; }
@@ -285,4 +301,23 @@ kbd {
   }
   .notebook-layout { grid-template-columns: 1fr; }
   .score-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .app-shell { padding: 14px; }
+  .case-header { gap: 14px; }
+  h1 { font-size: clamp(2.25rem, 14vw, 3.4rem); }
+  .status-panel { padding: 12px; }
+  .mission-card { padding: 18px; }
+  .controls { grid-template-columns: 1fr 1fr; }
+  .scene-toolbar { gap: 10px; font-size: .6rem; letter-spacing: .08em; }
+  .prototype-tag { text-align: right; }
+  .game-canvas { height: 360px; }
+  .hud-objective { max-width: calc(100% - 28px); }
+  .hud-chips { top: auto; right: 10px; bottom: 68px; }
+  .hud-chips span { font-size: .62rem; }
+  .desktop-notice { display: block; }
+  .investigation-backdrop { padding: 8px; place-items: stretch; }
+  .investigation-dialog { max-height: calc(100vh - 16px); padding: 18px; border-radius: 14px; }
+  .resolution-tabs { padding-right: 88px; }
 }

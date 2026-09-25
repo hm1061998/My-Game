@@ -3,6 +3,8 @@ import type { GameLifecycleEvent, WorldInteraction } from '../bridge/events'
 import { moveWithCollision, movementDelta, type Point, type Rect } from '../movement'
 import { advancePatrol, CHECKPOINT, DODGE_COOLDOWN_MS, DODGE_DURATION_MS,
   reachedCheckpoint, SCANNER_MIN_X, SCANNER_RADIUS, SCANNER_Y, scannerDetects } from '../encounter'
+import { characterStyle, evidenceStyle, interactionLabel, movementPose, OFFICE_PALETTE,
+  type CharacterStyle } from '../presentation'
 
 const WORLD_WIDTH = 1600
 const WORLD_HEIGHT = 1000
@@ -29,7 +31,11 @@ export class OfficeScene extends Phaser.Scene {
   private readonly emit: (event: GameLifecycleEvent) => void
   private position: Point = { x: 260, y: 645 }
   private player?: Phaser.GameObjects.Container
+  private playerFigure?: Phaser.GameObjects.Container
   private shadow?: Phaser.GameObjects.Ellipse
+  private leftLeg?: Phaser.GameObjects.Rectangle
+  private rightLeg?: Phaser.GameObjects.Rectangle
+  private playerFacing: -1 | 1 = 1
   private keys?: MovementKeys
   private pauseLabel?: Phaser.GameObjects.Text
   private paused = false
@@ -59,7 +65,7 @@ export class OfficeScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#9ebfc5')
+    this.cameras.main.setBackgroundColor('#a8cbd0')
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT)
     this.drawOffice()
     this.drawFurniture()
@@ -81,11 +87,13 @@ export class OfficeScene extends Phaser.Scene {
     this.pauseLabel = this.add.text(22, 58, 'TẠM DỪNG  ·  ESC để tiếp tục', {
       color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
       fontSize: '18px', fontStyle: 'bold', padding: { x: 14, y: 10 },
-    }).setScrollFactor(0).setDepth(10000).setVisible(false)
+    }).setScrollFactor(0).setDepth(10000).setOrigin(0, 1).setVisible(false)
     this.dodgeLabel = this.add.text(22, 15, 'SPACE · Né sẵn sàng', {
       color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
       fontSize: '15px', padding: { x: 10, y: 7 },
-    }).setScrollFactor(0).setDepth(10000)
+    }).setScrollFactor(0).setDepth(10000).setOrigin(0, 1)
+    this.positionCanvasLabels()
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.positionCanvasLabels)
 
     this.cameras.main.startFollow(this.player!, true, 0.12, 0.12)
     this.cameras.main.setDeadzone(80, 60)
@@ -99,6 +107,7 @@ export class OfficeScene extends Phaser.Scene {
       keyboard.off('keydown-ESC', this.togglePause)
       keyboard.off('keydown-E', this.tryInteract)
       keyboard.off('keydown-SPACE', this.tryDodge)
+      this.scale.off(Phaser.Scale.Events.RESIZE, this.positionCanvasLabels)
       keyboard.resetKeys()
     })
   }
@@ -124,6 +133,12 @@ export class OfficeScene extends Phaser.Scene {
       ? { x: this.dodgeDirection.x * 510 * Math.min(delta, 50) / 1000,
           y: this.dodgeDirection.y * 510 * Math.min(delta, 50) / 1000 }
       : movementDelta(input, delta, keys.shift.isDown)
+    const pose = movementPose(input, _time, this.dodgeRemainingMs > 0, this.playerFacing)
+    this.playerFacing = pose.facing
+    this.playerFigure?.setY(pose.bob).setScale(pose.facing, 1).setRotation(pose.tilt)
+    this.leftLeg?.setRotation(pose.stride)
+    this.rightLeg?.setRotation(-pose.stride)
+    this.shadow?.setScale(pose.shadowScale, 1)
     if (this.dodgeRemainingMs === 0 && (input.x !== 0 || input.y !== 0)) {
       const length = Math.hypot(input.x, input.y)
       this.lastMoveDirection = { x: input.x / length, y: input.y / length }
@@ -183,15 +198,24 @@ export class OfficeScene extends Phaser.Scene {
     this.markers.forEach(marker => marker.destroy())
     this.markers = this.interactions.map(interaction => {
       const marker = this.add.container(interaction.x, interaction.y).setDepth(interaction.y - 2)
-      const color = interaction.kind === 'npc' ? 0x4a7da2 : 0xf4bd64
-      marker.add([
-        this.add.ellipse(0, 0, 52, 17, 0x29434e, 0.25),
-        this.add.circle(0, -25, 16, color).setStrokeStyle(3, 0xffffff),
-        this.add.text(0, -58, interaction.labelVi, {
+      marker.add(this.add.ellipse(0, 2, interaction.kind === 'npc' ? 62 : 54, 19,
+        OFFICE_PALETTE.ink, 0.2))
+      if (interaction.kind === 'npc') {
+        const npcId = interaction.id.replace('npc-', '')
+        marker.add(this.createCharacterFigure(characterStyle(npcId), 0.82))
+      } else {
+        const style = evidenceStyle(interaction.id)
+        marker.add([
+          this.add.rectangle(0, -27, 38, 34, style.color).setStrokeStyle(3, OFFICE_PALETTE.cream),
+          this.add.text(0, -29, style.symbol, { color: '#17333d', fontFamily: 'Georgia, serif',
+            fontSize: '22px', fontStyle: 'bold' }).setOrigin(0.5),
+        ])
+      }
+      marker.add(this.add.text(0, interaction.kind === 'npc' ? -112 : -62,
+        interactionLabel(interaction.id, interaction.labelVi), {
           color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
-          fontSize: '14px', padding: { x: 5, y: 3 },
-        }).setOrigin(0.5),
-      ])
+          fontSize: '13px', fontStyle: 'bold', padding: { x: 7, y: 4 },
+        }).setOrigin(0.5).setStroke('#fff8e9', 1))
       return marker
     })
     this.updateNearby()
@@ -268,13 +292,18 @@ export class OfficeScene extends Phaser.Scene {
     this.emit({ type: 'play-state', state: paused ? 'paused' : 'playing' })
   }
 
+  private readonly positionCanvasLabels = () => {
+    this.dodgeLabel?.setPosition(18, this.scale.height - 16)
+    this.pauseLabel?.setPosition(18, this.scale.height - 58)
+  }
+
   private drawOffice() {
-    this.add.rectangle(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH, WORLD_HEIGHT, 0xa5c4c8).setDepth(-100)
-    this.add.rectangle(800, 540, 1488, 816, 0x526772).setDepth(-90)
-    this.add.rectangle(800, 540, 1456, 786, 0xd7e9df).setDepth(-80)
+    this.add.rectangle(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH, WORLD_HEIGHT, 0xa8cbd0).setDepth(-100)
+    this.add.rectangle(800, 540, 1488, 816, OFFICE_PALETTE.navy).setDepth(-90)
+    this.add.rectangle(800, 540, 1456, 786, OFFICE_PALETTE.floor).setDepth(-80)
 
     const tileLines = this.add.graphics().setDepth(-70)
-    tileLines.lineStyle(1, 0xb9d7cf, 0.6)
+    tileLines.lineStyle(1, OFFICE_PALETTE.floorLine, 0.72)
     for (let x = FLOOR.x; x <= FLOOR.x + FLOOR.width; x += 80) tileLines.lineBetween(x, FLOOR.y, x, FLOOR.y + FLOOR.height)
     for (let y = FLOOR.y; y <= FLOOR.y + FLOOR.height; y += 80) tileLines.lineBetween(FLOOR.x, y, FLOOR.x + FLOOR.width, y)
 
@@ -292,6 +321,10 @@ export class OfficeScene extends Phaser.Scene {
     }).setDepth(-50)
     this.add.text(1180, 824, 'MEETING ZONE', {
       color: '#678890', fontFamily: 'system-ui, sans-serif', fontSize: '20px', fontStyle: 'bold',
+    }).setDepth(-50)
+    this.add.text(1284, 388, 'ARCHIVE · RESTRICTED', {
+      color: '#8e5a43', backgroundColor: '#fff1db', fontFamily: 'system-ui, sans-serif',
+      fontSize: '17px', fontStyle: 'bold', padding: { x: 9, y: 5 },
     }).setDepth(-50)
   }
 
@@ -351,12 +384,35 @@ export class OfficeScene extends Phaser.Scene {
   private createPlayer() {
     this.shadow = this.add.ellipse(this.position.x, this.position.y + 1, 48, 17, 0x27434b, 0.27).setDepth(this.position.y - 1)
     this.player = this.add.container(this.position.x, this.position.y).setDepth(this.position.y)
-    this.player.add([
-      this.add.rectangle(-10, -16, 14, 32, 0x263d51).setRotation(-0.08),
-      this.add.rectangle(10, -16, 14, 32, 0x263d51).setRotation(0.08),
-      this.add.rectangle(0, -48, 39, 52, 0xd7734e).setStrokeStyle(3, 0x914a3e),
-      this.add.circle(0, -88, 19, 0xf0bd91).setStrokeStyle(3, 0x4b3432),
-      this.add.ellipse(0, -103, 38, 17, 0x433536),
+    const style = characterStyle('player')
+    this.playerFigure = this.add.container(0, 0)
+    this.leftLeg = this.add.rectangle(-9, -17, 13, 34, OFFICE_PALETTE.navy).setOrigin(0.5, 0.15)
+    this.rightLeg = this.add.rectangle(9, -17, 13, 34, OFFICE_PALETTE.navy).setOrigin(0.5, 0.15)
+    this.playerFigure.add([
+      this.leftLeg, this.rightLeg,
+      this.add.rectangle(0, -52, 42, 55, style.jacket).setStrokeStyle(3, 0x914a3e),
+      this.add.rectangle(13, -54, 8, 33, style.accent).setRotation(-0.22),
+      this.add.circle(0, -91, 20, style.skin).setStrokeStyle(3, OFFICE_PALETTE.ink),
+      this.add.ellipse(0, -106, 40, 17, style.hair),
+      this.add.circle(10, -91, 3, OFFICE_PALETTE.ink),
     ])
+    this.player.add(this.playerFigure)
+  }
+
+  private createCharacterFigure(style: CharacterStyle, scale: number) {
+    const figure = this.add.container(0, 0).setScale(scale)
+    figure.add([
+      this.add.rectangle(-9, -17, 12, 32, OFFICE_PALETTE.navy).setRotation(-0.05),
+      this.add.rectangle(9, -17, 12, 32, OFFICE_PALETTE.navy).setRotation(0.05),
+      this.add.rectangle(0, -49, 40, 52, style.jacket).setStrokeStyle(3, OFFICE_PALETTE.ink),
+      this.add.rectangle(12, -50, 7, 29, style.accent).setRotation(-0.2),
+      this.add.circle(0, -87, 19, style.skin).setStrokeStyle(3, OFFICE_PALETTE.ink),
+      this.add.ellipse(0, -102, 38, 16, style.hair),
+      this.add.circle(10, -87, 3, OFFICE_PALETTE.ink),
+      this.add.circle(-13, -52, 11, OFFICE_PALETTE.cream).setStrokeStyle(2, style.accent),
+      this.add.text(-13, -52, style.badge, { color: '#17333d', fontFamily: 'system-ui, sans-serif',
+        fontSize: '10px', fontStyle: 'bold' }).setOrigin(0.5),
+    ])
+    return figure
   }
 }

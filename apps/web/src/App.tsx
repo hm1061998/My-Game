@@ -10,7 +10,9 @@ import {
   type SessionProgress,
 } from "./api/session";
 import type { GameLifecycleEvent, WorldInteraction } from "./game/bridge/events";
+import { currentObjective } from "./game/presentation";
 import { ResolutionPanel } from "./ResolutionPanel";
+import { SceneHud } from "./SceneHud";
 import "./App.css";
 
 const GameCanvas = lazy(async () => {
@@ -239,12 +241,13 @@ export default function App() {
     encounterCleared: session.data.encounterCleared,
     assistEnabled,
   } : undefined, [session.data, assistEnabled]);
+  const objective = currentObjective(session.data ?? null);
 
   return (
     <main className="app-shell">
       <header className="case-header">
         <div>
-          <p className="eyebrow">OFFICE CASE FILES · PROTOTYPE</p>
+          <p className="eyebrow">OFFICE CASE FILES · A2–B1 ACTION DETECTIVE</p>
           <h1>The Swapped Report</h1>
           <p className="case-summary">
             Một bản báo cáo quan trọng đã bị tráo. Hãy khám phá văn phòng, đọc
@@ -276,10 +279,8 @@ export default function App() {
       <section className="workspace" aria-label="Khu vực điều tra">
         <aside className="mission-card">
           <p className="label">NHIỆM VỤ HIỆN TẠI</p>
-          <h2>Explore the office</h2>
-          <p>
-            Tìm email, chat và biên bản; nói chuyện với đồng nghiệp để hiểu vụ báo cáo bị tráo.
-          </p>
+          <h2 lang="en">Explore the office</h2>
+          <p>{objective}</p>
           <div className="controls" aria-label="Điều khiển">
             <span>
               <kbd>WASD</kbd> hoặc phím mũi tên: di chuyển
@@ -347,19 +348,17 @@ export default function App() {
         <div className="scene-card">
           <div className="scene-toolbar">
             <span>FLOOR 08 · MAIN OFFICE</span>
-            <span className="prototype-tag">OFFICE MAP · INVESTIGATION</span>
+            <span className="prototype-tag">CASE 01 · LIVE INVESTIGATION</span>
           </div>
-          {caseMap.isError && <p role="alert" className="scene-notice">Không tải được bản đồ vụ án. Kiểm tra API rồi tải lại trang.</p>}
-          {nearby && session.data && <p className="scene-notice" aria-live="polite"><kbd>E</kbd> {nearby.labelVi}</p>}
-          {notice && <p role="alert" className="scene-notice">{notice}</p>}
-          <Suspense
-            fallback={
-              <div className="game-loading">Đang dựng hiện trường…</div>
-            }
-          >
-            <GameCanvas key={gameGeneration} onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
-              overlayOpen={!!overlay} worldState={worldState} />
-          </Suspense>
+          <div className="scene-stage">
+            <SceneHud objective={objective} session={session.data ?? null} nearby={nearby}
+              notice={notice} mapError={caseMap.isError} />
+            <Suspense fallback={<div className="game-loading">Đang dựng hiện trường…</div>}>
+              <GameCanvas key={gameGeneration} onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
+                overlayOpen={!!overlay} worldState={worldState} />
+            </Suspense>
+          </div>
+          <p className="desktop-notice" role="note">Gameplay cần bàn phím desktop. Nội dung hồ sơ và kết quả vẫn đọc được trên màn hình hẹp.</p>
         </div>
       </section>
 

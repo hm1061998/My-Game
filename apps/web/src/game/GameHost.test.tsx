@@ -12,6 +12,7 @@ describe('GameHost', () => {
     const view = render(<GameHost factory={factory} onLifecycle={lifecycle} />)
     expect(factory).toHaveBeenCalledOnce()
     expect(lifecycle).toHaveBeenCalledWith({ type: 'ready' })
+    expect(view.container.querySelector('.game-canvas')).toHaveFocus()
     view.unmount()
     expect(destroy).toHaveBeenCalledOnce()
     expect(destroy).toHaveBeenCalledWith(true)

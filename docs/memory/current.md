@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: 1c30ba0
-Dirty workspace: T09 planning/index/current-memory documentation only; Git was clean and synchronized with `origin/main` before planning.
+Baseline: T09 completion revision (this handoff)
+Dirty workspace: none expected after the required scoped commit and push.
 
 ## Confirmed scope
 
@@ -20,13 +20,15 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T09 art/HUD/focus implementation 1.0 is planned and awaiting approval; T01–T08, T13 and T14 are done. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T09 art/HUD/focus implementation 1.0 is done; T01–T09, T13 and T14 are complete. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
 The user approved T08 plan 1.0 and its case-v1 truth on 2026-09-25 with “ok tôi duyệt”. Coding, local migration, tests and visible-browser verification are authorized within that scope. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
 
 T09 plan 1.0 was drafted after the user's 2026-09-25 instruction to continue and to try previewing in Codex's browser. That instruction authorizes planning, not unreviewed art/HUD implementation. T09 coding awaits approval of `docs/tasks/T09-art-hud-focus.md`. The visible Codex in-app browser was attempted twice during planning, but its trusted Node kernel reset immediately; implementation must retry it first and use a visible Chrome fallback only if the tool remains unavailable.
+
+The user approved T09 implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”. Frontend-only implementation and visible browser verification are authorized within that recorded scope; audio, external raster assets, backend/storage changes and deployment remain excluded.
 
 The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
 
@@ -51,6 +53,8 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - T08 adds server-owned readiness and 0/33/67/100 first-try reading scoring, independent investigation scoring, one immutable/idempotent conclusion, post-submit explanation, five retryable review items and SQLite persistence. Pre-disclosure endpoints omit solution sets, correct review choices and explanations.
 - React now owns conclusion/confirmation/result/review/replay overlays. Visible Chrome produced 100/100 for Nora + misunderstanding + E03/E06, completed one wrong-then-correct review and all 5 items, persisted through reload at 1100×720, and retained one canvas without runtime errors.
 - Replay browser testing found the old Phaser position could instantly save the meeting checkpoint in a new session. Remounting `GameCanvas` when a session is created restored revision 0 at `office-entry`; L006 is now verified across T07 and T08.
+- T09 centralizes code-authored Phaser presentation tokens/variants, adds distinct character and evidence visuals plus movement/dodge pose feedback, and layers a semantic objective/checkpoint/scanner/assist/interaction HUD over the canvas. Narrow screens retain readable content and explicitly require a desktop keyboard for gameplay.
+- T09 visible Chrome fallback confirmed live keyboard movement to the meeting checkpoint, HUD updates, overlay Escape/focus recovery, one canvas, 1100×720 without horizontal overflow and the 390px desktop notice. A fresh-session focus race was fixed in GameHost and regression-tested; L006 is promoted as the complete React/Phaser session boundary.
 
 ## Last checks
 
@@ -62,14 +66,15 @@ Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan
 - T06 final headed Chrome at 1280×800 passed E01, wrong/correct Q01, Maya E05, Escape focus, reload with explanation and 1100×720 layout. `verify.ps1` passed 21 structural task checks, npm ci/audit 0, lint/typecheck/build, 6 web tests and 6 API tests; .NET build had 0 warnings/errors. T06 EF migration drift check and `git diff --check` passed.
 - T07 final visible Chrome at 1280×800 and a 1100×720 outer window passed physical checkpoint, two detections, assist, encounter clear, E03/Q03, reload/resume, single-canvas StrictMode cleanup and no console/network issues. Final `verify.ps1` passed 22 task checks, npm ci/audit (118 packages, 0 advisories), lint/typecheck/build, 10 web tests, locked .NET restore/build with 0 warnings/errors and 7 API tests. EF migration drift and `git diff --check` passed.
 - T08 final visible Chrome at 1280×800 and 1100×720 passed conclusion confirmation, 100/100 result, assist-neutral messaging, wrong/correct review retry, 5/5 reload persistence, single canvas and fresh replay revision 0. `verify.ps1` passed 23 task checks, npm audit 0, lint/typecheck/build, 13 web tests and 9 API tests; .NET build had 0 warnings/errors. EF migration drift, privacy/bundle search and `git diff --check` passed.
+- T09 visible Chrome at 1280×800 and 1100×720 plus a 390px emulated viewport passed layout, live checkpoint movement, HUD, overlay focus and single-canvas checks. The visible Codex in-app browser was retried first but failed with `windows sandbox failed: helper_unknown_error`; visible Chrome remained the documented fallback. Final `verify.ps1` passed 24 task checks, npm audit with 0 advisories, lint/typecheck/build, 18 web tests, .NET build with 0 warnings/errors and 9 API tests. Frontend bundle privacy scan, agent-doc check and `git diff --check` passed; only the known ~1.39 MB lazy Phaser chunk warning remains.
 
 ## Blockers and known issues
 
-T09 coding is intentionally blocked on approval of plan 1.0. TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio and external raster assets remain outside the proposed T09 slice. The visible Codex browser kernel reset twice during planning.
+TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal. Audio and external raster assets remain outside T09. The visible Codex browser failed during both planning and implementation with the same Windows sandbox helper error; visible Chrome is the verified local fallback until the host issue is fixed.
 
 ## Next action
 
-Ask the user to approve or revise `docs/tasks/T09-art-hud-focus.md` plan 1.0. After approval, load `implement-vertical-slice` and implement the frontend-only presentation increment, retrying the visible Codex browser first. Keep admin implementation stopped.
+Draft and seek approval for T10 browser/E2E/playtest. Keep admin implementation stopped and do not deploy or publish.
 
 ## Relevant references
 

@@ -1,12 +1,12 @@
 # T09 — Cohesive art, HUD and focus polish
 
-Status: awaiting_approval
+Status: done
 Owner: Codex
 Depends on: T08
 Plan version: PROJECT_PLAN.md 1.4, T09 implementation 1.0
-Approval: pending user approval of this exact scope
-Lifecycle phase: define/design
-Workflow step: plan drafted; approval required before coding
+Approval: user approved implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”
+Lifecycle phase: verify/close
+Workflow step: implementation, visible-browser verification and final gates complete
 
 ## Outcome and success signal
 
@@ -95,12 +95,16 @@ Expected affected areas: `apps/web/src/game/scenes`, a small `apps/web/src/game/
 
 ## Handoff
 
-Planning slice only. No source, asset, dependency or runtime behavior has changed. The visible Codex in-app browser was attempted twice for baseline preview but its trusted Node kernel reset immediately; API/Vite preview services were stopped afterward. Next action: user approves or revises T09 implementation plan 1.0.
+T09 is complete. `presentation.ts` now centralizes the bright-office palette, distinct player/Maya/Leo/Nora variants, evidence symbols, compact interaction labels, movement pose and objective selection. `OfficeScene` applies those helpers without changing coordinates, collision, movement speed, encounter rules or server progression. React now layers a semantic `SceneHud` over the canvas, preserves readable notices and adds an explicit desktop-keyboard notice for narrow screens. GameHost focuses a fresh canvas after session/remount when no overlay is open; a regression test covers the boundary. No dependency, API, database, case contract, external asset or audio change was made; `docs/assets/manifest.md` records the code-authored sources.
+
+Focused frontend checks passed with 18 tests. Visible Chrome fallback passed a live session at 1280×800 and 1100×720, real keyboard movement into the meeting checkpoint, HUD objective/checkpoint update, Space dodge path, notebook open/close, Escape focus return, one-canvas assertion and 390px no-overflow/desktop-notice inspection. The implementation preview first retried the visible Codex in-app browser as requested, but its kernel failed again with `windows sandbox failed: helper_unknown_error`; the already-approved visible Chrome fallback was therefore used. Final `verify.ps1` passed 24 task checks, npm audit with 0 advisories, lint/typecheck/build, 18 web tests, .NET build with 0 warnings/errors and 9 API tests. The frontend bundle privacy scan, agent-doc check and `git diff --check` also passed.
+
+Next phase: T10 browser/E2E/playtest planning. T09 does not authorize T10 implementation, deployment, publishing, Docker/CI or the deferred T15–T26 admin implementation.
 
 ## Improvement review
 
-- Result: none
-- Observation/evidence: T09 planning reused established lifecycle, React/Phaser ownership and browser-fallback guidance. The in-app browser kernel reset is an environment incident already captured in this task, not yet a reusable project lesson.
-- Mechanism changed or no-change reason: no rule/skill/script change; the user preference to try Codex browser first is recorded in T09 acceptance.
-- Validation: task scope was checked against PROJECT_PLAN.md, current code, L005/L006 and existing frontend rules; documentation checks and `git diff --check` will run before the planning commit.
-- Follow-up trigger: reassess after the implementation preview; promote only if the browser failure repeats with a stable workaround that changes future workflow.
+- Result: promoted (L006)
+- Observation/evidence: T09's fresh-session preview exposed a focus race at the same React/Phaser remount boundary previously implicated in duplicate canvases and stale position. Focusing the parent after runtime setup restored immediate keyboard ownership while preserving overlay gating.
+- Mechanism changed or no-change reason: the invariant is encoded in `GameHost`, its focused regression test, and the existing scoped `apps/web/AGENTS.md` rule to return focus deliberately. L006 now names focus ownership as part of the promoted lifecycle boundary.
+- Validation: GameHost/StrictMode tests, 18-test focused suite, visible notebook Escape → canvas focus, live keyboard movement, one-canvas checks and the final repository verification all passed.
+- Follow-up trigger: reuse this lifecycle boundary for T10 replay/E2E coverage; retire only when Phaser hosting or the input architecture changes.
