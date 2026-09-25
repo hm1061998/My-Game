@@ -18,3 +18,7 @@ test-results/
 *-preview.log
 *-preview.err.log
 browser-preview.png
+
+# T12 progress exports are private backups (token hashes, learner answers)
+*.export.json
+exports/

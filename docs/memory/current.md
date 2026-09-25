@@ -16,10 +16,10 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 
 ## Task state
 
-- Done: T01–T11, T13, T14, T27.
-- Next: **T12 storage round-trip / local runbook** (depends on T10, T11). No plan file or approval exists yet: draft `docs/tasks/T12-*.md` from `TEMPLATE.md` and get user approval before any code.
+- Done: T01–T12, T13, T14, T27.
+- Next: **BUFFER** (fixes, final persistence pass, then record `code_complete` with user confirmation). No plan file yet: draft one from `TEMPLATE.md` and get approval first. Readiness table: `docs/tasks/T12-storage-roundtrip-runbook.md`.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
-- After T12 and the BUFFER task: record `code_complete`. Docker/GitHub configuration starts only after that gate.
+- After the BUFFER task: record `code_complete`. Docker/GitHub configuration starts only after that gate.
 
 ## Standing approvals and boundaries
 
@@ -40,7 +40,8 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 
 - Full case playable end to end: movement/collision/depth, six clues, three NPCs, Q01–Q03 with unlocks, meeting checkpoint, scanner dodge/retry/assist, immutable conclusion with separate reading/investigation scores, five review items, reload persistence, replay. Private answers stay server-side.
 - T27: game-first shell (canvas 958×651 at 1280×800, no page scroll), shared tokens (`apps/web/src/theme/tokens.ts`), status badges not relying on color, 17 office + 8 character SVGs via `scripts/art/*.py`, validated asset loading with code-drawn fallback, four-direction character sprites, investigative UI surfaces. QA: `docs/quality/T27-visual-qa.md`.
-- Last full gates (T27 V5): `verify.ps1` pass (30 web tests, 9 API tests), headed E2E 4/4, ~60 fps, p95 17 ms.
+- Storage round-trip (T12): `--export`/`--import` on the API host, private checksummed JSON (`*.export.json` ignored), import only into an empty migrated DB; runbook `docs/runbooks/local.md`.
+- Last full gates (T12): `verify.ps1` pass (30 web tests, 11 API tests), headed E2E 4/4, ~60 fps, p95 17 ms.
 
 ## Known issues
 
@@ -51,5 +52,5 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Relevant references
 
 - `AGENTS.md`, `CLAUDE.md`, `docs/agent/protocol.md`, `docs/agent/improvement.md`, `docs/agent/lessons.md`, `docs/agent/skills-index.md`
-- `docs/tasks/index.md`, `docs/tasks/TEMPLATE.md`, `PROJECT_PLAN.md` (T12 row and §10)
+- `docs/tasks/index.md`, `docs/tasks/TEMPLATE.md`, `PROJECT_PLAN.md` (§9 BUFFER row, §9.3 code_complete), `docs/runbooks/local.md`
 - `apps/web/AGENTS.md`, `services/api/AGENTS.md`, `docs/assets/manifest.md`, `README.md`

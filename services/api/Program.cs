@@ -28,6 +28,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
     throw new InvalidOperationException("ConnectionStrings:Game is required for SQLite storage.");
 builder.Services.AddDbContext<GameDbContext>(options => options.UseSqlite(connectionString));
 builder.Services.AddScoped<IPlaySessionStore, SqlitePlaySessionStore>();
+builder.Services.AddScoped<IProgressPortability, SqliteProgressPortability>();
 
 var app = builder.Build();
 
@@ -85,8 +86,44 @@ using (var scope = app.Services.CreateScope())
     }
     if ((await database.GetPendingMigrationsAsync()).Any())
         throw new InvalidOperationException("Database migrations are pending. Run the documented local migration command before starting the API.");
+
+    if (CommandPath(args, "--export") is { } exportPath)
+    {
+        if (File.Exists(exportPath))
+        {
+            Console.Error.WriteLine($"Export refused: '{exportPath}' already exists. Choose a new file name.");
+            Environment.ExitCode = 1;
+            return;
+        }
+        var export = await scope.ServiceProvider.GetRequiredService<IProgressPortability>().ExportAsync(CancellationToken.None);
+        await File.WriteAllTextAsync(exportPath, ProgressExportFormat.Serialize(export));
+        Console.WriteLine($"Exported {string.Join(", ", export.Manifest.Tables.Select(t => $"{t.Key}={t.Value.Count}"))}.");
+        return;
+    }
+    if (CommandPath(args, "--import") is { } importPath)
+    {
+        var export = ProgressExportFormat.Deserialize(await File.ReadAllTextAsync(importPath));
+        var result = await scope.ServiceProvider.GetRequiredService<IProgressPortability>().ImportAsync(export, CancellationToken.None);
+        if (result.Status != ImportStatus.Imported)
+        {
+            Console.Error.WriteLine($"Import refused ({result.Status}): {result.Message}");
+            Environment.ExitCode = 1;
+            return;
+        }
+        Console.WriteLine($"{result.Message} {string.Join(", ", result.Counts!.Select(t => $"{t.Key}={t.Value}"))}.");
+        return;
+    }
 }
 
 app.Run();
+
+static string? CommandPath(string[] args, string flag)
+{
+    var index = Array.IndexOf(args, flag);
+    if (index < 0) return null;
+    if (index + 1 >= args.Length || args[index + 1].StartsWith("--", StringComparison.Ordinal))
+        throw new InvalidOperationException($"{flag} requires a file path.");
+    return Path.GetFullPath(args[index + 1]);
+}
 
 public partial class Program;
