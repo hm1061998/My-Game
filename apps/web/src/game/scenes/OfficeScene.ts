@@ -5,6 +5,8 @@ import { advancePatrol, CHECKPOINT, DODGE_COOLDOWN_MS, DODGE_DURATION_MS,
   reachedCheckpoint, SCANNER_MIN_X, SCANNER_RADIUS, SCANNER_Y, scannerDetects } from '../encounter'
 import { COLOR, FONT, prefersReducedMotion } from '../../theme/tokens'
 import { artUrl, DECOR, footOrigin, isSvgDocument, OFFICE_ART, ZONES, type ArtKey } from '../officeArt'
+import { ANIM_STATES, animKey, CHARACTER_IDS, characterAnim, FRAME, isCharacterId, SHEET, sheetFrames,
+  sheetKey, sheetUrl, type CharacterId, type Facing4 } from '../characterArt'
 import { characterStyle, evidenceStyle, interactionLabel, movementPose, OFFICE_PALETTE,
   type CharacterStyle } from '../presentation'
 
@@ -71,6 +73,9 @@ export class OfficeScene extends Phaser.Scene {
   private dodgeDirection: Point = { x: 1, y: 0 }
   private readonly missingArt = new Set<string>()
   private readonly artObjectUrls: string[] = []
+  private playerSprite?: Phaser.GameObjects.Sprite
+  private playerFacing4: Facing4 = 'down'
+  private smearCooldownMs = 0
   private readonly reducedMotion = prefersReducedMotion()
 
   constructor(emit: (event: GameLifecycleEvent) => void) {
@@ -90,15 +95,63 @@ export class OfficeScene extends Phaser.Scene {
     const base = import.meta.env.BASE_URL ?? '/'
     // Fetch as text first: a missing file may come back as an HTML fallback with status 200,
     // which would crash Phaser's SVG parser and leave a blank scene.
-    for (const asset of OFFICE_ART) {
-      this.load.text(`${asset.key}#src`, artUrl(asset.key, base))
-      this.load.once(`filecomplete-text-${asset.key}#src`, (_key: string, _type: string, text: string) => {
-        if (!isSvgDocument(text)) { this.missingArt.add(asset.key); return }
-        const url = URL.createObjectURL(new Blob([text], { type: 'image/svg+xml' }))
-        this.artObjectUrls.push(url)
-        this.load.svg(asset.key, url, { width: asset.width, height: asset.height })
-      })
+    for (const asset of OFFICE_ART) this.queueSvg(asset.key, artUrl(asset.key, base), asset.width, asset.height)
+    for (const id of CHARACTER_IDS) this.queueSvg(sheetKey(id), sheetUrl(id, base), SHEET.width, SHEET.height)
+  }
+
+  private queueSvg(key: string, url: string, width: number, height: number) {
+    this.load.text(`${key}#src`, url)
+    this.load.once(`filecomplete-text-${key}#src`, (_key: string, _type: string, text: string) => {
+      if (!isSvgDocument(text)) { this.missingArt.add(key); return }
+      const objectUrl = URL.createObjectURL(new Blob([text], { type: 'image/svg+xml' }))
+      this.artObjectUrls.push(objectUrl)
+      this.load.svg(key, objectUrl, { width, height })
+    })
+  }
+
+  private hasSheet(id: CharacterId) {
+    return !this.missingArt.has(sheetKey(id)) && this.textures.exists(sheetKey(id))
+  }
+
+  private createCharacterAnims() {
+    for (const id of CHARACTER_IDS) {
+      if (!this.hasSheet(id)) continue
+      const texture = this.textures.get(sheetKey(id))
+      for (const frame of sheetFrames()) {
+        if (!texture.has(frame.name)) texture.add(frame.name, 0, frame.x, frame.y, FRAME.width, FRAME.height)
+      }
+      for (const row of ['down', 'up', 'side'] as const) {
+        for (const { state, count, fps } of ANIM_STATES) {
+          const key = animKey(id, row, state)
+          if (this.anims.exists(key)) continue
+          this.anims.create({ key, frameRate: fps, repeat: -1,
+            frames: Array.from({ length: count }, (_, i) => ({ key: sheetKey(id), frame: `${row}-${state}-${i}` })) })
+        }
+      }
     }
+  }
+
+  private characterSprite(id: CharacterId) {
+    const sprite = this.add.sprite(0, 0, sheetKey(id), 'down-idle-0').setOrigin(0.5, FRAME.footY / FRAME.height)
+    sprite.play(animKey(id, 'down', 'idle'))
+    return sprite
+  }
+
+  /** Short ring at an interaction point; static flash under reduced motion. */
+  private pulseAt(x: number, y: number, color: number) {
+    const ring = this.add.ellipse(x, y, 60, 22).setStrokeStyle(4, color).setDepth(y + 1)
+    if (this.reducedMotion) { this.time.delayedCall(160, () => ring.destroy()); return }
+    this.tweens.add({ targets: ring, scaleX: 2.2, scaleY: 2.2, alpha: 0, duration: 380,
+      ease: 'Cubic.easeOut', onComplete: () => ring.destroy() })
+  }
+
+  private dodgeSmear() {
+    const sprite = this.playerSprite
+    if (!sprite || this.reducedMotion) return
+    const ghost = this.add.image(this.position.x, this.position.y, sprite.texture.key, sprite.frame.name)
+      .setOrigin(sprite.originX, sprite.originY).setFlipX(sprite.flipX).setAlpha(0.35)
+      .setTint(OFFICE_PALETTE.amber).setDepth(this.position.y - 2)
+    this.tweens.add({ targets: ghost, alpha: 0, duration: 200, onComplete: () => ghost.destroy() })
   }
 
   private hasArt(key: ArtKey) {
@@ -114,6 +167,7 @@ export class OfficeScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setBackgroundColor('#a8cbd0')
+    this.createCharacterAnims()
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT)
     this.drawOffice()
     this.drawFurniture()
@@ -196,7 +250,19 @@ export class OfficeScene extends Phaser.Scene {
       : movementDelta(input, delta, keys.shift.isDown)
     const pose = movementPose(input, _time, this.dodgeRemainingMs > 0, this.playerFacing)
     this.playerFacing = pose.facing
-    this.playerFigure?.setY(pose.bob).setScale(pose.facing, 1).setRotation(pose.tilt)
+    if (this.playerSprite) {
+      const anim = characterAnim(input, keys.shift.isDown, this.dodgeRemainingMs > 0, this.playerFacing4)
+      this.playerFacing4 = anim.facing
+      this.playerSprite.setFlipX(anim.flipX).play(animKey('player', anim.row, anim.state), true)
+      this.playerFigure?.setRotation(pose.tilt)
+      this.smearCooldownMs = Math.max(0, this.smearCooldownMs - delta)
+      if (this.dodgeRemainingMs > 0 && this.smearCooldownMs === 0) {
+        this.smearCooldownMs = 45
+        this.dodgeSmear()
+      }
+    } else {
+      this.playerFigure?.setY(pose.bob).setScale(pose.facing, 1).setRotation(pose.tilt)
+    }
     this.leftLeg?.setRotation(pose.stride)
     this.rightLeg?.setRotation(-pose.stride)
     this.shadow?.setScale(pose.shadowScale, 1)
@@ -222,6 +288,11 @@ export class OfficeScene extends Phaser.Scene {
       if (this.detectionGraceMs === 0 && scannerDetects(this.position,
           this.scannerX, this.dodgeRemainingMs > 0)) {
         this.detectionGraceMs = 1800
+        if (!this.reducedMotion) {
+          this.cameras.main.flash(220, 200, 68, 47)
+          this.cameras.main.shake(180, 0.006)
+        }
+        this.pulseAt(this.scannerX, SCANNER_Y, OFFICE_PALETTE.danger)
         this.position = { ...CHECKPOINT }
         this.player?.setPosition(this.position.x, this.position.y).setDepth(this.position.y)
         this.shadow?.setPosition(this.position.x, this.position.y + 1).setDepth(this.position.y - 1)
@@ -263,7 +334,9 @@ export class OfficeScene extends Phaser.Scene {
         OFFICE_PALETTE.ink, 0.2))
       if (interaction.kind === 'npc') {
         const npcId = interaction.id.replace('npc-', '')
-        marker.add(this.createCharacterFigure(characterStyle(npcId), 0.82))
+        marker.add(isCharacterId(npcId) && this.hasSheet(npcId)
+          ? this.characterSprite(npcId).setScale(0.92)
+          : this.createCharacterFigure(characterStyle(npcId), 0.82))
       } else {
         const style = evidenceStyle(interaction.id)
         const ring = this.add.ellipse(0, 2, 70, 26).setStrokeStyle(3, OFFICE_PALETTE.coral, 0.9)
@@ -300,6 +373,8 @@ export class OfficeScene extends Phaser.Scene {
 
   private readonly tryInteract = (event: KeyboardEvent) => {
     if (event.repeat || this.paused || this.overlayPaused || !this.nearestId) return
+    const target = this.interactions.find(item => item.id === this.nearestId)
+    if (target) this.pulseAt(target.x, target.y, OFFICE_PALETTE.coral)
     if (this.nearestId === 'archive-terminal' && !this.encounterCleared) {
       this.emit({ type: this.checkpointId === 'meeting-zone' ?
         'encounter-cleared' : 'encounter-checkpoint-required' })
@@ -482,6 +557,12 @@ export class OfficeScene extends Phaser.Scene {
     this.player = this.add.container(this.position.x, this.position.y).setDepth(this.position.y)
     const style = characterStyle('player')
     this.playerFigure = this.add.container(0, 0)
+    if (this.hasSheet('player')) {
+      this.playerSprite = this.characterSprite('player')
+      this.playerFigure.add(this.playerSprite)
+      this.player.add(this.playerFigure)
+      return
+    }
     this.leftLeg = this.add.rectangle(-9, -17, 13, 34, OFFICE_PALETTE.navy).setOrigin(0.5, 0.15)
     this.rightLeg = this.add.rectangle(9, -17, 13, 34, OFFICE_PALETTE.navy).setOrigin(0.5, 0.15)
     this.playerFigure.add([

@@ -6,7 +6,7 @@ Depends on: T10
 Plan version: 1.0
 Approval: approved by user 2026-09-25 — option (b): full V0→V5 sequence with the mandatory V0 visual checkpoint; art direction and asset-source choice remain pending at V0 exit gate
 Lifecycle phase: define/design
-Workflow step: V2 complete and verified (office textures, zones, affordances, validated loading with fallback); next is V3 characters/interaction/motion
+Workflow step: V3 complete and verified (character sprites, portraits, motion feedback); next is V4 investigative UI surfaces
 
 ## Outcome and success signal
 
@@ -147,7 +147,14 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: start V3 — direction-A player/NPC sprites with 4-direction idle/walk/run and interaction feedback, keeping foot anchors and collision unchanged.
+Next action: start V4 — evidence-board notebook, dialogue and conclusion/result surfaces on direction-A tokens, keeping semantic controls, focus order and E2E names.
+
+## V3 evidence (2026-09-25)
+
+- Changed: 8 SVGs in `apps/web/public/assets/characters` from `scripts/art/characters-svg.py` (distinct silhouettes: player trench coat + scarf + badge, Maya bob, Leo spiky hair + glasses, Nora bun + clipboard); `src/game/characterArt.ts` (frame slicing, anim keys, `characterAnim` four-direction idle/walk/run choice, `portraitFor`); `OfficeScene` loads sheets through the same validated text-then-SVG path, builds Phaser animations, plays player/NPC sprites on unchanged foot anchors, adds dodge smear afterimages, E-press interaction pulse, and scanner-detection flash/shake + pulse (smear, flash and shake off under reduced motion; pulse becomes a static flash). React: dialogue portrait (decorative `img`, hides on error) and a "Manh mối mới · Exx" stamp for newly collected evidence (no extra `status` role); CSS animation is disabled by the global reduced-motion rule. Movement speed, collision, detection and server progression are unchanged; no new bridge command.
+- Fixed in passing: dialog `h2` used Georgia, which rendered "Sổ tay điều tra" with detached Vietnamese diacritics; dialog headings now use the UI font. English titles keep the display serif.
+- Visible browser 1280×800: player back-view after walking up and mirrored side view walking left; Leo/Maya sprites; Maya dialogue shows the 160 px portrait and the locked-statement badge; collecting E01 opens the notebook with the stamp. Missing `player-sheet.svg`: scene renders the fallback figure plus the art notice; file restored. Dodge smear frame not captured in a screenshot (300 ms window); dodge path runs in the E2E journey without errors.
+- Scripts on final revision: lint pass, typecheck pass, `test:run` 30/30 (4 new characterArt tests), build pass (pre-existing Phaser chunk warning), headed `scripts/e2e.ps1`: 1 passed, ~60 fps, p95 17 ms.
 
 ## V2 evidence (2026-09-25)
 
@@ -166,7 +173,8 @@ Next action: start V3 — direction-A player/NPC sprites with 4-direction idle/w
 
 ## Improvement review
 
-- Result: candidate (L008, L009)
+- Result: promoted (L009), candidate (L008)
+- V3 observation: the validated loader handled a second asset family (character sheets) and its missing-file fallback passed in the browser, meeting L009's trigger. Promoted to a rule in `apps/web/AGENTS.md`.
 - V2 observation: a missing static asset can be served as a 200 HTML fallback, which crashes Phaser's SVG loader instead of firing its load-error event. Recorded as candidate L009 with the validate-then-load fix and a unit test.
 - V1 observation: `npm run e2e` hard-codes `pwsh`, absent on this machine, and a running developer API locks the build output the E2E runner needs. Recorded as candidate L008; no script change until it recurs.
 - Observation/evidence: T09 and T10 already supply the reusable React/Phaser lifecycle, visible-browser and integration-runner lessons. This audit found product-specific visual gaps, not a new cross-task failure mode.

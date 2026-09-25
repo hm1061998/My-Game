@@ -14,6 +14,7 @@ import { currentObjective } from "./game/presentation";
 import { ResolutionPanel } from "./ResolutionPanel";
 import { SceneHud } from "./SceneHud";
 import { StatusBadge } from "./StatusBadge";
+import { portraitFor, portraitUrl } from "./game/characterArt";
 import "./App.css";
 
 const GameCanvas = lazy(async () => {
@@ -41,6 +42,7 @@ export default function App() {
   const [answerFeedback, setAnswerFeedback] = useState<AnswerResult | null>(null);
   const [answerError, setAnswerError] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const [clueStamp, setClueStamp] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [assistEnabled, setAssistEnabled] = useState(false);
   const [encounterError, setEncounterError] = useState<string | null>(null);
@@ -127,6 +129,7 @@ export default function App() {
       void queryClient.invalidateQueries({ queryKey: ["notebook"] });
       void queryClient.invalidateQueries({ queryKey: ["questions"] });
       setNotice(null);
+      setClueStamp(result.collectedEvidenceId);
       if (result.dialogue) {
         setDialogue(result);
         setOverlay("dialogue");
@@ -222,7 +225,7 @@ export default function App() {
     document.querySelector<HTMLElement>(".game-canvas")?.focus();
   }, [overlay]);
 
-  const openNotebook = () => { setSelectedEvidenceId(null); setOverlay("notebook"); };
+  const openNotebook = () => { setSelectedEvidenceId(null); setClueStamp(null); setOverlay("notebook"); };
   const selectQuestion = (id: string) => {
     setSelectedQuestionId(id); setSelectedChoiceId(null); setAnswerFeedback(null); setAnswerError(null);
   };
@@ -358,8 +361,15 @@ export default function App() {
             <button type="button" disabled={encounter.isPending || !!encounterError}
               onClick={() => setOverlay(null)}>Thử lại</button>
           </>}
+          {clueStamp && (overlay === "dialogue" || overlay === "notebook") &&
+            <p className="clue-stamp"><span aria-hidden="true">✦</span> Manh mối mới · {clueStamp}</p>}
           {overlay === "dialogue" && dialogue && <>
-            <h2>{dialogue.title ?? "Đồng nghiệp"}</h2>
+            <div className="dialogue-head">
+              {portraitFor(dialogue.interactionId) && <img className="dialogue-portrait" alt="" aria-hidden="true"
+                width={88} height={88} src={portraitUrl(portraitFor(dialogue.interactionId)!, import.meta.env.BASE_URL)}
+                onError={event => { event.currentTarget.hidden = true; }} />}
+              <h2>{dialogue.title ?? "Đồng nghiệp"}</h2>
+            </div>
             {dialogue.dialogue?.map((line, index) => <p key={index}>{line}</p>)}
             {dialogue.statementLocked && <StatusBadge tone="locked">Lời khai chi tiết sẽ mở khi có đủ bằng chứng.</StatusBadge>}
           </>}

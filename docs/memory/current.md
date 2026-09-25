@@ -85,7 +85,7 @@ TypeScript type generation from OpenAPI remains open. Vite still warns about the
 
 ## Next action
 
-T27 V2 (direction-A office textures, validated loading with fallback) is verified and committed. Next: V3 character sprites/interaction/motion. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
+T27 V3 (character sprites, portraits, motion feedback) is verified and committed. Next: V4 investigative UI surfaces. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
 
 ## Relevant references
 

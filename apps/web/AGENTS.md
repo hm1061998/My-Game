@@ -7,3 +7,4 @@
 - Keep readable learning content in the DOM. Canvas-only text is not sufficient for dialogs, quests, or answers.
 - Use generated API types once contract generation exists. Never edit generated files manually.
 - Run `npm run lint`, `npm run typecheck`, `npm run test:run`, and `npm run build` for the final web revision.
+- Load runtime art through the validated text-then-load path in `OfficeScene` (never a bare `load.svg`/`load.image` on a URL), keep a code-drawn fallback, and test the missing-file path in the real browser.
