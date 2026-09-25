@@ -64,6 +64,7 @@ export class OfficeScene extends Phaser.Scene {
   private scannerX = SCANNER_MIN_X
   private scannerDirection: -1 | 1 = 1
   private scanner?: Phaser.GameObjects.Container
+  private scannerRange?: Phaser.GameObjects.Container
   private checkpointMarker?: Phaser.GameObjects.Container
   private dodgeLabel?: Phaser.GameObjects.Text
   private dodgeRemainingMs = 0
@@ -285,6 +286,7 @@ export class OfficeScene extends Phaser.Scene {
       this.scannerX = patrol.x
       this.scannerDirection = patrol.direction
       this.scanner?.setPosition(this.scannerX, SCANNER_Y)
+      this.scannerRange?.setPosition(this.scannerX, SCANNER_Y)
       if (this.detectionGraceMs === 0 && scannerDetects(this.position,
           this.scannerX, this.dodgeRemainingMs > 0)) {
         this.detectionGraceMs = 1800
@@ -314,6 +316,7 @@ export class OfficeScene extends Phaser.Scene {
     this.assistEnabled = assistEnabled
     this.checkpointMarker?.setVisible(checkpointId === 'office-entry')
     this.scanner?.setVisible(checkpointId === 'meeting-zone' && !encounterCleared)
+    this.scannerRange?.setVisible(checkpointId === 'meeting-zone' && !encounterCleared)
   }
 
   setInteractions(interactions: WorldInteraction[]) {
@@ -411,8 +414,10 @@ export class OfficeScene extends Phaser.Scene {
     if (!this.reducedMotion) this.tweens.add({ targets: sweep, rotation: Math.PI * 2, duration: 2400, repeat: -1 })
     const range = this.add.circle(0, 0, SCANNER_RADIUS, OFFICE_PALETTE.danger, 0.1)
       .setStrokeStyle(3, OFFICE_PALETTE.danger, 0.85)
+    // Danger range sits above furniture so the table never hides it; the drone keeps foot depth.
+    this.scannerRange = this.add.container(this.scannerX, SCANNER_Y).setDepth(MEETING_TABLE.y + MEETING_TABLE.height + 1)
+    this.scannerRange.add([range, sweep])
     this.scanner.add([
-      range, sweep,
       ...(this.hasArt('scanner-drone') ? [this.add.image(0, -30, 'scanner-drone')] : [
         this.add.circle(0, -26, 21, 0x355f75).setStrokeStyle(4, 0xe9d4a5),
         this.add.circle(0, -26, 8, 0xf7d07b)]),
@@ -420,6 +425,7 @@ export class OfficeScene extends Phaser.Scene {
         fontFamily: FONT.ui, fontSize: '14px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
     ])
     this.scanner.setVisible(this.checkpointId === 'meeting-zone' && !this.encounterCleared)
+    this.scannerRange.setVisible(this.scanner.visible)
   }
 
   private readonly pauseForFocusLoss = () => {

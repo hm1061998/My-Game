@@ -1,12 +1,12 @@
 # T27 — Game-first visual and interface upgrade
 
-Status: in_progress
+Status: done
 Owner: Codex
 Depends on: T10
 Plan version: 1.0
 Approval: approved by user 2026-09-25 — option (b): full V0→V5 sequence with the mandatory V0 visual checkpoint; art direction and asset-source choice remain pending at V0 exit gate
 Lifecycle phase: define/design
-Workflow step: V4 complete and verified (dialogue, notebook, evidence board, result/review surfaces); next is V5 integration and visual QA
+Workflow step: complete — V0–V5 delivered, verified and pushed; QA record `docs/quality/T27-visual-qa.md`
 
 ## Outcome and success signal
 
@@ -147,7 +147,11 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: start V5 — full visual QA pass (grayscale/color-deficiency, 1280×800 and 1440×900, reduced motion, zoom 200%), asset/license and privacy audit, then close T27.
+Next action: resume queued T11 handoff verification (or a new user-directed task).
+
+## V5 evidence (2026-09-25)
+
+- Added `apps/web/e2e/visual-states.spec.ts` (layout at 1280×800/1100×720, texture readiness, drawer collapse, HTML-fallback textures, offline + reduced motion, 390 px shell; screenshots attached as local evidence only). Fixed scanner danger ring occluded by the meeting table (separate range layer). Full results in `docs/quality/T27-visual-qa.md`: verify.ps1 pass, headed E2E 4/4, ~60 fps, +6.7 kB Phaser chunk, 402 KB textures, privacy scan clean.
 
 ## V4 evidence (2026-09-25)
 
@@ -181,6 +185,7 @@ Next action: start V5 — full visual QA pass (grayscale/color-deficiency, 1280�
 ## Improvement review
 
 - Result: promoted (L009), candidate (L008, L010)
+- V5 observation: `verify.ps1` hit the known L003 `npm ci` EPERM because the preview Vite server was still running; stopping previews before repository gates is part of L008's preflight. L008/L010 stay candidates until they recur outside T27.
 - V4 observation: reaching late-game UI by hand is slow; preparing state through the app's own API modules from the dev page made conclusion/result/review inspectable in minutes. Recorded as candidate L010.
 - V3 observation: the validated loader handled a second asset family (character sheets) and its missing-file fallback passed in the browser, meeting L009's trigger. Promoted to a rule in `apps/web/AGENTS.md`.
 - V2 observation: a missing static asset can be served as a 200 HTML fallback, which crashes Phaser's SVG loader instead of firing its load-error event. Recorded as candidate L009 with the validate-then-load fix and a unit test.
