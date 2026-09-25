@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T27 V0 Direction Boards</title>
+<style>
+  :root { --bg:#f4f1ea; --ink:#1d2b2a; --muted:#5c6a68; --card:#fffdf8; --line:#d9d2c3; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 system-ui, "Segoe UI", sans-serif; }
+  header, section { max-width:1320px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:28px; margin:0 0 4px; } h2 { font-size:22px; margin:0 0 4px; } h3 { font-size:15px; margin:16px 0 6px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  .note { color:var(--muted); max-width:860px; }
+  nav a { margin-right:14px; color:var(--ink); font-weight:600; }
+  .board { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; margin-top:24px; }
+  .tag { display:inline-block; font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; background:#1d2b2a; color:#fff; margin-left:8px; vertical-align:middle; }
+  .grid { display:grid; grid-template-columns: 1.6fr 1fr; gap:20px; align-items:start; }
+  .grid > * { min-width:0; }
+  svg { width:100%; height:auto; display:block; border-radius:10px; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .swatches { display:flex; gap:6px; flex-wrap:wrap; }
+  .sw { width:44px; height:44px; border-radius:8px; border:1px solid rgba(0,0,0,.15); font-size:9px; display:flex; align-items:flex-end; padding:2px; color:#000; background-clip:padding-box; }
+  table { border-collapse:collapse; width:100%; font-size:13px; }
+  td { border-top:1px solid var(--line); padding:5px 6px; vertical-align:top; }
+  td:first-child { font-weight:600; width:32%; color:var(--muted); }
+  .wf { background:#fff; border:1px dashed #9aa; border-radius:10px; }
+  @media (max-width: 900px) { .grid, .row { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>T27 · V0 — Bảng định hướng hình ảnh</h1>
+  <p class="note">Ba hướng đều giữ mặc định đã duyệt: văn phòng sáng, Phaser sprite 2.5D, bàn phím desktop, điều hướng tiếng Việt và nội dung vụ án tiếng Anh. Đây là mockup vẽ bằng SVG (placeholder để so sánh), không phải asset production và không đụng code game. Mỗi bảng gồm: khung gameplay đại diện, bộ silhouette nhân vật, bộ vật chứng, giao diện sổ tay/hội thoại và thông số art bible.</p>
+  <nav><a href="#A">A · Editorial detective (đề xuất)</a><a href="#B">B · Minh họa giáo dục mềm</a><a href="#C">C · Corporate mystery hiện đại</a><a href="#W">Wireframe 1280×800</a></nav>
+</header>
+<main id="boards"></main>
+
+<section id="W">
+  <div class="board">
+    <h2>Wireframe game-first 1280×800</h2>
+    <p class="note">Khung cảnh chiếm phần lớn viewport, không cuộn trang. Thanh vụ án gọn ở trên; drawer nhiệm vụ thu gọn được; dải điều khiển ngắn theo ngữ cảnh; thông tin phiên/diagnostic đưa vào drawer phụ.</p>
+    <svg viewBox="0 0 1280 800" class="wf" role="img" aria-label="Wireframe màn chơi 1280 x 800">
+      <rect x="0" y="0" width="1280" height="800" fill="#fbfbfb"/>
+      <rect x="16" y="12" width="1248" height="48" rx="8" fill="#e8eeee" stroke="#7a8"/>
+      <text x="32" y="42" font-size="16" fill="#344">📁 Case: The Missing Report · Mục tiêu: Tìm bằng chứng ở phòng họp</text>
+      <text x="1040" y="42" font-size="14" fill="#344">⏸ Tạm dừng · 📓 Sổ tay (N)</text>
+      <rect x="16" y="72" width="1248" height="652" rx="10" fill="#dfeae6" stroke="#7a8"/>
+      <text x="560" y="390" font-size="22" fill="#566">PHASER SCENE ~1248×652 (≈82% chiều cao)</text>
+      <rect x="1004" y="88" width="244" height="220" rx="10" fill="#fff" stroke="#7a8" opacity=".95"/>
+      <text x="1020" y="114" font-size="14" font-weight="700" fill="#344">Nhiệm vụ ▾ (thu gọn)</text>
+      <text x="1020" y="140" font-size="13" fill="#566">✓ Nói chuyện với Maya</text>
+      <text x="1020" y="162" font-size="13" fill="#566">● Tìm email bị xoá</text>
+      <text x="1020" y="184" font-size="13" fill="#566">○ Hỏi Leo về lịch họp</text>
+      <text x="1020" y="290" font-size="11" fill="#899">Phiên / diagnostic ▸</text>
+      <rect x="32" y="88" width="190" height="56" rx="8" fill="#fff" stroke="#7a8"/>
+      <text x="44" y="112" font-size="13" fill="#344">Vật chứng 2/4</text>
+      <text x="44" y="132" font-size="13" fill="#344">Checkpoint: Lobby</text>
+      <rect x="470" y="560" width="220" height="44" rx="22" fill="#fff" stroke="#e76f51" stroke-width="2"/>
+      <text x="492" y="588" font-size="14" fill="#344">[E] Kiểm tra máy in</text>
+      <rect x="16" y="736" width="1248" height="48" rx="8" fill="#e8eeee" stroke="#7a8"/>
+      <text x="32" y="766" font-size="14" fill="#344">WASD/↑↓←→ Di chuyển · Shift Chạy · Space Né · E Tương tác · N Sổ tay · Esc Tạm dừng</text>
+    </svg>
+  </div>
+  <div class="board">
+    <h2>Wireframe sổ tay / hội thoại</h2>
+    <div class="row">
+      <svg viewBox="0 0 620 420" class="wf" role="img" aria-label="Wireframe sổ tay điều tra">
+        <rect x="10" y="10" width="600" height="400" rx="12" fill="#fffaf0" stroke="#998"/>
+        <text x="30" y="44" font-size="18" font-weight="700">📓 Case Notebook</text>
+        <text x="470" y="44" font-size="13" fill="#777">Esc Đóng</text>
+        <rect x="30" y="60" width="90" height="28" rx="6" fill="#e8eeee"/><text x="44" y="79" font-size="13">Evidence</text>
+        <rect x="126" y="60" width="90" height="28" rx="6" fill="#fff" stroke="#ccc"/><text x="140" y="79" font-size="13">People</text>
+        <rect x="222" y="60" width="90" height="28" rx="6" fill="#fff" stroke="#ccc"/><text x="236" y="79" font-size="13">Words</text>
+        <g font-size="12">
+          <rect x="30" y="104" width="170" height="120" rx="6" fill="#fff" stroke="#bbb" transform="rotate(-2 115 164)"/><text x="44" y="130">🖨 Printer log</text><text x="44" y="150" fill="#777">"printed at 9:14"</text>
+          <rect x="220" y="104" width="170" height="120" rx="6" fill="#fff" stroke="#bbb" transform="rotate(1.5 305 164)"/><text x="234" y="130">✉ Deleted email</text>
+          <rect x="410" y="104" width="170" height="120" rx="6" fill="#fff" stroke="#ccc" stroke-dasharray="4"/><text x="424" y="130" fill="#999">? Chưa tìm thấy</text>
+          <path d="M200 164 L220 164" stroke="#e76f51" stroke-width="2"/>
+        </g>
+        <rect x="30" y="244" width="550" height="140" rx="8" fill="#fff" stroke="#ccc"/>
+        <text x="46" y="270" font-size="13" font-weight="700">Printer log</text>
+        <text x="46" y="292" font-size="12" fill="#555">Text tiếng Anh thật (HTML), không raster. Từ vựng A2–B1 gạch chân.</text>
+        <text x="46" y="314" font-size="12" fill="#555">Liên kết: Maya · Meeting room · Keyword "deadline"</text>
+      </svg>
+      <svg viewBox="0 0 620 420" class="wf" role="img" aria-label="Wireframe hội thoại">
+        <rect x="10" y="10" width="600" height="400" rx="12" fill="#dfeae6" stroke="#998"/>
+        <text x="200" y="120" font-size="16" fill="#677">(scene mờ phía sau)</text>
+        <rect x="30" y="220" width="560" height="170" rx="12" fill="#fff" stroke="#998"/>
+        <circle cx="90" cy="222" r="50" fill="#f2c6a0" stroke="#1d3b3a" stroke-width="3"/>
+        <text x="150" y="250" font-size="15" font-weight="700">Maya · Marketing</text>
+        <text x="150" y="276" font-size="14">"I sent the report before lunch, I think."</text>
+        <rect x="50" y="300" width="250" height="32" rx="6" fill="#e8eeee"/><text x="62" y="321" font-size="13">1 · Who did you send it to?</text>
+        <rect x="310" y="300" width="260" height="32" rx="6" fill="#e8eeee"/><text x="322" y="321" font-size="13">2 · What time was lunch?</text>
+        <rect x="50" y="340" width="250" height="32" rx="6" fill="#fff" stroke="#ccc"/><text x="62" y="361" font-size="13">3 · Tạm rời</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<script>
+const D = [
+ { id:'A', name:'A · Editorial detective', rec:true,
+   blurb:'Giấy ấm, gỗ, mặt bàn teal/mint, điểm nhấn coral/amber, viền mực xanh-đen đậm, bóng tiếp đất mềm, chi tiết halftone/con dấu hồ sơ. Thân thiện nhưng có "mùi" trinh thám.',
+   floor:'#efe3cc', floor2:'#e6d6b8', wall:'#2f6f6a', desk:'#8fd3c1', accent:'#e76f51', accent2:'#f4a261', ink:'#1d3b3a', lw:3.2, shadow:.28, skin:'#f2c6a0', paper:'#fff6e6', halftone:true, radius:4, font:'"Fraunces", Georgia, serif',
+   pal:[['#1d3b3a','ink'],['#2f6f6a','wall'],['#8fd3c1','desk'],['#efe3cc','paper'],['#e76f51','coral'],['#f4a261','amber']],
+   spec:{ 'Line weight':'Viền ngoài 3 px mực xanh-đen, nét trong 1.5 px', 'Phối cảnh':'3/4 top-down 2.5D, góc nhìn ~35°, tile 64 px', 'Bóng':'Contact shadow elip 28% + một nguồn sáng trên-trái', 'Texture':'Halftone nhẹ trên sàn/giấy, grain giấy 4%', 'Tỷ lệ nhân vật':'~2.6 đầu, đầu to vừa, silhouette khác nhau theo tóc/phụ kiện', 'Icon':'Nét 2 px bo tròn, fill mặt phẳng, dạng con dấu', 'Font':'Serif hiển thị (Fraunces) cho tiêu đề + system sans cho UI/nội dung', 'Mật độ animation':'Trung bình: idle 4f, walk 6f, run 6f × 4 hướng; hiệu ứng stamp/giấy bay', 'Nguồn':'AI-assisted gốc + dọn tay + chuẩn hoá atlas (đề xuất)', 'Ngân sách asset':'~4 nhân vật × 16 anim, ~40 prop, 4 zone tile set, ~24 icon ≈ 2 atlas 2048²' }},
+ { id:'B', name:'B · Minh họa giáo dục mềm', rec:false,
+   blurb:'Pastel dịu, nét mảnh màu (không đen), hình khối tròn, bóng rất nhẹ. Rất thân thiện với người học nhưng giảm cảm giác nguy hiểm/bí ẩn của scanner.',
+   floor:'#f6efe6', floor2:'#efe4f3', wall:'#9cc5e8', desk:'#c8e6c9', accent:'#ff8fab', accent2:'#ffd166', ink:'#6b7fa3', lw:2, shadow:.12, skin:'#ffd9c0', paper:'#ffffff', halftone:false, radius:14, font:'"Nunito", system-ui, sans-serif',
+   pal:[['#6b7fa3','line'],['#9cc5e8','wall'],['#c8e6c9','desk'],['#f6efe6','floor'],['#ff8fab','pink'],['#ffd166','yellow']],
+   spec:{ 'Line weight':'Viền màu 2 px (tone tối của fill), không mực đen', 'Phối cảnh':'3/4 top-down, góc ~40°, tile 64 px', 'Bóng':'Bóng mờ 12%, không nguồn sáng rõ', 'Texture':'Phẳng, gradient rất nhẹ', 'Tỷ lệ nhân vật':'~2.2 đầu, chibi, mắt to', 'Icon':'Tròn, fill 2 tone, không nét', 'Font':'Nunito (bo tròn) cho toàn bộ', 'Mật độ animation':'Cao: squash/stretch, idle 6f, walk 8f', 'Nguồn':'AI-assisted hoặc gói minh họa trẻ em có license', 'Ngân sách asset':'Tương đương A + nhiều frame hơn (~+30%)' }},
+ { id:'C', name:'C · Corporate mystery hiện đại', rec:false,
+   blurb:'Flat vector sạch, trắng/xám lạnh + xanh navy, một màu cảnh báo đỏ cam, gần như không viền, bóng hình học. Gọn và chuyên nghiệp nhưng dễ bị "giống app văn phòng", ít cá tính.',
+   floor:'#eef1f5', floor2:'#e2e7ee', wall:'#24344d', desk:'#ffffff', accent:'#ff5a36', accent2:'#3a86ff', ink:'#24344d', lw:0.8, shadow:.18, skin:'#e9b99a', paper:'#ffffff', halftone:false, radius:2, font:'"Inter", system-ui, sans-serif',
+   pal:[['#24344d','navy'],['#3a86ff','blue'],['#ffffff','white'],['#eef1f5','floor'],['#ff5a36','alert'],['#8a96a8','grey']],
+   spec:{ 'Line weight':'Gần như không viền (≤1 px), phân tách bằng mảng màu', 'Phối cảnh':'Isometric sạch 2:1, tile 64 px', 'Bóng':'Bóng hình học cứng 18% theo khối', 'Texture':'Không; chỉ lưới/kính mờ', 'Tỷ lệ nhân vật':'~4 đầu, tỷ lệ người lớn thon', 'Icon':'Line icon 1.5 px kiểu hệ điều hành', 'Font':'Inter cho toàn bộ', 'Mật độ animation':'Thấp: idle 2f, walk 6f; UI transition mượt', 'Nguồn':'Dễ tìm gói license vector văn phòng; hoặc AI-assisted', 'Ngân sách asset':'Nhỏ nhất (~-20% so với A)' }},
+];
+
+function person(d, x, y, body, hair, s=1, badge) {
+  const k = d.id==='C' ? 1.35 : d.id==='B' ? .9 : 1;
+  const hr = (d.id==='B'?15:12)*s, bh=(26*k)*s;
+  return `<g stroke="${d.ink}" stroke-width="${d.lw}" stroke-linejoin="round">
+    <ellipse cx="${x}" cy="${y+2}" rx="${16*s}" ry="${5*s}" fill="#000" opacity="${d.shadow}" stroke="none"/>
+    <rect x="${x-11*s}" y="${y-bh}" width="${22*s}" height="${bh}" rx="${d.radius*s}" fill="${body}"/>
+    <circle cx="${x}" cy="${y-bh-hr+2}" r="${hr}" fill="${d.skin}"/>
+    <path d="M${x-hr} ${y-bh-hr} q${hr} ${-hr*1.4} ${hr*2} 0" fill="${hair}"/>
+    ${badge?`<circle cx="${x+6*s}" cy="${y-bh+8*s}" r="${3*s}" fill="${d.accent2}" stroke-width="1"/>`:''}
+  </g>`;
+}
+function scene(d) {
+  const ht = d.halftone ? `<pattern id="ht${d.id}" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="${d.ink}" opacity=".08"/></pattern>` : '';
+  return `<svg viewBox="0 0 640 380" role="img" aria-label="Khung gameplay mẫu hướng ${d.name}">
+  <defs>${ht}</defs>
+  <rect width="640" height="380" fill="${d.floor}"/>
+  <rect x="330" y="40" width="300" height="170" fill="${d.floor2}"/>
+  ${d.halftone?`<rect width="640" height="380" fill="url(#ht${d.id})"/>`:''}
+  <rect x="0" y="0" width="640" height="40" fill="${d.wall}"/>
+  <rect x="320" y="40" width="10" height="120" fill="${d.wall}"/><rect x="320" y="200" width="10" height="180" fill="${d.wall}"/>
+  <g font-family="${d.font}" font-size="12" font-weight="700" fill="#fff"><text x="14" y="25">LOBBY / OPEN OFFICE</text><text x="344" y="25">MEETING ROOM</text></g>
+  <g stroke="${d.ink}" stroke-width="${d.lw}">
+    <rect x="40" y="80" width="110" height="54" rx="${d.radius}" fill="${d.desk}"/><rect x="40" y="134" width="110" height="12" fill="${d.ink}" opacity=".35"/>
+    <rect x="180" y="80" width="110" height="54" rx="${d.radius}" fill="${d.desk}"/><rect x="180" y="134" width="110" height="12" fill="${d.ink}" opacity=".35"/>
+    <rect x="60" y="66" width="30" height="20" rx="2" fill="#dde"/><rect x="200" y="66" width="30" height="20" rx="2" fill="#dde"/>
+    <rect x="390" y="90" width="190" height="70" rx="${d.radius*3}" fill="${d.desk}"/>
+    <rect x="540" y="230" width="60" height="44" rx="${d.radius}" fill="#cfd6d8"/><rect x="548" y="222" width="44" height="10" fill="${d.paper}"/>
+    <circle cx="40" cy="330" r="16" fill="#5aa469"/><rect x="32" y="340" width="16" height="16" fill="${d.accent2}"/>
+  </g>
+  <path d="M470 330 L380 250 A120 120 0 0 1 470 215 Z" fill="${d.accent}" opacity=".22" stroke="${d.accent}" stroke-width="2" stroke-dasharray="6 4"/>
+  <g transform="translate(560 244)"><circle r="14" fill="${d.accent2}" opacity=".35"><animate attributeName="r" values="12;18;12" dur="1.6s" repeatCount="indefinite"/></circle><text x="-5" y="5" font-size="14" font-weight="800" fill="${d.ink}">!</text></g>
+  <g transform="translate(140 300)"><path d="M-14 0 h28 l-14 -26z" fill="${d.accent2}" stroke="${d.ink}" stroke-width="${d.lw}"/><text x="-40" y="22" font-family="${d.font}" font-size="11" fill="${d.ink}">CHECKPOINT</text></g>
+  ${person(d,250,260,d.accent,d.ink,1.1,true)}
+  <text x="226" y="290" font-family="${d.font}" font-size="11" font-weight="700" fill="${d.ink}">YOU</text>
+  ${person(d,110,190,'#6c8ebf','#7a4b2a')}
+  ${person(d,470,200,'#b58ad6','#2b2b2b')}
+  ${person(d,480,340,'#555f6b','#999',1,false)}
+  <g transform="translate(250 196)"><rect x="-58" y="-16" width="116" height="26" rx="13" fill="#fff" stroke="${d.accent}" stroke-width="2"/><text x="-48" y="2" font-family="${d.font}" font-size="12" fill="${d.ink}">[E] Talk to Maya</text></g>
+  </svg>`;
+}
+function sil(d){ return `<svg viewBox="0 0 320 120" role="img" aria-label="Silhouette nhân vật">
+  <rect width="320" height="120" fill="${d.floor}"/>
+  ${person(d,40,100,d.accent,d.ink,1.2,true)}${person(d,110,100,'#6c8ebf','#7a4b2a',1.2)}${person(d,180,100,'#b58ad6','#2b2b2b',1.2)}${person(d,250,100,'#555f6b','#999',1.2)}
+  <g font-size="10" fill="${d.ink}" font-family="${d.font}"><text x="26" y="116">Player</text><text x="98" y="116">Maya</text><text x="170" y="116">Leo</text><text x="236" y="116">Scanner</text></g></svg>`; }
+function props(d){ const s=`stroke="${d.ink}" stroke-width="${d.lw}"`; return `<svg viewBox="0 0 320 110" role="img" aria-label="Bộ vật chứng">
+  <rect width="320" height="110" fill="${d.paper}"/>
+  <g ${s}><rect x="20" y="24" width="50" height="40" rx="${d.radius}" fill="#cfd6d8"/><rect x="28" y="16" width="34" height="12" fill="#fff"/>
+  <rect x="96" y="20" width="52" height="38" rx="${d.radius}" fill="#fff"/><path d="M96 20 l26 20 l26 -20" fill="none"/>
+  <rect x="172" y="18" width="36" height="46" rx="${d.radius}" fill="${d.accent2}"/><rect x="178" y="26" width="24" height="3" fill="${d.ink}"/>
+  <rect x="236" y="30" width="58" height="30" rx="${d.radius}" fill="${d.desk}"/><circle cx="265" cy="45" r="6" fill="${d.accent}"/></g>
+  <g font-size="10" fill="${d.ink}" font-family="${d.font}"><text x="18" y="88">Printer log</text><text x="98" y="88">Email</text><text x="168" y="88">Folder</text><text x="236" y="88">Badge reader</text></g></svg>`; }
+function note(d){ return `<div style="background:${d.paper};border:${Math.max(1,d.lw-1)}px solid ${d.ink};border-radius:${d.radius*2}px;padding:12px;font-family:${d.font};color:${d.ink}">
+  <div style="display:flex;gap:10px;align-items:center"><div style="width:44px;height:44px;border-radius:50%;background:${d.skin};border:${d.lw}px solid ${d.ink}"></div>
+  <div><b>Maya · Marketing</b><div style="font-family:system-ui;font-size:14px">"I sent the report <u>before</u> lunch, I think."</div></div></div>
+  <div style="display:flex;gap:6px;margin-top:10px;font-family:system-ui;font-size:13px">
+  <span style="padding:4px 10px;border-radius:${d.radius*2}px;background:${d.accent};color:#fff">1 · Who did you send it to?</span>
+  <span style="padding:4px 10px;border-radius:${d.radius*2}px;border:1px solid ${d.ink}">2 · What time?</span></div>
+  ${d.id==='A'?`<div style="margin-top:8px;display:inline-block;transform:rotate(-4deg);border:2px solid ${d.accent};color:${d.accent};font-weight:800;padding:0 6px;font-size:12px">EVIDENCE +1</div>`:''}
+  </div>`; }
+document.getElementById('boards').innerHTML = D.map(d=>`
+<section id="${d.id}"><div class="board">
+ <h2>${d.name}${d.rec?'<span class="tag">Đề xuất</span>':''}</h2>
+ <p class="note">${d.blurb}</p>
+ <div class="grid">
+  <div>${scene(d)}<h3>Nhân vật</h3>${sil(d)}</div>
+  <div>
+   <h3>Bảng màu</h3><div class="swatches">${d.pal.map(([c,n])=>`<div class="sw" style="background:${c};color:${['#1d3b3a','#2f6f6a','#24344d','#6b7fa3','#e76f51','#ff5a36','#3a86ff'].includes(c)?'#fff':'#000'}">${n}</div>`).join('')}</div>
+   <h3>Vật chứng</h3>${props(d)}
+   <h3>Hội thoại / sổ tay</h3>${note(d)}
+   <h3>Art bible</h3><table>${Object.entries(d.spec).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>
+  </div>
+ </div></div></section>`).join('');
+</script>
+</body>
+</html>

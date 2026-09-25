@@ -85,7 +85,7 @@ TypeScript type generation from OpenAPI remains open. Vite still warns about the
 
 ## Next action
 
-Prepare the three T27 V0 direction boards and show them in a visible browser; the user must pick one direction and an asset-source method (original AI-assisted or licensed pack) before any runtime asset is bundled. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
+T27 V0 boards are at `docs/design/t27-v0/direction-boards.html`. Wait for the user to pick direction A/B/C and an asset-source method; do not infer. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
 
 ## Relevant references
 

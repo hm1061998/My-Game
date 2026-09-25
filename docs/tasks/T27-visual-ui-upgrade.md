@@ -6,7 +6,7 @@ Depends on: T10
 Plan version: 1.0
 Approval: approved by user 2026-09-25 — option (b): full V0→V5 sequence with the mandatory V0 visual checkpoint; art direction and asset-source choice remain pending at V0 exit gate
 Lifecycle phase: define/design
-Workflow step: plan 1.0 approved; next is V0 direction boards (no runtime code or distributable art changed yet)
+Workflow step: V0 direction boards and wireframes delivered in `docs/design/t27-v0/direction-boards.html` (SVG placeholders, no product code); awaiting V0 exit-gate choice
 
 ## Outcome and success signal
 
@@ -141,7 +141,7 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: prepare three V0 direction boards and show them in a visible browser for the user to pick one direction and an asset-source method.
+Next action: user selects direction A, B or C and an asset-source method (original AI-assisted or licensed-pack search); then V1 starts.
 
 ## Improvement review
 
