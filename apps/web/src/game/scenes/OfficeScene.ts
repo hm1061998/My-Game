@@ -4,6 +4,7 @@ import { moveWithCollision, movementDelta, type Point, type Rect } from '../move
 import { advancePatrol, CHECKPOINT, DODGE_COOLDOWN_MS, DODGE_DURATION_MS,
   reachedCheckpoint, SCANNER_MIN_X, SCANNER_RADIUS, SCANNER_Y, scannerDetects } from '../encounter'
 import { COLOR, FONT, prefersReducedMotion } from '../../theme/tokens'
+import { artUrl, DECOR, footOrigin, isSvgDocument, OFFICE_ART, ZONES, type ArtKey } from '../officeArt'
 import { characterStyle, evidenceStyle, interactionLabel, movementPose, OFFICE_PALETTE,
   type CharacterStyle } from '../presentation'
 
@@ -68,10 +69,47 @@ export class OfficeScene extends Phaser.Scene {
   private detectionGraceMs = 0
   private lastMoveDirection: Point = { x: 1, y: 0 }
   private dodgeDirection: Point = { x: 1, y: 0 }
+  private readonly missingArt = new Set<string>()
+  private readonly artObjectUrls: string[] = []
+  private readonly reducedMotion = prefersReducedMotion()
 
   constructor(emit: (event: GameLifecycleEvent) => void) {
     super('office')
     this.emit = emit
+  }
+
+  preload() {
+    const label = this.add.text(24, 24, 'Đang tải hình ảnh văn phòng…', {
+      color: COLOR.ink, backgroundColor: COLOR.paperLight, fontFamily: FONT.ui,
+      fontSize: '16px', padding: { x: 10, y: 6 },
+    })
+    this.load.on(Phaser.Loader.Events.FILE_LOAD_ERROR, (file: Phaser.Loader.File) => {
+      this.missingArt.add(file.key.replace('#src', ''))
+    })
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => label.destroy())
+    const base = import.meta.env.BASE_URL ?? '/'
+    // Fetch as text first: a missing file may come back as an HTML fallback with status 200,
+    // which would crash Phaser's SVG parser and leave a blank scene.
+    for (const asset of OFFICE_ART) {
+      this.load.text(`${asset.key}#src`, artUrl(asset.key, base))
+      this.load.once(`filecomplete-text-${asset.key}#src`, (_key: string, _type: string, text: string) => {
+        if (!isSvgDocument(text)) { this.missingArt.add(asset.key); return }
+        const url = URL.createObjectURL(new Blob([text], { type: 'image/svg+xml' }))
+        this.artObjectUrls.push(url)
+        this.load.svg(asset.key, url, { width: asset.width, height: asset.height })
+      })
+    }
+  }
+
+  private hasArt(key: ArtKey) {
+    return !this.missingArt.has(key) && this.textures.exists(key)
+  }
+
+  /** Foot-anchored image, or null so the caller draws its code-authored fallback. */
+  private placeArt(key: ArtKey, x: number, footY: number) {
+    if (!this.hasArt(key)) return null
+    const origin = footOrigin(key)
+    return this.add.image(x, footY, key).setOrigin(origin.x, origin.y).setDepth(footY)
   }
 
   create() {
@@ -116,6 +154,7 @@ export class OfficeScene extends Phaser.Scene {
       }) }
     }
     this.emit({ type: 'play-state', state: 'playing' })
+    if (this.missingArt.size > 0) this.emit({ type: 'art-missing', keys: [...this.missingArt] })
 
     window.addEventListener('blur', this.pauseForFocusLoss)
     document.addEventListener('visibilitychange', this.onVisibilityChange)
@@ -127,6 +166,7 @@ export class OfficeScene extends Phaser.Scene {
       keyboard.off('keydown-SPACE', this.tryDodge)
       this.scale.off(Phaser.Scale.Events.RESIZE, this.positionCanvasLabels)
       keyboard.resetKeys()
+      this.artObjectUrls.splice(0).forEach(url => URL.revokeObjectURL(url))
       if (import.meta.env.VITE_E2E_OBSERVABILITY === '1') {
         delete window.__officeCaseFilesE2E
       }
@@ -226,8 +266,14 @@ export class OfficeScene extends Phaser.Scene {
         marker.add(this.createCharacterFigure(characterStyle(npcId), 0.82))
       } else {
         const style = evidenceStyle(interaction.id)
+        const ring = this.add.ellipse(0, 2, 70, 26).setStrokeStyle(3, OFFICE_PALETTE.coral, 0.9)
+        marker.add(ring)
+        if (!this.reducedMotion) this.tweens.add({ targets: ring, scaleX: 1.25, scaleY: 1.25, alpha: 0.2,
+          duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' })
+        marker.add(this.hasArt('evidence-card')
+          ? this.add.image(0, -28, 'evidence-card')
+          : this.add.rectangle(0, -27, 38, 34, style.color).setStrokeStyle(3, OFFICE_PALETTE.cream))
         marker.add([
-          this.add.rectangle(0, -27, 38, 34, style.color).setStrokeStyle(3, OFFICE_PALETTE.cream),
           this.add.text(0, -29, style.symbol, { color: '#17333d', fontFamily: FONT.display,
             fontSize: '22px', fontStyle: 'bold' }).setOrigin(0.5),
         ])
@@ -273,19 +319,29 @@ export class OfficeScene extends Phaser.Scene {
   private drawEncounter() {
     this.checkpointMarker = this.add.container(CHECKPOINT.x, CHECKPOINT.y).setDepth(CHECKPOINT.y - 2)
     this.checkpointMarker.add([
-      this.add.ellipse(0, 0, 112, 55, 0x4dbb91, 0.33).setStrokeStyle(2, 0x23866b),
-      this.add.text(0, -45, 'MỐC AN TOÀN', { color: '#17333d', backgroundColor: '#e5fff2',
+      this.hasArt('checkpoint-pad') ? this.add.image(0, -6, 'checkpoint-pad')
+        : this.add.ellipse(0, 0, 112, 55, 0x4dbb91, 0.33).setStrokeStyle(2, 0x23866b),
+      this.add.text(0, -45, '✓ MỐC AN TOÀN', { color: COLOR.ink, backgroundColor: '#e5fff2',
         fontFamily: FONT.ui, fontSize: '15px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
     ])
     this.checkpointMarker.setVisible(this.checkpointId === 'office-entry')
-    this.add.rectangle(1360, SCANNER_Y, 330, 180, 0xf4c682, 0.12)
-      .setStrokeStyle(2, 0xb67e45, 0.65).setDepth(SCANNER_Y - 5)
+    const corridor = this.add.graphics().setDepth(-40)
+    corridor.fillStyle(OFFICE_PALETTE.amber, 0.12).fillRect(1195, SCANNER_Y - 90, 330, 180)
+    corridor.lineStyle(3, OFFICE_PALETTE.danger, 0.7)
+    for (let x = 1195; x < 1525; x += 22) corridor.lineBetween(x, SCANNER_Y - 90, x + 11, SCANNER_Y - 90)
+    for (let x = 1195; x < 1525; x += 22) corridor.lineBetween(x, SCANNER_Y + 90, x + 11, SCANNER_Y + 90)
     this.scanner = this.add.container(this.scannerX, SCANNER_Y).setDepth(SCANNER_Y)
+    const sweep = this.add.graphics()
+    sweep.fillStyle(OFFICE_PALETTE.danger, 0.22).slice(0, 0, SCANNER_RADIUS, -0.5, 0.5).fillPath()
+    if (!this.reducedMotion) this.tweens.add({ targets: sweep, rotation: Math.PI * 2, duration: 2400, repeat: -1 })
+    const range = this.add.circle(0, 0, SCANNER_RADIUS, OFFICE_PALETTE.danger, 0.1)
+      .setStrokeStyle(3, OFFICE_PALETTE.danger, 0.85)
     this.scanner.add([
-      this.add.circle(0, 0, SCANNER_RADIUS, 0xf08a65, 0.19).setStrokeStyle(3, 0xd65d4c, 0.7),
-      this.add.circle(0, -26, 21, 0x355f75).setStrokeStyle(4, 0xe9d4a5),
-      this.add.circle(0, -26, 8, 0xf7d07b),
-      this.add.text(0, -61, 'MÁY QUÉT', { color: '#6f2b22', backgroundColor: '#fff1db',
+      range, sweep,
+      ...(this.hasArt('scanner-drone') ? [this.add.image(0, -30, 'scanner-drone')] : [
+        this.add.circle(0, -26, 21, 0x355f75).setStrokeStyle(4, 0xe9d4a5),
+        this.add.circle(0, -26, 8, 0xf7d07b)]),
+      this.add.text(0, -80, '⚠ MÁY QUÉT', { color: '#6f2b22', backgroundColor: '#fff1db',
         fontFamily: FONT.ui, fontSize: '14px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
     ])
     this.scanner.setVisible(this.checkpointId === 'meeting-zone' && !this.encounterCleared)
@@ -321,12 +377,27 @@ export class OfficeScene extends Phaser.Scene {
   private drawOffice() {
     this.add.rectangle(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH, WORLD_HEIGHT, 0xa8cbd0).setDepth(-100)
     this.add.rectangle(800, 540, 1488, 816, OFFICE_PALETTE.navy).setDepth(-90)
-    this.add.rectangle(800, 540, 1456, 786, OFFICE_PALETTE.floor).setDepth(-80)
-
-    const tileLines = this.add.graphics().setDepth(-70)
-    tileLines.lineStyle(1, OFFICE_PALETTE.floorLine, 0.72)
-    for (let x = FLOOR.x; x <= FLOOR.x + FLOOR.width; x += 80) tileLines.lineBetween(x, FLOOR.y, x, FLOOR.y + FLOOR.height)
-    for (let y = FLOOR.y; y <= FLOOR.y + FLOOR.height; y += 80) tileLines.lineBetween(FLOOR.x, y, FLOOR.x + FLOOR.width, y)
+    for (const zone of ZONES) {
+      if (this.hasArt(zone.floor)) {
+        this.add.tileSprite(zone.x, zone.y, zone.width, zone.height, zone.floor).setOrigin(0).setDepth(-80)
+      } else {
+        this.add.rectangle(zone.x, zone.y, zone.width, zone.height, zone.fallback).setOrigin(0).setDepth(-80)
+      }
+    }
+    const seams = this.add.graphics().setDepth(-75)
+    seams.lineStyle(4, OFFICE_PALETTE.ink, 0.35)
+    seams.lineBetween(420, FLOOR.y, 420, FLOOR.y + FLOOR.height)
+    seams.lineBetween(1000, FLOOR.y, 1000, FLOOR.y + FLOOR.height)
+    if (this.hasArt('restricted-tape')) {
+      this.add.tileSprite(1000, 512, 536, 16, 'restricted-tape').setOrigin(0).setDepth(-74)
+    } else {
+      seams.lineBetween(1000, 520, 1536, 520)
+    }
+    for (const item of DECOR) {
+      if (!this.hasArt(item.key)) continue
+      if (item.decal) this.add.image(item.x, item.y, item.key).setDepth(-60)
+      else this.placeArt(item.key, item.x, item.y)
+    }
 
     this.add.rectangle(800, 113, 1488, 58, 0xeff3df).setDepth(-60)
     this.add.rectangle(800, 143, 1488, 12, 0x708b93).setDepth(-59)
@@ -337,12 +408,12 @@ export class OfficeScene extends Phaser.Scene {
     for (const x of [310, 720, 1130]) {
       this.add.rectangle(x, 105, 190, 31, 0x8fc9d8).setStrokeStyle(5, 0xf8f5e7).setDepth(-57)
     }
-    this.add.text(132, 185, 'LOBBY  →  MAIN OFFICE', {
-      color: '#58717a', fontFamily: FONT.ui, fontSize: '22px', fontStyle: 'bold',
-    }).setDepth(-50)
-    this.add.text(1180, 824, 'MEETING ZONE', {
-      color: '#678890', fontFamily: FONT.ui, fontSize: '20px', fontStyle: 'bold',
-    }).setDepth(-50)
+    const sign = { color: COLOR.paperLight, backgroundColor: COLOR.wall, fontFamily: FONT.display,
+      fontSize: '18px', fontStyle: 'bold', padding: { x: 10, y: 5 } }
+    this.add.text(140, 118, 'LOBBY', sign).setOrigin(0.5).setDepth(-50)
+    this.add.text(710, 118, 'MAIN OFFICE', sign).setOrigin(0.5).setDepth(-50)
+    this.add.text(1268, 118, 'ARCHIVE', sign).setOrigin(0.5).setDepth(-50)
+    this.add.text(1180, 900, 'MEETING ZONE', { ...sign, fontSize: '16px' }).setOrigin(0.5).setDepth(-50)
     this.add.text(1284, 388, 'ARCHIVE · RESTRICTED', {
       color: '#8e5a43', backgroundColor: '#fff1db', fontFamily: FONT.ui,
       fontSize: '17px', fontStyle: 'bold', padding: { x: 9, y: 5 },
@@ -358,6 +429,7 @@ export class OfficeScene extends Phaser.Scene {
 
   private addDesk(rect: Rect) {
     const footY = rect.y + rect.height
+    if (this.placeArt('desk', rect.x + rect.width / 2, footY)) return
     this.add.ellipse(rect.x + rect.width / 2, footY + 8, rect.width + 26, 34, 0x405764, 0.22).setDepth(footY - 1)
     const desk = this.add.container(rect.x, footY).setDepth(footY)
     desk.add([
@@ -371,6 +443,7 @@ export class OfficeScene extends Phaser.Scene {
 
   private addCabinet(rect: Rect) {
     const footY = rect.y + rect.height
+    if (this.placeArt('cabinet', rect.x + rect.width / 2, footY)) return
     const cabinet = this.add.container(rect.x, footY).setDepth(footY)
     cabinet.add([
       this.add.rectangle(rect.width / 2, -rect.height / 2 - 40, rect.width, rect.height + 80, 0x779da1).setStrokeStyle(4, 0x406c78),
@@ -383,6 +456,7 @@ export class OfficeScene extends Phaser.Scene {
 
   private addPlanter(rect: Rect) {
     const footY = rect.y + rect.height
+    if (this.placeArt('planter', rect.x + rect.width / 2, footY)) return
     const planter = this.add.container(rect.x + rect.width / 2, footY).setDepth(footY)
     planter.add([
       this.add.ellipse(0, -47, 132, 110, 0x418c70),
@@ -394,6 +468,7 @@ export class OfficeScene extends Phaser.Scene {
 
   private addMeetingTable(rect: Rect) {
     const footY = rect.y + rect.height
+    if (this.placeArt('meeting-table', rect.x + rect.width / 2, footY)) return
     const table = this.add.container(rect.x, footY).setDepth(footY)
     table.add([
       this.add.rectangle(rect.width / 2, -rect.height / 2, rect.width, rect.height, 0x75959b).setStrokeStyle(3, 0x4d727a),

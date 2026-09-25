@@ -8,6 +8,7 @@ export type GameLifecycleEvent =
   | { type: 'encounter-detected' }
   | { type: 'encounter-cleared' }
   | { type: 'encounter-checkpoint-required' }
+  | { type: 'art-missing'; keys: string[] }
 
 export type WorldInteraction = {
   id: string

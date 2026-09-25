@@ -178,6 +178,8 @@ export default function App() {
     if (event.type === "interaction-nearby") setNearby(event.interaction);
     if (event.type === "checkpoint-reached" && session.data?.checkpointId === "office-entry" &&
         !checkpoint.isPending) checkpoint.mutate();
+    if (event.type === "art-missing")
+      setNotice("Một số hình ảnh văn phòng không tải được; đang dùng hình thay thế. Tải lại trang để thử lại.");
     if (event.type === "encounter-checkpoint-required")
       setNotice("Hãy chạm mốc an toàn tại khu họp trước khi vào kho lưu trữ.");
     if ((event.type === "encounter-detected" || event.type === "encounter-cleared") &&
