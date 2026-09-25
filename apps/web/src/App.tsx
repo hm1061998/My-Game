@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { answerQuestion, getCaseMap, getEvidence, getNotebook, getQuestions, interact, InvestigationError,
   type AnswerResult, type Evidence, type InteractionResult } from "./api/investigation";
 import {
   resumeSession,
+  recordEncounter,
   saveMeetingCheckpoint,
   startSession,
   type SessionProgress,
@@ -28,7 +29,7 @@ async function getHealth(): Promise<HealthResponse> {
 export default function App() {
   const [gameStatus, setGameStatus] = useState("Đang khởi tạo hiện trường…");
   const [nearby, setNearby] = useState<WorldInteraction | null>(null);
-  const [overlay, setOverlay] = useState<"notebook" | "dialogue" | null>(null);
+  const [overlay, setOverlay] = useState<"notebook" | "dialogue" | "retry" | null>(null);
   const [dialogue, setDialogue] = useState<InteractionResult | null>(null);
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
@@ -36,9 +37,13 @@ export default function App() {
   const [answerFeedback, setAnswerFeedback] = useState<AnswerResult | null>(null);
   const [answerError, setAnswerError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [assistEnabled, setAssistEnabled] = useState(false);
+  const [encounterError, setEncounterError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const retryRef = useRef<{ id: string; submissionId: string; revision: number } | null>(null);
   const answerRetryRef = useRef<{ id: string; choiceId: string; submissionId: string; revision: number } | null>(null);
+  const encounterRetryRef = useRef<{ outcome: "detected" | "cleared"; assistanceUsed: boolean;
+    submissionId: string; revision: number } | null>(null);
   const queryClient = useQueryClient();
   const health = useQuery({
     queryKey: ["api-health"],
@@ -68,10 +73,34 @@ export default function App() {
   });
   const checkpoint = useMutation({
     mutationFn: () => saveMeetingCheckpoint(session.data!.revision),
-    onSuccess: (progress) =>
-      queryClient.setQueryData<SessionProgress>(["session"], progress),
-    onError: () =>
-      void queryClient.invalidateQueries({ queryKey: ["session"] }),
+    onSuccess: (progress) => {
+      queryClient.setQueryData<SessionProgress>(["session"], progress);
+      setNotice("Đã lưu mốc an toàn tại khu họp.");
+    },
+    onError: () => {
+      setNotice("Không lưu được mốc an toàn. Đứng gần dấu mốc để thử lại.");
+      void queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+  });
+  const encounter = useMutation({
+    mutationFn: ({ outcome, assistanceUsed, submissionId, revision }:
+      { outcome: "detected" | "cleared"; assistanceUsed: boolean;
+        submissionId: string; revision: number }) =>
+      recordEncounter(outcome, assistanceUsed, submissionId, revision),
+    onSuccess: (progress, request) => {
+      encounterRetryRef.current = null;
+      queryClient.setQueryData<SessionProgress>(["session"], progress);
+      setEncounterError(null);
+      if (request.outcome === "cleared") {
+        setOverlay(null);
+        setNotice("Đã vượt máy quét. Nhấn E tại terminal để đọc hồ sơ E03.");
+      } else setNotice("Bị phát hiện; quay về mốc an toàn. Bạn có thể thử lại.");
+    },
+    onError: () => {
+      setEncounterError("Không lưu được kết quả. Hãy thử gửi lại trước khi tiếp tục.");
+      setOverlay("retry");
+      void queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
   });
   const interaction = useMutation({
     mutationFn: ({ id, submissionId, revision }: { id: string; submissionId: string; revision: number }) =>
@@ -132,6 +161,20 @@ export default function App() {
     if (event.type === "play-state")
       setGameStatus(event.state === "paused" ? "Đã tạm dừng" : "Đang khám phá");
     if (event.type === "interaction-nearby") setNearby(event.interaction);
+    if (event.type === "checkpoint-reached" && session.data?.checkpointId === "office-entry" &&
+        !checkpoint.isPending) checkpoint.mutate();
+    if (event.type === "encounter-checkpoint-required")
+      setNotice("Hãy chạm mốc an toàn tại khu họp trước khi vào kho lưu trữ.");
+    if ((event.type === "encounter-detected" || event.type === "encounter-cleared") &&
+        session.data && !encounter.isPending && !encounterRetryRef.current) {
+      const request = { outcome: event.type === "encounter-detected" ? "detected" as const : "cleared" as const,
+        assistanceUsed: event.type === "encounter-cleared" && assistEnabled,
+        submissionId: crypto.randomUUID(), revision: session.data.revision };
+      encounterRetryRef.current = request;
+      setEncounterError(null);
+      if (request.outcome === "detected") setOverlay("retry");
+      encounter.mutate(request);
+    }
     if (event.type === "interaction-requested" && session.data && !interaction.isPending && !overlay) {
       setNotice(null);
       const pending = retryRef.current;
@@ -140,7 +183,7 @@ export default function App() {
       retryRef.current = request;
       interaction.mutate(request);
     }
-  }, [session.data, interaction, overlay]);
+  }, [session.data, interaction, overlay, checkpoint, encounter, assistEnabled]);
 
   useEffect(() => {
     if (!overlay) return;
@@ -175,6 +218,11 @@ export default function App() {
     answer.mutate(request);
   };
   const activeQuestion = questions.data?.find(item => item.id === selectedQuestionId);
+  const worldState = useMemo(() => session.data ? {
+    checkpointId: session.data.checkpointId,
+    encounterCleared: session.data.encounterCleared,
+    assistEnabled,
+  } : undefined, [session.data?.checkpointId, session.data?.encounterCleared, assistEnabled]);
 
   return (
     <main className="app-shell">
@@ -227,6 +275,7 @@ export default function App() {
               <kbd>Esc</kbd> Tạm dừng / tiếp tục
             </span>
             <span><kbd>E</kbd> Tương tác khi đứng gần điểm điều tra</span>
+            <span><kbd>Space</kbd> Né máy quét; có thời gian hồi</span>
           </div>
           <div className="session-panel" aria-live="polite">
             <h3>Lượt điều tra</h3>
@@ -261,19 +310,13 @@ export default function App() {
                   </strong>
                 </p>
                 <p>Phiên bản tiến độ: {session.data.revision}</p>
+                <p>Máy quét: {session.data.encounterCleared ? "Đã vượt" :
+                  `${session.data.encounterFailures} lần bị phát hiện`}</p>
+                {session.data.assistanceUsed && <p>Đã dùng chế độ hỗ trợ quét chậm.</p>}
                 <button type="button" onClick={openNotebook}>Mở sổ tay điều tra</button>
-                {session.data.checkpointId === "office-entry" && (
-                  <button
-                    type="button"
-                    disabled={checkpoint.isPending}
-                    onClick={() => checkpoint.mutate()}
-                  >
-                    {checkpoint.isPending ? "Đang lưu…" : "Lưu thử mốc khu họp"}
-                  </button>
-                )}
               </>
             )}
-            {(started.isError || checkpoint.isError) && (
+            {started.isError && (
               <p role="alert">
                 Không lưu được tiến độ. Hãy kiểm tra API hoặc tải lại trang rồi
                 thử lại.
@@ -295,14 +338,33 @@ export default function App() {
               <div className="game-loading">Đang dựng hiện trường…</div>
             }
           >
-            <GameCanvas onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []} overlayOpen={!!overlay} />
+            <GameCanvas onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
+              overlayOpen={!!overlay} worldState={worldState} />
           </Suspense>
         </div>
       </section>
 
       {overlay && <div className="investigation-backdrop">
-        <section ref={dialogRef} tabIndex={-1} className="investigation-dialog" role="dialog" aria-modal="true" aria-label={overlay === "notebook" ? "Sổ tay điều tra" : "Hội thoại"}>
+        <section ref={dialogRef} tabIndex={-1} className="investigation-dialog" role="dialog" aria-modal="true"
+          aria-label={overlay === "notebook" ? "Sổ tay điều tra" : overlay === "retry" ? "Kết quả máy quét" : "Hội thoại"}>
           <button className="close-dialog" type="button" onClick={() => setOverlay(null)}>Đóng (Esc)</button>
+          {overlay === "retry" && <>
+            <h2>{encounterRetryRef.current?.outcome === "cleared" ?
+              "Xác nhận vượt máy quét" : "Bị máy quét phát hiện"}</h2>
+            <p>{encounterRetryRef.current?.outcome === "cleared" ?
+              "Đang lưu kết quả vượt qua máy quét." :
+              "Bạn đã quay về mốc an toàn. Manh mối và câu trả lời đã lưu vẫn còn."}</p>
+            <p>Số lần bị phát hiện: {session.data?.encounterFailures ?? 0}</p>
+            {session.data && session.data.encounterFailures >= 2 && !assistEnabled &&
+              <button type="button" onClick={() => setAssistEnabled(true)}>Bật hỗ trợ: máy quét chậm hơn</button>}
+            {assistEnabled && <p>Hỗ trợ quét chậm đang bật; không ảnh hưởng điểm tiếng Anh.</p>}
+            {encounterError && <p role="alert">{encounterError}</p>}
+            {encounterError && encounterRetryRef.current &&
+              <button type="button" disabled={encounter.isPending}
+                onClick={() => encounter.mutate(encounterRetryRef.current!)}>Gửi lại kết quả</button>}
+            <button type="button" disabled={encounter.isPending || !!encounterError}
+              onClick={() => setOverlay(null)}>Thử lại</button>
+          </>}
           {overlay === "dialogue" && dialogue && <>
             <h2>{dialogue.title ?? "Đồng nghiệp"}</h2>
             {dialogue.dialogue?.map((line, index) => <p key={index}>{line}</p>)}

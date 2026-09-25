@@ -1,6 +1,7 @@
 namespace OfficeCaseFiles.Api.Domain;
 
-public sealed record WorldProgress(string MapId, string CheckpointId);
+public sealed record WorldProgress(string MapId, string CheckpointId,
+    bool EncounterCleared = false, int EncounterFailures = 0, bool AssistanceUsed = false);
 
 public sealed record PlaySession(
     Guid Id,

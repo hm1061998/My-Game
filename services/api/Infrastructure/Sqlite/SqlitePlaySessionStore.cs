@@ -21,6 +21,9 @@ public sealed class SqlitePlaySessionStore(GameDbContext db) : IPlaySessionStore
             ExpiresAtUtc = session.ExpiresAtUtc.UtcDateTime,
             MapId = session.World.MapId,
             CheckpointId = session.World.CheckpointId,
+            EncounterCleared = session.World.EncounterCleared,
+            EncounterFailures = session.World.EncounterFailures,
+            AssistanceUsed = session.World.AssistanceUsed,
         });
         await db.SaveChangesAsync(cancellationToken);
     }
@@ -168,10 +171,65 @@ public sealed class SqlitePlaySessionStore(GameDbContext db) : IPlaySessionStore
             progress.Attempts, isCorrect, progress.IsPassed, firstTryCorrect);
     }
 
+    public async Task<EncounterSaveResult> SaveEncounterAsync(
+        string tokenHash, int expectedRevision, Guid submissionId, string outcome,
+        bool assistanceUsed, DateTimeOffset now, CancellationToken cancellationToken)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var row = await db.Sessions.SingleOrDefaultAsync(item => item.TokenHash == tokenHash, cancellationToken);
+        if (row is null || row.ExpiresAtUtc <= now.UtcDateTime)
+            return new EncounterSaveResult(EncounterSaveStatus.NotFound, null);
+
+        var receipt = await db.EncounterReceipts.AsNoTracking().SingleOrDefaultAsync(
+            item => item.SessionId == row.Id && item.SubmissionId == submissionId, cancellationToken);
+        if (receipt is not null)
+        {
+            if (receipt.Outcome != outcome || receipt.AssistanceUsed != assistanceUsed ||
+                receipt.RequestedRevision != expectedRevision)
+                return new EncounterSaveResult(EncounterSaveStatus.Conflict, ToDomain(row));
+            var snapshot = ToDomain(row) with
+            {
+                Revision = receipt.RevisionAfter,
+                World = new WorldProgress(row.MapId, row.CheckpointId, receipt.ClearedAfter,
+                    receipt.FailuresAfter, receipt.AssistanceUsed),
+            };
+            return new EncounterSaveResult(EncounterSaveStatus.AlreadyApplied, snapshot);
+        }
+
+        if (row.Revision != expectedRevision)
+            return new EncounterSaveResult(EncounterSaveStatus.Conflict, ToDomain(row));
+        if (row.CheckpointId != SessionRules.MeetingCheckpoint ||
+            (assistanceUsed && row.EncounterFailures < 2))
+            return new EncounterSaveResult(EncounterSaveStatus.Invalid, ToDomain(row));
+        if (row.EncounterCleared)
+            return new EncounterSaveResult(EncounterSaveStatus.AlreadyCleared, ToDomain(row));
+
+        if (outcome == "detected") row.EncounterFailures++;
+        else
+        {
+            row.EncounterCleared = true;
+            row.AssistanceUsed = assistanceUsed;
+        }
+        row.Revision++;
+        row.UpdatedAtUtc = now.UtcDateTime;
+        row.ExpiresAtUtc = now.AddDays(30).UtcDateTime;
+        db.EncounterReceipts.Add(new EncounterReceiptRow
+        {
+            SessionId = row.Id, SubmissionId = submissionId, Outcome = outcome,
+            AssistanceUsed = assistanceUsed, RequestedRevision = expectedRevision,
+            RevisionAfter = row.Revision, FailuresAfter = row.EncounterFailures,
+            ClearedAfter = row.EncounterCleared,
+        });
+        await db.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return new EncounterSaveResult(EncounterSaveStatus.Saved, ToDomain(row));
+    }
+
     private static PlaySession ToDomain(SessionRow row) => new(
         row.Id, row.CaseId, row.CaseVersion, row.Status, row.Revision,
         new DateTimeOffset(row.CreatedAtUtc, TimeSpan.Zero),
         new DateTimeOffset(row.UpdatedAtUtc, TimeSpan.Zero),
         new DateTimeOffset(row.ExpiresAtUtc, TimeSpan.Zero),
-        new WorldProgress(row.MapId, row.CheckpointId));
+        new WorldProgress(row.MapId, row.CheckpointId, row.EncounterCleared,
+            row.EncounterFailures, row.AssistanceUsed));
 }

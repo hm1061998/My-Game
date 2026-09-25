@@ -5,6 +5,9 @@ export type SessionProgress = {
   revision: number;
   mapId: string;
   checkpointId: string;
+  encounterCleared: boolean;
+  encounterFailures: number;
+  assistanceUsed: boolean;
   expiresAtUtc: string;
 };
 
@@ -22,6 +25,9 @@ async function readProgress(response: Response): Promise<SessionProgress> {
     typeof session.revision !== "number" ||
     typeof session.mapId !== "string" ||
     typeof session.checkpointId !== "string" ||
+    typeof session.encounterCleared !== "boolean" ||
+    typeof session.encounterFailures !== "number" ||
+    typeof session.assistanceUsed !== "boolean" ||
     typeof session.expiresAtUtc !== "string"
   )
     throw new Error("Invalid session response");
@@ -54,5 +60,14 @@ export async function saveMeetingCheckpoint(
       body: JSON.stringify({ checkpointId: "meeting-zone", revision }),
     }),
   );
+}
+
+export async function recordEncounter(outcome: "detected" | "cleared", assistanceUsed: boolean,
+  submissionId: string, revision: number): Promise<SessionProgress> {
+  return readProgress(await fetch("/api/v1/session/encounter", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Office-Request": "1" },
+    body: JSON.stringify({ outcome, assistanceUsed, submissionId, revision }),
+  }));
 }
 

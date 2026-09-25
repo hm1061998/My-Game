@@ -7,8 +7,8 @@ public static class QuestionRules
 
     public static bool IsEvidenceAvailable(
         EvidenceDefinition evidence, IReadOnlySet<string> collectedEvidence,
-        IReadOnlySet<string> passedQuestions) =>
-        !evidence.RequiresEncounter &&
+        IReadOnlySet<string> passedQuestions, bool encounterCleared) =>
+        (!evidence.RequiresEncounter || encounterCleared) &&
         evidence.SourceEvidenceIds.All(collectedEvidence.Contains) &&
         evidence.RequiredCorrectQuestionIds.All(passedQuestions.Contains);
 }

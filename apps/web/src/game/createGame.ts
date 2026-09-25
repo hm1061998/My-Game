@@ -16,5 +16,7 @@ export const createGame: GameFactory = (parent, emit) => {
     destroy: (removeCanvas) => game.destroy(removeCanvas),
     setInteractions: (interactions) => scene.setInteractions(interactions),
     setOverlayPaused: (paused) => scene.setOverlayPaused(paused),
+    setWorldState: (state) => scene.setWorldState(state.checkpointId,
+      state.encounterCleared, state.assistEnabled),
   }
 }

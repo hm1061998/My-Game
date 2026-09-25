@@ -56,6 +56,26 @@ public static class SessionEndpoints
             };
         }).WithName("SaveCheckpoint").Produces<SessionResponse>().ProducesProblem(400)
             .ProducesProblem(401).ProducesProblem(409);
+
+        app.MapPost("/api/v1/session/encounter", async (
+            EncounterRequest request, SessionService service, HttpContext http,
+            CancellationToken cancellationToken) =>
+        {
+            if (!http.Request.Cookies.TryGetValue(CookieName, out var token) || string.IsNullOrEmpty(token))
+                return Error(http, 401, "session_missing", "Start a new session to continue.");
+            var result = await service.SaveEncounterAsync(token, request.Revision,
+                request.SubmissionId, request.Outcome, request.AssistanceUsed, cancellationToken);
+            return result.Status switch
+            {
+                EncounterSaveStatus.Saved or EncounterSaveStatus.AlreadyApplied =>
+                    Results.Ok(SessionResponse.From(result.Session!)),
+                EncounterSaveStatus.Invalid => Error(http, 400, "invalid_encounter", "Checkpoint or assistance requirements are not met."),
+                EncounterSaveStatus.NotFound => Error(http, 401, "session_expired", "This session is unavailable or expired."),
+                EncounterSaveStatus.AlreadyCleared => Error(http, 409, "encounter_cleared", "This encounter is already complete."),
+                _ => Error(http, 409, "revision_conflict", "Reload progress before retrying."),
+            };
+        }).WithName("SaveEncounter").Produces<SessionResponse>().ProducesProblem(400)
+            .ProducesProblem(401).ProducesProblem(409);
     }
 
     private static IResult Error(HttpContext http, int status, string code, string title) =>

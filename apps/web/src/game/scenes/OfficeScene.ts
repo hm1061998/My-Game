@@ -1,6 +1,8 @@
 import Phaser from 'phaser'
 import type { GameLifecycleEvent, WorldInteraction } from '../bridge/events'
 import { moveWithCollision, movementDelta, type Point, type Rect } from '../movement'
+import { advancePatrol, CHECKPOINT, DODGE_COOLDOWN_MS, DODGE_DURATION_MS,
+  reachedCheckpoint, SCANNER_MIN_X, SCANNER_RADIUS, SCANNER_Y, scannerDetects } from '../encounter'
 
 const WORLD_WIDTH = 1600
 const WORLD_HEIGHT = 1000
@@ -35,6 +37,21 @@ export class OfficeScene extends Phaser.Scene {
   private interactions: WorldInteraction[] = []
   private markers: Phaser.GameObjects.Container[] = []
   private nearestId: string | null = null
+  private checkpointId = 'office-entry'
+  private encounterCleared = false
+  private assistEnabled = false
+  private worldInitialized = false
+  private checkpointSignalCooldown = 0
+  private scannerX = SCANNER_MIN_X
+  private scannerDirection: -1 | 1 = 1
+  private scanner?: Phaser.GameObjects.Container
+  private checkpointMarker?: Phaser.GameObjects.Container
+  private dodgeLabel?: Phaser.GameObjects.Text
+  private dodgeRemainingMs = 0
+  private dodgeCooldownMs = 0
+  private detectionGraceMs = 0
+  private lastMoveDirection: Point = { x: 1, y: 0 }
+  private dodgeDirection: Point = { x: 1, y: 0 }
 
   constructor(emit: (event: GameLifecycleEvent) => void) {
     super('office')
@@ -47,6 +64,7 @@ export class OfficeScene extends Phaser.Scene {
     this.drawOffice()
     this.drawFurniture()
     this.createPlayer()
+    this.drawEncounter()
     this.renderInteractions()
 
     const keyboard = this.input.keyboard
@@ -58,11 +76,16 @@ export class OfficeScene extends Phaser.Scene {
     }, true) as MovementKeys
     keyboard.on('keydown-ESC', this.togglePause)
     keyboard.on('keydown-E', this.tryInteract)
+    keyboard.on('keydown-SPACE', this.tryDodge)
 
     this.pauseLabel = this.add.text(22, 58, 'TẠM DỪNG  ·  ESC để tiếp tục', {
       color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
       fontSize: '18px', fontStyle: 'bold', padding: { x: 14, y: 10 },
     }).setScrollFactor(0).setDepth(10000).setVisible(false)
+    this.dodgeLabel = this.add.text(22, 15, 'SPACE · Né sẵn sàng', {
+      color: '#17333d', backgroundColor: '#fff8e9', fontFamily: 'system-ui, sans-serif',
+      fontSize: '15px', padding: { x: 10, y: 7 },
+    }).setScrollFactor(0).setDepth(10000)
 
     this.cameras.main.startFollow(this.player!, true, 0.12, 0.12)
     this.cameras.main.setDeadzone(80, 60)
@@ -75,6 +98,7 @@ export class OfficeScene extends Phaser.Scene {
       document.removeEventListener('visibilitychange', this.onVisibilityChange)
       keyboard.off('keydown-ESC', this.togglePause)
       keyboard.off('keydown-E', this.tryInteract)
+      keyboard.off('keydown-SPACE', this.tryDodge)
       keyboard.resetKeys()
     })
   }
@@ -85,15 +109,64 @@ export class OfficeScene extends Phaser.Scene {
 
     if (this.paused || this.overlayPaused) return
 
+    this.dodgeRemainingMs = Math.max(0, this.dodgeRemainingMs - delta)
+    this.dodgeCooldownMs = Math.max(0, this.dodgeCooldownMs - delta)
+    this.detectionGraceMs = Math.max(0, this.detectionGraceMs - delta)
+    this.checkpointSignalCooldown = Math.max(0, this.checkpointSignalCooldown - delta)
+    this.dodgeLabel?.setText(this.dodgeRemainingMs > 0 ? 'SPACE · Đang né' :
+      this.dodgeCooldownMs > 0 ? `SPACE · Hồi ${Math.ceil(this.dodgeCooldownMs / 1000)}s` : 'SPACE · Né sẵn sàng')
+
     const input = {
       x: Number(keys.d.isDown || keys.right.isDown) - Number(keys.a.isDown || keys.left.isDown),
       y: Number(keys.s.isDown || keys.down.isDown) - Number(keys.w.isDown || keys.up.isDown),
     }
-    const movement = movementDelta(input, delta, keys.shift.isDown)
+    const movement = this.dodgeRemainingMs > 0
+      ? { x: this.dodgeDirection.x * 510 * Math.min(delta, 50) / 1000,
+          y: this.dodgeDirection.y * 510 * Math.min(delta, 50) / 1000 }
+      : movementDelta(input, delta, keys.shift.isDown)
+    if (this.dodgeRemainingMs === 0 && (input.x !== 0 || input.y !== 0)) {
+      const length = Math.hypot(input.x, input.y)
+      this.lastMoveDirection = { x: input.x / length, y: input.y / length }
+    }
     this.position = moveWithCollision(this.position, movement, FLOOR, OBSTACLES)
     this.player?.setPosition(this.position.x, this.position.y).setDepth(this.position.y)
     this.shadow?.setPosition(this.position.x, this.position.y + 1).setDepth(this.position.y - 1)
     this.updateNearby()
+
+    if (this.checkpointId === 'office-entry' && reachedCheckpoint(this.position) &&
+        this.checkpointSignalCooldown === 0) {
+      this.checkpointSignalCooldown = 2000
+      this.emit({ type: 'checkpoint-reached' })
+    }
+    if (this.checkpointId === 'meeting-zone' && !this.encounterCleared) {
+      const patrol = advancePatrol(this.scannerX, this.scannerDirection, delta, this.assistEnabled)
+      this.scannerX = patrol.x
+      this.scannerDirection = patrol.direction
+      this.scanner?.setPosition(this.scannerX, SCANNER_Y)
+      if (this.detectionGraceMs === 0 && scannerDetects(this.position,
+          this.scannerX, this.dodgeRemainingMs > 0)) {
+        this.detectionGraceMs = 1800
+        this.position = { ...CHECKPOINT }
+        this.player?.setPosition(this.position.x, this.position.y).setDepth(this.position.y)
+        this.shadow?.setPosition(this.position.x, this.position.y + 1).setDepth(this.position.y - 1)
+        this.updateNearby()
+        this.emit({ type: 'encounter-detected' })
+      }
+    }
+  }
+
+  setWorldState(checkpointId: string, encounterCleared: boolean, assistEnabled: boolean) {
+    if (!this.worldInitialized && checkpointId === 'meeting-zone') {
+      this.position = { ...CHECKPOINT }
+      this.player?.setPosition(this.position.x, this.position.y).setDepth(this.position.y)
+      this.shadow?.setPosition(this.position.x, this.position.y + 1).setDepth(this.position.y - 1)
+    }
+    this.worldInitialized = true
+    this.checkpointId = checkpointId
+    this.encounterCleared = encounterCleared
+    this.assistEnabled = assistEnabled
+    this.checkpointMarker?.setVisible(checkpointId === 'office-entry')
+    this.scanner?.setVisible(checkpointId === 'meeting-zone' && !encounterCleared)
   }
 
   setInteractions(interactions: WorldInteraction[]) {
@@ -136,7 +209,41 @@ export class OfficeScene extends Phaser.Scene {
 
   private readonly tryInteract = (event: KeyboardEvent) => {
     if (event.repeat || this.paused || this.overlayPaused || !this.nearestId) return
+    if (this.nearestId === 'archive-terminal' && !this.encounterCleared) {
+      this.emit({ type: this.checkpointId === 'meeting-zone' ?
+        'encounter-cleared' : 'encounter-checkpoint-required' })
+      return
+    }
     this.emit({ type: 'interaction-requested', interactionId: this.nearestId })
+  }
+
+  private readonly tryDodge = (event: KeyboardEvent) => {
+    if (event.repeat || this.paused || this.overlayPaused || this.dodgeCooldownMs > 0) return
+    this.dodgeDirection = this.lastMoveDirection
+    this.dodgeRemainingMs = DODGE_DURATION_MS
+    this.dodgeCooldownMs = DODGE_COOLDOWN_MS
+    this.input.keyboard?.resetKeys()
+  }
+
+  private drawEncounter() {
+    this.checkpointMarker = this.add.container(CHECKPOINT.x, CHECKPOINT.y).setDepth(CHECKPOINT.y - 2)
+    this.checkpointMarker.add([
+      this.add.ellipse(0, 0, 112, 55, 0x4dbb91, 0.33).setStrokeStyle(2, 0x23866b),
+      this.add.text(0, -45, 'MỐC AN TOÀN', { color: '#17333d', backgroundColor: '#e5fff2',
+        fontFamily: 'system-ui, sans-serif', fontSize: '15px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
+    ])
+    this.checkpointMarker.setVisible(this.checkpointId === 'office-entry')
+    this.add.rectangle(1360, SCANNER_Y, 330, 180, 0xf4c682, 0.12)
+      .setStrokeStyle(2, 0xb67e45, 0.65).setDepth(SCANNER_Y - 5)
+    this.scanner = this.add.container(this.scannerX, SCANNER_Y).setDepth(SCANNER_Y)
+    this.scanner.add([
+      this.add.circle(0, 0, SCANNER_RADIUS, 0xf08a65, 0.19).setStrokeStyle(3, 0xd65d4c, 0.7),
+      this.add.circle(0, -26, 21, 0x355f75).setStrokeStyle(4, 0xe9d4a5),
+      this.add.circle(0, -26, 8, 0xf7d07b),
+      this.add.text(0, -61, 'MÁY QUÉT', { color: '#6f2b22', backgroundColor: '#fff1db',
+        fontFamily: 'system-ui, sans-serif', fontSize: '14px', padding: { x: 5, y: 3 } }).setOrigin(0.5),
+    ])
+    this.scanner.setVisible(this.checkpointId === 'meeting-zone' && !this.encounterCleared)
   }
 
   private readonly pauseForFocusLoss = () => {

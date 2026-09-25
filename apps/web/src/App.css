@@ -231,6 +231,8 @@ kbd {
 .investigation-dialog p { line-height: 1.65; }
 .investigation-dialog .muted { color: #596b70; }
 .close-dialog { float: right; padding: 8px 12px; border: 1px solid #8d7258; border-radius: 6px; background: #fffaf0; color: #263842; cursor: pointer; }
+.investigation-dialog > button:not(.close-dialog) { margin: 8px 8px 0 0; padding: 9px 12px; border: 1px solid #8d7258; border-radius: 6px; background: #f5d9bd; color: #263842; cursor: pointer; }
+.investigation-dialog > button:disabled { opacity: .55; cursor: wait; }
 .notebook-layout { display: grid; grid-template-columns: minmax(180px, 230px) 1fr; gap: 24px; }
 .notebook-layout nav { display: flex; flex-direction: column; gap: 8px; }
 .notebook-layout nav button { padding: 9px; border: 1px solid #b8ad99; border-radius: 6px; background: #fffaf0; color: #263842; text-align: left; cursor: pointer; }

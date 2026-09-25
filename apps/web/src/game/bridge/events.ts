@@ -4,6 +4,10 @@ export type GameLifecycleEvent =
   | { type: 'play-state'; state: 'playing' | 'paused' }
   | { type: 'interaction-nearby'; interaction: WorldInteraction | null }
   | { type: 'interaction-requested'; interactionId: string }
+  | { type: 'checkpoint-reached' }
+  | { type: 'encounter-detected' }
+  | { type: 'encounter-cleared' }
+  | { type: 'encounter-checkpoint-required' }
 
 export type WorldInteraction = {
   id: string

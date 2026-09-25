@@ -9,6 +9,7 @@ public sealed class GameDbContext(DbContextOptions<GameDbContext> options) : DbC
     public DbSet<InteractionReceiptRow> InteractionReceipts => Set<InteractionReceiptRow>();
     public DbSet<QuestionProgressRow> Questions => Set<QuestionProgressRow>();
     public DbSet<AnswerReceiptRow> AnswerReceipts => Set<AnswerReceiptRow>();
+    public DbSet<EncounterReceiptRow> EncounterReceipts => Set<EncounterReceiptRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -49,7 +50,25 @@ public sealed class GameDbContext(DbContextOptions<GameDbContext> options) : DbC
         answers.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId).OnDelete(DeleteBehavior.Cascade);
         answers.Property(row => row.QuestionId).HasMaxLength(80);
         answers.Property(row => row.ChoiceId).HasMaxLength(80);
+
+        var encounterReceipts = modelBuilder.Entity<EncounterReceiptRow>();
+        encounterReceipts.ToTable("EncounterReceipts");
+        encounterReceipts.HasKey(row => new { row.SessionId, row.SubmissionId });
+        encounterReceipts.HasOne<SessionRow>().WithMany().HasForeignKey(row => row.SessionId).OnDelete(DeleteBehavior.Cascade);
+        encounterReceipts.Property(row => row.Outcome).HasMaxLength(20);
     }
+}
+
+public sealed class EncounterReceiptRow
+{
+    public Guid SessionId { get; set; }
+    public Guid SubmissionId { get; set; }
+    public string Outcome { get; set; } = string.Empty;
+    public bool AssistanceUsed { get; set; }
+    public int RequestedRevision { get; set; }
+    public int RevisionAfter { get; set; }
+    public int FailuresAfter { get; set; }
+    public bool ClearedAfter { get; set; }
 }
 
 public sealed class QuestionProgressRow
@@ -108,4 +127,7 @@ public sealed class SessionRow
     public DateTime ExpiresAtUtc { get; set; }
     public string MapId { get; set; } = string.Empty;
     public string CheckpointId { get; set; } = string.Empty;
+    public bool EncounterCleared { get; set; }
+    public int EncounterFailures { get; set; }
+    public bool AssistanceUsed { get; set; }
 }

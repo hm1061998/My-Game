@@ -47,7 +47,8 @@ public sealed class InteractionService(
             return new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc?.Name, npc?.Dialogue);
 
         var evidence = definition.Evidence.Single(item => item.Id == evidenceId);
-        var unlocked = QuestionRules.IsEvidenceAvailable(evidence, collected, passed);
+        var unlocked = QuestionRules.IsEvidenceAvailable(evidence, collected, passed,
+            session.World.EncounterCleared);
         if (!unlocked)
             return npc is not null
                 ? new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc.Name, npc.Dialogue,

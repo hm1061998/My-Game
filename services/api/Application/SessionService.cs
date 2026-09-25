@@ -33,4 +33,14 @@ public sealed class SessionService(IPlaySessionStore store, ICaseCatalog catalog
         return await store.SaveCheckpointAsync(
             SessionToken.Hash(token), expectedRevision, checkpointId, clock.GetUtcNow(), cancellationToken);
     }
+
+    public Task<EncounterSaveResult> SaveEncounterAsync(string token, int expectedRevision,
+        Guid submissionId, string outcome, bool assistanceUsed, CancellationToken cancellationToken)
+    {
+        if (expectedRevision < 0 || submissionId == Guid.Empty ||
+            outcome is not ("detected" or "cleared") || (outcome == "detected" && assistanceUsed))
+            return Task.FromResult(new EncounterSaveResult(EncounterSaveStatus.Invalid, null));
+        return store.SaveEncounterAsync(SessionToken.Hash(token), expectedRevision, submissionId,
+            outcome, assistanceUsed, clock.GetUtcNow(), cancellationToken);
+    }
 }

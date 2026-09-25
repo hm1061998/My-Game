@@ -6,7 +6,7 @@ import type { GameFactory } from './runtime'
 describe('GameHost', () => {
   it('creates and destroys one game instance per mount', () => {
     const destroy = vi.fn()
-    const factory: GameFactory = vi.fn(() => ({ destroy, setInteractions: vi.fn(), setOverlayPaused: vi.fn() }))
+    const factory: GameFactory = vi.fn(() => ({ destroy, setInteractions: vi.fn(), setOverlayPaused: vi.fn(), setWorldState: vi.fn() }))
     const lifecycle = vi.fn()
     const view = render(<GameHost factory={factory} onLifecycle={lifecycle} />)
     expect(factory).toHaveBeenCalledOnce()
@@ -20,7 +20,7 @@ describe('GameHost', () => {
   it('forwards game play-state changes to the DOM owner', () => {
     const factory: GameFactory = (_parent, emit) => {
       emit({ type: 'play-state', state: 'paused' })
-      return { destroy: vi.fn(), setInteractions: vi.fn(), setOverlayPaused: vi.fn() }
+      return { destroy: vi.fn(), setInteractions: vi.fn(), setOverlayPaused: vi.fn(), setWorldState: vi.fn() }
     }
     const lifecycle = vi.fn()
     const view = render(<GameHost factory={factory} onLifecycle={lifecycle} />)
@@ -31,14 +31,17 @@ describe('GameHost', () => {
   it('forwards map changes and overlay pause without remounting the game', () => {
     const setInteractions = vi.fn()
     const setOverlayPaused = vi.fn()
-    const factory: GameFactory = vi.fn(() => ({ destroy: vi.fn(), setInteractions, setOverlayPaused }))
+    const setWorldState = vi.fn()
+    const factory: GameFactory = vi.fn(() => ({ destroy: vi.fn(), setInteractions, setOverlayPaused, setWorldState }))
     const view = render(<GameHost factory={factory} />)
     const interactions = [{ id: 'desk-email', kind: 'evidence' as const,
       labelVi: 'Email trên bàn', x: 455, y: 535, radius: 75 }]
-    view.rerender(<GameHost factory={factory} interactions={interactions} overlayOpen />)
+    view.rerender(<GameHost factory={factory} interactions={interactions} overlayOpen
+      worldState={{ checkpointId: 'office-entry', encounterCleared: false, assistEnabled: false }} />)
     expect(factory).toHaveBeenCalledOnce()
     expect(setInteractions).toHaveBeenLastCalledWith(interactions)
     expect(setOverlayPaused).toHaveBeenLastCalledWith(true)
+    expect(setWorldState).toHaveBeenCalledWith({ checkpointId: 'office-entry', encounterCleared: false, assistEnabled: false })
     view.unmount()
   })
 })
