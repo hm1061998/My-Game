@@ -147,7 +147,7 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: resume queued T11 handoff verification (or a new user-directed task).
+Next action: none (T27 closed). Project next step is tracked in `docs/memory/current.md`.
 
 ## V5 evidence (2026-09-25)
 

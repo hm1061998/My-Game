@@ -91,5 +91,5 @@ Next action: draft the T12 plan from `TEMPLATE.md` and ask for approval.
 - Result: promoted (L008), verified (L002, L010)
 - Observation/evidence: stale memory accumulated because each task appended history instead of replacing state; a status sed in T27 silently failed and left the index wrong, which only the blind probe caught.
 - Mechanism changed or no-change reason: memory now states "current state only" at the top; L008 preflight encoded in memory and README. No new script: the probe is judgment-based and cheap to rerun with a subagent.
-- Validation: two blind probes graded against the answer key; `scripts/check-agent-docs.ps1` and `git diff --check` pass; clean-state re-probe after commit.
+- Validation: two blind probes graded against the answer key; `scripts/check-agent-docs.ps1` and `git diff --check` pass; clean-state re-probe after commit found one stale line (T27 "Next action: resume queued T11"), fixed; no other mismatch.
 - Follow-up trigger: rerun a blind probe at the end of T12 and before `code_complete`; if a status edit silently fails again, add an index-vs-task status consistency check to `check-agent-docs.ps1`.
