@@ -1,12 +1,12 @@
 # T27 — Game-first visual and interface upgrade
 
-Status: awaiting_approval
+Status: approved
 Owner: Codex
 Depends on: T10
 Plan version: 1.0
-Approval: pending user approval of the design process, art-source choice and implementation scope
+Approval: approved by user 2026-09-25 — option (b): full V0→V5 sequence with the mandatory V0 visual checkpoint; art direction and asset-source choice remain pending at V0 exit gate
 Lifecycle phase: define/design
-Workflow step: current-product audit complete; plan awaiting approval; no runtime code or distributable art changed
+Workflow step: plan 1.0 approved; next is V0 direction boards (no runtime code or distributable art changed yet)
 
 ## Outcome and success signal
 
@@ -141,7 +141,7 @@ Rough single-developer/AI-assisted effort after direction approval: V0 0.5–1 d
 
 Planning audit only on clean baseline `6af49c0`. The preview used visible Chrome after the Codex browser kernel reset; no product code, package, runtime asset, developer database or accepted product decision changed. T11 remains queued while the user considers this visual/UI detour.
 
-Next action: user reviews plan 1.0 and either (a) approves V0 only so three direction boards can be prepared, (b) approves the recommended full sequence with a required V0 visual checkpoint, or (c) narrows the plan to the 2–3 day V1/high-impact-V2 slice.
+Next action: prepare three V0 direction boards and show them in a visible browser for the user to pick one direction and an asset-source method.
 
 ## Improvement review
 

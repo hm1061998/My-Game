@@ -2,7 +2,7 @@
 
 Updated: 2026-09-25
 Baseline: `6af49c0` on `main`
-Dirty workspace: T27 visual/UI planning documentation only; no runtime code or asset change.
+Dirty workspace: none after T27 approval commit.
 
 ## Confirmed scope
 
@@ -20,7 +20,7 @@ The detailed identity provider configuration, retention durations, production em
 
 ## Active task
 
-T27 game-first visual/UI upgrade plan 1.0 is awaiting approval after a user-requested audit. T10 browser/E2E/playtest is complete; T01–T10, T13 and T14 are complete. T11 handoff verification remains queued behind this explicit visual-planning detour. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+T27 game-first visual/UI upgrade plan 1.0 was approved by the user on 2026-09-25 (full V0–V5 sequence with mandatory V0 visual checkpoint). T10 browser/E2E/playtest is complete; T01–T10, T13 and T14 are complete. T11 handoff verification remains queued behind this explicit visual-planning detour. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
 
 ## Workflow checkpoint and approval
 
@@ -85,7 +85,7 @@ TypeScript type generation from OpenAPI remains open. Vite still warns about the
 
 ## Next action
 
-User reviews `docs/tasks/T27-visual-ui-upgrade.md` and chooses V0-only direction exploration, the full recommended V0–V5 sequence with a visual checkpoint, or the smaller V1/high-impact-V2 slice. Until approval, do not generate/bundle art or modify runtime UI. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
+Prepare the three T27 V0 direction boards and show them in a visible browser; the user must pick one direction and an asset-source method (original AI-assisted or licensed pack) before any runtime asset is bundled. T11 remains queued; keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
 
 ## Relevant references
 
