@@ -1,107 +1,55 @@
 # Current context
 
 Updated: 2026-09-25
-Baseline: `6af49c0` on `main`
-Dirty workspace: none after T27 approval commit.
+Baseline: `main` at the T11 completion commit (see `git log -1`); previous `87bfb7f` (T27 V5)
+Dirty workspace: none expected after T11. Never commit `office-case-files.db`, `.tools/`, `test-results/` or `playwright-report/`.
 
-## Confirmed scope
+This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
 
-Browser-based 2.5D action detective RPG for A2-B1 English learning, office setting, React client, .NET backend, one developer, AI-friendly repository, extensible storage, and Docker/GitHub after code completion.
+## Product and accepted defaults
 
-## Accepted defaults for current implementation
+Browser-based 2.5D action detective RPG teaching A2–B1 English in an office setting. React owns application UI, Phaser owns frame-level gameplay, ASP.NET Core owns trusted progression and scoring (PROJECT_PLAN.md 1.4).
 
-User approved PROJECT_PLAN.md 1.4: Phaser sprite-based 2.5D, desktop keyboard controls, stealth/dodge action, bright stylized office, Vietnamese navigation with English case content, SQLite behind application storage ports, and a staged whole-system administration portal. Server JSON remains the bootstrap/transitional case source; the approved admin design adds mutable drafts and immutable published snapshots behind application ports. Record a new decision before materially changing a default.
+Accepted defaults: Phaser sprite-based 2.5D, desktop keyboard controls, stealth/dodge action, bright stylized office, Vietnamese navigation with English case content, SQLite behind storage ports, server-side JSON case content. Visual direction A "editorial detective" with original AI-assisted SVG art authored in-repo (T27). Record a decision before materially changing a default.
 
-## Proposed decisions still open
+Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adapter timing, OpenAPI → TypeScript codegen (two generators rejected: TypeScript 6 incompatibility / npm audit advisories; runtime response validation used instead), and the admin-portal production choices that T16 must record.
 
-Case story details, final art source/style, public hosting, GitHub owner/repository visibility, image publishing, and whether a PostgreSQL adapter is included in the first delivery.
+## Task state
 
-The detailed identity provider configuration, retention durations, production email/reset delivery, hosting and external analytics/provider choices remain open inside the approved admin boundaries. T16 must record these decisions or explicitly defer production-only choices before dependent implementation.
+- Done: T01–T11, T13, T14, T27.
+- Next: **T12 storage round-trip / local runbook** (depends on T10, T11). No plan file or approval exists yet: draft `docs/tasks/T12-*.md` from `TEMPLATE.md` and get user approval before any code.
+- Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
+- After T12 and the BUFFER task: record `code_complete`. Docker/GitHub configuration starts only after that gate.
 
-## Active task
+## Standing approvals and boundaries
 
-T27 game-first visual/UI upgrade is complete (approved 2026-09-25; direction A editorial detective; original AI-assisted SVG art authored in-repo). T01–T10, T13, T14 and T27 are complete. T11 handoff verification is queued next. T15 admin plan 1.0 and detailed tasks T16–T26 are approved but implementation is explicitly deferred; preserve their files and boundaries.
+- Every task: plan → user approval (recorded in the task) → code → quick checks → visible browser preview/test → fix/retest → final browser confirmation → scripts → improvement review → task then memory update.
+- Browser checks must be visible to the user; never headless or a hidden tab.
+- After each completed work session: commit only scoped verified changes and push the current branch to the configured `origin` (user standing instruction). Stop and report if branch/remote/auth is ambiguous.
+- Never deploy, publish images, change repository visibility, create accounts or use secrets.
 
-## Workflow checkpoint and approval
+## Verification commands (this machine)
 
-The user approved T08 plan 1.0 and its case-v1 truth on 2026-09-25 with “ok tôi duyệt”. Coding, local migration, tests and visible-browser verification are authorized within that scope. User requires all future browser previews/tests to show the browser window; no headless or hidden-tab runs. No deployment or external publishing is authorized.
+- Web: `npm --prefix apps/web run lint`, `typecheck`, `test:run`, `build`, `e2e:list`.
+- Headed E2E: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/e2e.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe` (`npm run e2e` needs `pwsh`, which is not installed). 4 tests: critical journey + 3 visual-state checks.
+- Full: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`; agent docs: `scripts/check-agent-docs.ps1`.
+- Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
+- Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
 
-T09 plan 1.0 was drafted after the user's 2026-09-25 instruction to continue and to try previewing in Codex's browser. That instruction authorizes planning, not unreviewed art/HUD implementation. T09 coding awaits approval of `docs/tasks/T09-art-hud-focus.md`. The visible Codex in-app browser was attempted twice during planning, but its trusted Node kernel reset immediately; implementation must retry it first and use a visible Chrome fallback only if the tool remains unavailable.
+## Verified product state (latest)
 
-The user approved T09 implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”. Frontend-only implementation and visible browser verification are authorized within that recorded scope; audio, external raster assets, backend/storage changes and deployment remain excluded.
+- Full case playable end to end: movement/collision/depth, six clues, three NPCs, Q01–Q03 with unlocks, meeting checkpoint, scanner dodge/retry/assist, immutable conclusion with separate reading/investigation scores, five review items, reload persistence, replay. Private answers stay server-side.
+- T27: game-first shell (canvas 958×651 at 1280×800, no page scroll), shared tokens (`apps/web/src/theme/tokens.ts`), status badges not relying on color, 17 office + 8 character SVGs via `scripts/art/*.py`, validated asset loading with code-drawn fallback, four-direction character sprites, investigative UI surfaces. QA: `docs/quality/T27-visual-qa.md`.
+- Last full gates (T27 V5): `verify.ps1` pass (30 web tests, 9 API tests), headed E2E 4/4, ~60 fps, p95 17 ms.
 
-The user's 2026-09-25 instruction “làm bước tiếp theo” authorizes drafting T10 plan 1.0, not installing Playwright or implementing the unreviewed suite. T10 proposes headed Chromium, a temporary isolated SQLite database, dedicated local ports, a full critical journey, manual visible playtest and an environment-qualified performance sample. Coding awaits approval of `docs/tasks/T10-browser-e2e-playtest.md`.
+## Known issues
 
-The user approved T10 implementation plan 1.0 on 2026-09-25 with “duyệt kế hoạch”. The scoped Playwright dependency/browser, isolated local runner, headed E2E journey, manual playtest, performance sample and defect fixes within existing MVP behavior are authorized. New gameplay/contracts/schema, admin implementation, Docker/CI, deployment and publishing remain excluded.
-
-T27 approvals on 2026-09-25 covered plan 1.0 (full V0–V5), direction A with original AI-assisted assets, and each increment start (V1–V5). All runtime art lives in `apps/web/public/assets/**`, is generated by `scripts/art/*.py` and is listed in `docs/assets/manifest.md`.
-
-The user's 2026-09-25 instruction authorizes a standing delivery step for this repository: after each completed work session, commit the scoped verified changes and push the current branch to the already-configured `origin`. This does not authorize unrelated changes, secrets, deployment, image publishing, repository visibility changes or guessing an ambiguous remote/branch.
-
-Admin plan 1.0 was approved by the user's 2026-09-25 instruction “duyệt plan, hãy lập task chi tiết vào tài liệu, chưa tiến hành code”. PROJECT_PLAN.md 1.4 and T16–T26 may be documented now; no admin code, dependency, migration, account, secret or external service is authorized in this turn.
-
-## Verified state
-
-- T03 office movement/collision/depth/camera/pause remains the gameplay baseline. React still owns UI and server state; Phaser owns frame-level play.
-- T04 added `IPlaySessionStore`, domain checkpoint rules, EF Core SQLite adapter, explicit versioned migration, and anonymous session/checkpoint endpoints. Raw token stays in an HttpOnly/SameSite cookie; database stores only its SHA-256 hash. API responses and OpenAPI omit token/hash.
-- Browser start → save meeting checkpoint → reload resumed revision 1 at 1280px and 1100px. Isolated SQLite/API tests cover stale revision, parallel duplicates, cross-site rejection, expiry and resume through a new API host. An unsupported storage provider fails startup clearly.
-- The meeting checkpoint button is a prototype UI action, not a real proximity-triggered Phaser event. No full case content, question progression or scoring exists yet.
-- npm is the only JS package manager. SDK 10.0.401 remains available in ignored `.tools/dotnet`; the developer should follow README to set up a normal shell. SQLite database `office-case-files.db` is ignored and must not be deleted casually.
-- OpenAPI is available in Development. Automatic TypeScript codegen remains open: the two generators tried were incompatible with TypeScript 6 or brought npm audit advisories, so neither was retained. The frontend validates its session response at runtime for now.
-- L004 is a verified provider-specific lesson: SQLite expiry predicates use UTC `DateTime` fields in Infrastructure because EF Core SQLite cannot compare `DateTimeOffset` in SQL.
-- T05 added versioned server-only JSON case content with six clues, three NPCs, glossary and private future questions/solution; startup validation checks integrity. Public case/map DTOs do not include private answers.
-- Phaser proximity and `E` interaction events feed React dialogue/notebook overlays. SQLite persists collected evidence and idempotent interaction receipts behind the store port. E01/E02/E04 are collectible; E03 awaits T07, E05/E06 await T06.
-- Browser testing found and fixed the scene pre-create input race and overlay Escape double-handling. The meeting checkpoint button remains a separate prototype action.
-- T06 added question prerequisites, safe GET/list/answer APIs, SQLite question progress and answer receipts, React notebook answer controls, retry feedback and post-pass explanation. First choice and attempt count persist; same submission ID/payload is idempotent. Q01 pass enables E05; Q02 alone does not enable E06; Q03 waits for T07's E03.
-- L005 is verified by T05 failure/fix and T06 visible Chrome Escape→canvas focus→movement path. No broader rule or skill was added.
-- T07 replaces the prototype checkpoint button with a physical meeting marker, adds a Phaser scanner patrol/dodge/retry loop and a two-failure slow-assist option, and persists encounter failures/clear/assist plus idempotent receipts atomically in SQLite. Completion makes E03 collectible; collecting it exposes Q03 without leaking the correct choice.
-- Visible Chrome covered checkpoint revision 1, two detections, assist, clear, E03/Q03 and reload at 1100×720. Browser verification found and fixed StrictMode duplicate canvases and unused Phaser audio-context exceptions; final reload had one canvas and no console/network issues. L006 records this as a candidate lifecycle lesson.
-- T08 adds server-owned readiness and 0/33/67/100 first-try reading scoring, independent investigation scoring, one immutable/idempotent conclusion, post-submit explanation, five retryable review items and SQLite persistence. Pre-disclosure endpoints omit solution sets, correct review choices and explanations.
-- React now owns conclusion/confirmation/result/review/replay overlays. Visible Chrome produced 100/100 for Nora + misunderstanding + E03/E06, completed one wrong-then-correct review and all 5 items, persisted through reload at 1100×720, and retained one canvas without runtime errors.
-- Replay browser testing found the old Phaser position could instantly save the meeting checkpoint in a new session. Remounting `GameCanvas` when a session is created restored revision 0 at `office-entry`; L006 is now verified across T07 and T08.
-- T09 centralizes code-authored Phaser presentation tokens/variants, adds distinct character and evidence visuals plus movement/dodge pose feedback, and layers a semantic objective/checkpoint/scanner/assist/interaction HUD over the canvas. Narrow screens retain readable content and explicitly require a desktop keyboard for gameplay.
-- T09 visible Chrome fallback confirmed live keyboard movement to the meeting checkpoint, HUD updates, overlay Escape/focus recovery, one canvas, 1100×720 without horizontal overflow and the 390px desktop notice. A fresh-session focus race was fixed in GameHost and regression-tested; L006 is promoted as the complete React/Phaser session boundary.
-- T10 adds a pinned Playwright 1.63 headed Chromium journey plus an isolated PowerShell runner with dedicated ports, unique temporary SQLite data, explicit migration/readiness, owned-process cleanup and performance output. The full case passes real keyboard movement, retry/idempotency, checkpoint/scanner recovery, conclusion/review, reload and fresh replay with one canvas.
-- Final T10 measurements on Windows/Chromium were 7,063 ms total readiness, approximately 60 FPS over 1.607 seconds, p95/longest frame interval 17 ms, and 35.7 seconds for the complete journey. Visible Chrome separately confirmed pause/resume and responsive shell behavior. The production bundle excludes the E2E hook/private solution/token strings.
-- L007 promotes the validated Windows integration-runner pattern: quote paths, set working directories, fail on occupied ports, wait through the browser-facing proxy, and clean only owned processes plus validated unique data.
-- T27 planning audit found that the current accessible prototype remains code-authored only: at 1280×800 the canvas measured 896×496, the mission rail 285×765 and the document 979px high. Plan 1.0 proposes a game-first shell, a single approved local asset pipeline, richer environment/character presentation and purpose-specific investigative UI without changing gameplay/backend truth.
-
-## Last checks
-
-- 2026-09-25 T04: `./scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe` passed: agent structural check (7 tasks), npm clean install (118 packages, 0 vulnerabilities), lint, typecheck, 5 frontend tests, Vite build, .NET locked restore/build (0 warnings/errors), and 2 API tests.
-- Final Chrome/Playwright browser run passed session create/save/reload, cookie privacy, API connectivity, one canvas, smaller laptop width and no unexpected page/console/5xx error. Initial 401 without cookie is expected.
-- `dotnet-ef migrations has-pending-model-changes` found no drift; direct unknown-provider startup check failed as intended; `git diff --check` passed.
-- T05 Chrome/Playwright at 1280×800 passed keyboard travel and `E` for E01/E02/E04, notebook content, reload retention and 1100×720 layout. One transient Chrome `ERR_NO_BUFFER_SPACE` did not reproduce on rerun.
-- T05 final `verify.ps1` passed agent structural check (20 tasks), npm ci/audit (0 advisories), lint/typecheck/build, 6 web tests, .NET locked restore/build (0 warnings/errors) and 5 API tests. EF T05 migration drift check found none.
-- T06 final headed Chrome at 1280×800 passed E01, wrong/correct Q01, Maya E05, Escape focus, reload with explanation and 1100×720 layout. `verify.ps1` passed 21 structural task checks, npm ci/audit 0, lint/typecheck/build, 6 web tests and 6 API tests; .NET build had 0 warnings/errors. T06 EF migration drift check and `git diff --check` passed.
-- T07 final visible Chrome at 1280×800 and a 1100×720 outer window passed physical checkpoint, two detections, assist, encounter clear, E03/Q03, reload/resume, single-canvas StrictMode cleanup and no console/network issues. Final `verify.ps1` passed 22 task checks, npm ci/audit (118 packages, 0 advisories), lint/typecheck/build, 10 web tests, locked .NET restore/build with 0 warnings/errors and 7 API tests. EF migration drift and `git diff --check` passed.
-- T08 final visible Chrome at 1280×800 and 1100×720 passed conclusion confirmation, 100/100 result, assist-neutral messaging, wrong/correct review retry, 5/5 reload persistence, single canvas and fresh replay revision 0. `verify.ps1` passed 23 task checks, npm audit 0, lint/typecheck/build, 13 web tests and 9 API tests; .NET build had 0 warnings/errors. EF migration drift, privacy/bundle search and `git diff --check` passed.
-- T09 visible Chrome at 1280×800 and 1100×720 plus a 390px emulated viewport passed layout, live checkpoint movement, HUD, overlay focus and single-canvas checks. The visible Codex in-app browser was retried first but failed with `windows sandbox failed: helper_unknown_error`; visible Chrome remained the documented fallback. Final `verify.ps1` passed 24 task checks, npm audit with 0 advisories, lint/typecheck/build, 18 web tests, .NET build with 0 warnings/errors and 9 API tests. Frontend bundle privacy scan, agent-doc check and `git diff --check` passed; only the known ~1.39 MB lazy Phaser chunk warning remains.
-- T10 final headed Chromium passed 1/1 complete journeys in 35.7 seconds after explicit migration/readiness; occupied-port rejection also passed. Separate visible Chrome confirmation passed movement/collision, pause/resume, one canvas, 1100×720 and 390px layout. Final `verify.ps1` passed 25 task checks, npm audit with 0 advisories, lint/typecheck/build, 18 web tests and 9 API tests; .NET build had 0 warnings/errors. The rebuilt bundle privacy scan and E2E listing passed.
-
-## Blockers and known issues
-
-TypeScript type generation from OpenAPI remains open. Vite still warns about the ~1.39 MB lazy Phaser chunk. The local SDK may need PATH setup in each new terminal; `verify.ps1` currently inherits shell Node 22/npm 10 and reports an engine warning even though the approved Node 24/npm 11 path passes. Audio and external raster assets remain outside the MVP. The visible Codex browser failed again during T10 with the same Windows sandbox helper error; visible Chrome is the verified local fallback until the host issue is fixed.
-
-## Next action
-
-T27 is done (V0–V5 verified and pushed; QA in `docs/quality/T27-visual-qa.md`). Next: resume queued T11 handoff verification unless the user directs otherwise. Keep T12, admin implementation, Docker/CI, deployment and publishing stopped.
+- Vite warns about the ~1.40 MB lazy Phaser chunk (known optimization item).
+- `verify.ps1` may report a Node engine warning when the shell resolves an older Node; the approved Node 24/npm 11 path passes.
+- The Codex in-app browser previously failed with a Windows sandbox helper error; the Claude in-app browser and visible Chrome both work.
 
 ## Relevant references
 
-- `PROJECT_PLAN.md`
-- `README.md`
-- `docs/tasks/T04-storage-session.md`
-- `docs/tasks/T05-case-npc-notebook.md`
-- `docs/tasks/T06-questions-unlocks.md`
-- `docs/tasks/T07-encounter-checkpoint.md`
-- `docs/tasks/T08-conclusion-review.md`
-- `docs/tasks/T09-art-hud-focus.md`
-- `docs/tasks/T10-browser-e2e-playtest.md`
-- `docs/tasks/T27-visual-ui-upgrade.md`
-- `docs/tasks/T15-admin-console.md`
-- `docs/tasks/index.md`
-- `docs/agent/lessons.md`
-- `apps/web/AGENTS.md`
-- `services/api/AGENTS.md`
-- `.agents/skills/product-lifecycle/SKILL.md`
+- `AGENTS.md`, `CLAUDE.md`, `docs/agent/protocol.md`, `docs/agent/improvement.md`, `docs/agent/lessons.md`, `docs/agent/skills-index.md`
+- `docs/tasks/index.md`, `docs/tasks/TEMPLATE.md`, `PROJECT_PLAN.md` (T12 row and §10)
+- `apps/web/AGENTS.md`, `services/api/AGENTS.md`, `docs/assets/manifest.md`, `README.md`

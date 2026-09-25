@@ -166,11 +166,14 @@ Runner dùng cổng test 5063/5174, dừng nếu cổng đã bị chiếm, migra
 - API báo pending migrations: chạy lệnh `--migrate` ở trên trước khi mở web. Không chạy migration đồng thời từ nhiều tiến trình.
 - Lượt chơi biến mất: kiểm tra cookie còn tồn tại, thời hạn 30 ngày không hoạt động và `ConnectionStrings__Game` có trỏ về cùng file SQLite. Không có khôi phục đa thiết bị trong MVP.
 - PowerShell chặn script cài .NET: chỉ dùng `-ExecutionPolicy Bypass` cho lệnh cài local được ghi ở trên; không cần đổi policy toàn máy.
+- `'pwsh' is not recognized` khi chạy `npm --prefix apps/web run e2e`: máy chỉ có Windows PowerShell 5.1. Chạy trực tiếp `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/e2e.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`.
+- `npm ci` báo `EPERM` hoặc build API báo `MSB3027 ... locked`: một Vite dev server đang giữ `node_modules` hoặc một API đang chạy giữ `services/api/bin`. Dừng các preview/dev server trước khi chạy `verify.ps1` hoặc E2E.
+- API trả 403 khi mở `http://localhost:5173`: API chỉ chấp nhận origin `http://127.0.0.1:5173`; mở đúng địa chỉ này.
 
 Trước khi dùng AI agent, đọc `AGENTS.md`, `docs/agent/protocol.md`, `docs/memory/current.md` và task hiện tại. Docker và GitHub được cấu hình sau mốc `code_complete` theo `PROJECT_PLAN.md`.
 
 ## Vòng đời làm việc của agents
 
-Agents có thể thực hiện discovery, yêu cầu, thiết kế, kiến trúc, coding, nội dung, kiểm thử, tài liệu, đóng gói và release readiness. Deploy/publish/push hoặc thay đổi production chưa thuộc phạm vi được phép.
+Agents có thể thực hiện discovery, yêu cầu, thiết kế, kiến trúc, coding, nội dung, kiểm thử, tài liệu, đóng gói và release readiness. Deploy/publish hoặc thay đổi production chưa thuộc phạm vi được phép. Commit các thay đổi đã kiểm chứng và push nhánh hiện tại lên `origin` đã cấu hình sau mỗi phiên hoàn tất là chỉ thị thường trực của người dùng (xem `AGENTS.md`).
 
 Mỗi task phải kết thúc bằng `Improvement review`: ghi `none` nếu không có bài học bền vững, hoặc đưa bài học qua candidate → verified → promoted/retired theo `docs/agent/improvement.md`. `./scripts/verify.ps1` chạy structural check để bảo đảm task và agent foundation không bỏ qua bước này.

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": ".tools/dotnet/dotnet.exe",
+      "runtimeArgs": ["run", "--project", "services/api", "--launch-profile", "http"],
+      "port": 5062
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "apps/web", "run", "dev"],
+      "port": 5173
+    }
+  ]
+}

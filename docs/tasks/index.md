@@ -12,9 +12,10 @@
 | [T08](T08-conclusion-review.md) conclusion/review | done | Codex | T06, T07 |
 | [T09](T09-art-hud-focus.md) art/HUD/focus | done | Codex | T08 |
 | [T10](T10-browser-e2e-playtest.md) browser/E2E/playtest | done | Codex | T08, T09 |
-| [T27](T27-visual-ui-upgrade.md) game-first visual/UI upgrade | awaiting_approval | Codex | T10 |
-| [T11](T11-handoff-verification.md) handoff verification | awaiting_approval | Claude | T01-T10 |
-| T12 storage round-trip/local runbook | todo | unassigned | T10, T11 |
+| [T27](T27-visual-ui-upgrade.md) game-first visual/UI upgrade | done | Claude | T10 |
+| [T11](T11-handoff-verification.md) handoff verification | done | Claude | T01-T10 |
+| T12 storage round-trip/local runbook | todo (needs plan + approval) | unassigned | T10, T11 |
+| BUFFER fixes, persistence verification, `code_complete` record | todo | unassigned | T12 |
 | [T13](T13-environment-readme.md) environment setup guide | done | Codex | T02 |
 | [T14](T14-agent-lifecycle-improvement.md) agent lifecycle and improvement | done | Codex | T01 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
@@ -29,3 +30,5 @@
 | [T24](T24-admin-governance.md) roles, audit and safe settings | approved | unassigned | T17, T21 |
 | [T25](T25-admin-integrated-verification.md) integrated admin verification | approved | unassigned | T18-T24, T10 |
 | [T26](T26-admin-handoff.md) admin handoff and release readiness | approved | unassigned | T25, T11/T12 |
+
+Status `approved` on T15–T26 means the plan/documentation is approved; implementation stays deferred until the user explicitly starts that task.
