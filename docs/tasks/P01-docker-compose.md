@@ -1,12 +1,12 @@
 # P01 — Docker image, Compose and container smoke test
 
-Status: in_progress
+Status: done
 Owner: Claude
 Depends on: code_complete (recorded 2026-09-26)
 Plan version: PROJECT_PLAN.md 1.4 (§9.3 row P01, §11.4), P01 plan 1.0
 Approval: user approved plan 1.0 on 2026-09-26 with “duyệt kế hoạch”
-Lifecycle phase: build
-Workflow step: approved; coding
+Lifecycle phase: handoff
+Workflow step: complete — image, Compose, container browser test, persistence, privacy and clean-clone build verified
 
 ## Outcome and success signal
 
@@ -51,12 +51,32 @@ Risks and controls: a Production-only difference (static hosting, Secure cookie)
 
 ## Handoff
 
-Pending approval. Needs the user to start Docker Desktop before the build step.
+Baseline `332b599`; plan `a3b378d`; implementation `0d689f2`.
+
+Changed: `Dockerfile` (node:24.15.0-bookworm-slim → dotnet/sdk:10.0.401 locked restore/publish → dotnet/aspnet:10.0.12, non-root `app`, port 8080, `/data` owned by `app`, HEALTHCHECK via `--healthcheck`), `.dockerignore`, `compose.yaml` (`migrate` one-shot + `app` on `127.0.0.1:8080`, Production, named volume `ocf-data`, `restart: unless-stopped`), `services/api/Program.cs` (`--healthcheck`; static hosting + SPA fallback only when `wwwroot/index.html` exists; `/api/{**rest}` stays 404), `tests/OfficeCaseFiles.Api.Tests/StaticHostingTests.cs`, runbook §7 Docker, README link.
+
+Evidence (Docker 29.3.1 / Compose v5.1.1, Docker Desktop started by the user):
+
+- `docker compose build` 69 s; image 116 MB; user `app` (uid 1654); no SDK, no Node, no `.db`; `wwwroot` holds only the web build (0 JSON files); case JSON at `/app/Content/Cases`.
+- `docker compose up -d`: `migrate` exited 0, `app` healthy.
+- HTTP probes: `/` and `/deep/link` 200 (SPA); `/api/v1/health` 200; `/api/v1/nope`, `/Content/Cases/swapped-report.v1.json`, `/swapped-report.v1.json`, `/appsettings.json`, `/office-case-files.db`, `/OfficeCaseFiles.Api.dll` all 404 with no leaked content.
+- Visible browser at `http://127.0.0.1:8080`: new session (Secure + HttpOnly cookie works on 127.0.0.1; `document.cookie` empty), E01 collected with real keys and `E`, Q01 answered in the UI, checkpoint/encounter/remaining clues via same-origin API calls, conclusion through the evidence board → 100/100.
+- `docker compose up -d --force-recreate app` → reload: same session, result 100/100. `docker compose down` (volume kept) + `up -d` → same.
+- Logs (957 lines): no `ocf_session` cookie name, no long token-like strings.
+- Backup/restore: `docker compose run --rm ... --export` → new volume `--migrate` + `--import` verified; second import refused (TargetNotEmpty, exit 1).
+- Clean clone of `origin/main` at `0d689f2`, `docker build --no-cache` 24 s: identical asset hashes (`index-BTvXHge4.js`, `GameCanvas-BLH8N341.js`, `phaser-DepFvUma.js`); clone and test image removed.
+- Local gates: `verify.ps1` pass (30 web, 12/12 API tests, 0 warnings), `npm --prefix apps/web run e2e` 4/4, `check-agent-docs.ps1`, `git diff --check`.
+
+Left running: nothing — `app` stopped with `docker compose stop`; volume `office-case-files_ocf-data` kept with the test session.
+
+Limitations / follow-ups: base images pinned by tag, not digest (P02 CI can add digests); Production logs include EF Core SQL command lines at Information level (no parameter values) — lower `Microsoft.EntityFrameworkCore` to Warning if log volume matters; HTTPS/reverse proxy and any non-local host are out of scope.
+
+Next action: P02 — GitHub workflow, PR template and branch-check guidance; needs its own plan and approval.
 
 ## Improvement review
 
-- Result: pending
-- Observation/evidence: pending
-- Mechanism changed or no-change reason: pending
-- Validation: pending
-- Follow-up trigger: pending
+- Result: none (new); L011 applied
+- Observation/evidence: testing the production container directly in the browser (L011) covered the Production-only paths (static hosting, Secure cookie); no new failure mode appeared.
+- Mechanism changed or no-change reason: static hosting is guarded by a test; container checks are recorded in the runbook.
+- Validation: evidence above.
+- Follow-up trigger: add the container smoke to CI in P02.

@@ -16,8 +16,8 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 
 ## Task state
 
-- Done: T01–T12, T13, T14, T27, BUFFER. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
-- Next: **Docker/GitHub packaging P01–P03** (PROJECT_PLAN §9.4) toward `delivery_complete`. No plan exists yet: draft it and get approval; it does not authorize deployment, publishing images or changing repository visibility.
+- Done: T01–T12, T13, T14, T27, BUFFER, P01. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
+- Next: **P02 GitHub workflow / PR template / branch-check guidance**, then P03 packaged retest toward `delivery_complete`. No P02 plan yet: draft and get approval. Pushing to the configured `origin` is allowed; changing repository settings/visibility, secrets or publishing images is not.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
 - `code_complete` is reached, so Docker/GitHub configuration may now be planned (still needs its own approval).
 
@@ -34,6 +34,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Headed E2E: `npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe` (launcher `scripts/run-e2e.mjs` uses `pwsh` if present, else Windows PowerShell 5.1). 4 tests: critical journey + 3 visual-state checks.
 - Full: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`; agent docs: `scripts/check-agent-docs.ps1`.
 - Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
+- Docker (P01): `docker compose up -d` → `http://127.0.0.1:8080` (needs Docker Desktop running); progress in volume `office-case-files_ocf-data`; `down -v` deletes it. Runbook §7.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
 
 ## Verified product state (latest)
