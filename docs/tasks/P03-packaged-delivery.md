@@ -1,12 +1,12 @@
 # P03 — Packaged retest and final delivery evidence
 
-Status: in_progress
+Status: done
 Owner: Codex
 Depends on: P01, P02, code_complete
 Plan version: PROJECT_PLAN.md 1.4 (§9.3, §11.4–11.5), P03 plan 1.0
 Approval: user approved plan 1.0 on 2026-09-26 with “duyệt plan”
 Lifecycle phase: handoff
-Workflow step: follow-up fix complete locally; waiting on remote CI for the final E2E-route reliability correction
+Workflow step: complete — packaged acceptance, local gates, route correction, and remote CI passed
 
 ## Outcome and success signal
 
@@ -21,7 +21,8 @@ The user can follow the README/runbook, open the packaged game in a visible brow
 - P02 CI configuration is complete. The recorded all-green remote run is GitHub Actions run `36213362487` on commit `6a2f8f7`; verify, headed Chromium E2E and Docker smoke all passed. P03 must verify the CI run for its final pushed implementation revision, not reuse the older run as current evidence.
 - Approved P03 baseline was `5e03c6d` on `main`, synchronized with `origin/main`; P03 changed only scoped documentation/evidence files, not runtime code. Evidence commit: `a63e3072eb26efe83939ff4353f06c28441165dd`.
 - A documentation-only closeout push at `0af22cd91ca716e25eb0d20383a45a5d10973a56` triggered run `36234356486`; its `verify` and `docker` jobs passed, but headed E2E failed at the scanner corridor. Public annotation: the journey attempted `y=495` and stalled at `y=503.308`, exactly outside the helper's 8 px tolerance. The cabinet ends at `y=480`, and the player radius is 15 px, so the collision boundary is `y=495`; the helper was being asked to target the boundary itself.
-- Corrected the E2E route to target `y=500`, safely inside the corridor and outside scanner radius. This changes no gameplay behavior. Local visible headed Chromium E2E now passes 4/4; full `verify.ps1` passes (30 web tests, build, 12 API tests, docs gate). The follow-up push/run for this correction remains pending.
+- Corrected the E2E route to target `y=500`, safely inside the corridor and outside scanner radius. This changes no gameplay behavior. Local visible headed Chromium E2E passes 4/4; full `verify.ps1` passes (30 web tests, build, 12 API tests, docs gate). The pushed correction was verified by run `36235584949`.
+- Final route-correction commit `98448555c85815d0523c5ced457080b5c0b2da6d` passed GitHub Actions run `36235584949`: `verify`, headed Chromium `e2e`, and `docker` all succeeded. Run: https://github.com/hm1061998/My-Game/actions/runs/36235584949.
 - Planning preflight on 2026-09-26 found Docker client/server 29.3.1, no running container, the developer's persistent `office-case-files_ocf-data` volume, and no listener on ports 8080, 5062 or 5173. The implementation preflight reconfirmed port 8080 is free and found two stopped containers from the default `office-case-files` project; preserve those, the developer volume and all unrecognized resources.
 - `scripts/docker-smoke.sh` uses the isolated Compose project `ocf-smoke`, binds host port 8080, and normally removes that project's volume on exit. Preflight confirmed its project/volume absent and port free before smoke; the final report records cleanup and preservation of `office-case-files_ocf-data`.
 - The user requires each completed work session to commit scoped changes and push the current branch to configured `origin`. The configured remote is `https://github.com/hm1061998/My-Game.git`; do not change GitHub settings as part of this plan.
@@ -78,28 +79,28 @@ The user can follow the README/runbook, open the packaged game in a visible brow
 - `npm --prefix apps/web run e2e`: all current headed tests pass with visible local Chromium; record FPS/frame sample where emitted.
 - `bash scripts/docker-smoke.sh`: pass from a clean smoke-project preflight; expected private routes stay private.
 - `scripts/check-agent-docs.ps1`, production privacy/bundle scan, and `git diff --check`: pass.
-- CI run `36233739417` for P03 package/evidence SHA `a63e3072eb26efe83939ff4353f06c28441165dd`: `verify`, `e2e`, and `docker` green. Follow-up run `36234356486` revealed an E2E corridor-targeting defect in test code; require all three jobs green for the final route-correction SHA before closing P03 again.
+- CI run `36233739417` for P03 package/evidence SHA `a63e3072eb26efe83939ff4353f06c28441165dd`: `verify`, `e2e`, and `docker` green. Follow-up run `36234356486` exposed an E2E corridor-targeting defect in test code; final route-correction SHA `98448555c85815d0523c5ced457080b5c0b2da6d` passed all three jobs in run `36235584949`.
 - P03 report records branch/commit, image ID/size, Docker/Compose versions, browser, test cases, persistence/recovery, security probes, script/CI outcomes, limitations and user-owned outstanding items.
 - Mark P03 and `delivery_complete` done only if all required local acceptance and P01/P02 configuration evidence are satisfied and remote CI is green when the configured repository remains observable/in-scope. Otherwise leave the exact gate incomplete and record the blocker.
 
 ### Workflow and delivery boundary
 
-Plan approval authorized only the P03 checks and minimal in-scope fixes above. Initial sequence passed and `delivery_complete` was recorded; a follow-up CI rerun then exposed a false-blocked movement step at the exact collider boundary. The test route is corrected and local headed/script checks pass; keep P03 open until the final route-correction push has green `verify`, `e2e`, and `docker`. Stop before deploy/publish or GitHub settings changes.
+Plan approval authorized only the P03 checks and minimal in-scope fixes above. Complete: preflight → package smoke/build → visible browser test → container-recreate recovery → final visible confirmation → full scripts → improvement review → E2E correction/retest → task/memory/report update → commit/push → remote CI observation. The discovered collider-boundary flake was corrected; local and final remote CI are green. `delivery_complete` is recorded. Stop before deploy/publish or GitHub settings changes.
 
 ## Handoff
 
-Last pushed commit `0af22cd91ca716e25eb0d20383a45a5d10973a56` on `origin/main`; scoped dirty paths for this follow-up: `apps/web/e2e/critical-journey.spec.ts`, `apps/web/AGENTS.md`, `docs/agent/lessons.md`, `docs/memory/current.md`, `docs/quality/P03-delivery-readiness.md`, `docs/tasks/P03-packaged-delivery.md`, and `docs/tasks/index.md`. No gameplay/runtime code changed. Plan 1.0 approval remains the user's 2026-09-26 “duyệt plan”.
+Route correction commit `98448555c85815d0523c5ced457080b5c0b2da6d` is pushed to `origin/main`; its CI run `36235584949` passed all three jobs. This final handoff changes only scoped task/report/index/memory documentation; gameplay/runtime behavior remains unchanged. Plan 1.0 approval remains the user's 2026-09-26 “duyệt plan”.
 
 Verified this session: visible production case/result/review; same Chrome session survived app force-recreate and reload at revision 21; Secure/HttpOnly cookie and empty `document.cookie`; Docker health/routes/private-file 404s; non-root runtime with no Node/.NET SDK; client answer-string scan and 24-line log token scan; full `verify.ps1`, 4/4 headed E2E, clean-preflight Docker smoke, agent-doc checks and `git diff --check`. P03-owned containers/network/volume were removed after ownership verification; `office-case-files_ocf-data` remains present. The WSL `bash` shim failure was corrected in the runbook with the tested Git Bash invocation.
 
-Failed/not-run notes: initial bare `bash` invocation did not run the smoke because its WSL shim had no `/bin/bash`; explicit Git Bash passed. The first headed E2E launch was not started because automatic permission review timed out; a single retry ran successfully. Codex in-app browser automation also hit the Windows sandbox helper error; the package journey was completed in visible Chrome instead. The closeout-only push's run `36234356486` passed verify and Docker but failed E2E because the test route targeted the collider boundary; this was fixed and local headed E2E/full verify pass. Remote CI for the corrected route remains pending.
+Failed/not-run notes: initial bare `bash` invocation did not run the smoke because its WSL shim had no `/bin/bash`; explicit Git Bash passed. The first headed E2E launch was not started because automatic permission review timed out; a single retry ran successfully. Codex in-app browser automation also hit the Windows sandbox helper error; the package journey was completed in visible Chrome instead. Closeout run `36234356486` failed E2E at the collider boundary; the route was corrected and final run `36235584949` passed verify, headed Chromium E2E and Docker smoke.
 
-Next action: run the final diff/docs gates, commit and push the scoped route/rule/evidence update, then observe its CI and close P03 only if all three jobs pass. Preserve default stopped containers and `office-case-files_ocf-data`; no deployment, image publication or repository settings changes.
+Next action: commit and push this final evidence closeout, confirm the working tree is clean, and hand off. Preserve default stopped containers and `office-case-files_ocf-data`; no deployment, image publication or repository settings changes.
 
 ## Improvement review
 
 - Result: promoted (L012; L013 remains verified).
 - Observation/evidence: the final CI rerun's headed E2E targeted y=495, precisely the cabinet's collision boundary after the 15 px player radius, and slow-runner movement stopped at y=503.308. Retargeting the safe scanner corridor to y=500 passed local visible headed E2E 4/4 and full `verify.ps1`.
 - Mechanism changed: added the narrow movement-target rule to `apps/web/AGENTS.md` and expanded L012; no gameplay behavior or quality gate changed.
-- Validation: headed E2E and full verify passed; agent-doc and staged diff checks are final gates before push. Remote CI follow-up remains required.
+- Validation: headed E2E 4/4 and full verify passed locally; final pushed route-correction revision also passed all three jobs in run `36235584949`; agent-doc and diff checks passed.
 - Follow-up trigger: revalidate if scanner/cabinet geometry or E2E movement tolerances change.

@@ -2,11 +2,12 @@
 
 Date: 2026-09-26
 
-Status: follow-up in progress — package acceptance passed; a later CI rerun exposed and locally fixed an E2E route-target issue
+Status: complete — packaged acceptance, E2E correction, and all remote CI jobs passed
 
 Branch/evidence commit: `main` at `a63e3072eb26efe83939ff4353f06c28441165dd` (pushed to `origin`)
 GitHub Actions: [run 36233739417](https://github.com/hm1061998/My-Game/actions/runs/36233739417) — `verify`, headed Chromium `e2e`, and `docker` all succeeded.
-Follow-up: [run 36234356486](https://github.com/hm1061998/My-Game/actions/runs/36234356486) passed `verify` and `docker`, but E2E failed because the test targeted the cabinet collision boundary (`y=495`) and slow CI movement stopped at `y=503.308`. The route now targets safe `y=500`; local headed E2E is 4/4 and full `verify.ps1` passes. Final remote rerun is pending.
+Follow-up: [run 36234356486](https://github.com/hm1061998/My-Game/actions/runs/36234356486) passed `verify` and `docker`, but E2E failed because the test targeted the cabinet collision boundary (`y=495`) and slow CI movement stopped at `y=503.308`. The route now targets safe `y=500`; local headed E2E is 4/4 and full `verify.ps1` passes. Final remote rerun [36235584949](https://github.com/hm1061998/My-Game/actions/runs/36235584949) passed all three jobs.
+Final correction commit `98448555c85815d0523c5ced457080b5c0b2da6d`: [run 36235584949](https://github.com/hm1061998/My-Game/actions/runs/36235584949) — `verify`, headed Chromium `e2e`, and `docker` all succeeded.
 
 Package URL: `http://127.0.0.1:8080/` (production Docker Compose package)
 
@@ -54,7 +55,8 @@ The previous P01 957-line log review also recorded no `ocf_session` cookie name 
 | Production runtime and bundle privacy probes | pass |
 | `git diff --check` | pass after the current documentation edits |
 | Remote GitHub Actions, run 36233739417 for `a63e3072eb26efe83939ff4353f06c28441165dd` | pass: verify, headed Chromium E2E, Docker smoke |
-| Follow-up CI run 36234356486 for `0af22cd91ca716e25eb0d20383a45a5d10973a56` | verify/docker pass; E2E failure diagnosed as route targeting exact collider boundary; local route fix passes headed 4/4; remote rerun pending |
+| Follow-up CI run 36234356486 for `0af22cd91ca716e25eb0d20383a45a5d10973a56` | verify/docker pass; E2E failure diagnosed as route targeting exact collider boundary |
+| Final route-correction CI run 36235584949 for `98448555c85815d0523c5ced457080b5c0b2da6d` | pass: verify, headed Chromium E2E, Docker smoke |
 
 The Vite build emits the already-known `advancedChunks` deprecation warning; the build succeeds. No product fix was needed.
 
