@@ -1,7 +1,7 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: `b7c7f48` on `main`, pushed to `origin/main`; T28 is complete. T29 source selection is approved in D14, but official download failed; no audio file or product code has been added. Workspace has a documentation checkpoint recording the blocker pending commit/push.
+Baseline: T29 approval/blocker checkpoint `98f5b2c` on `main`, pushed to `origin/main`; this handoff records its completed implementation. T28 and T29 implementation/verification are complete. T29 adds a user-supplied, approved Pixabay office ambience MP3 and local Web Audio fallback behavior.
 Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
@@ -17,7 +17,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Task state
 
 - Done: T01–T12, T13, T14, T27, T28, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
-- Blocked: T29 integration of the approved Pixabay “Quiet room ambience with traffic outside” clip. The official download control timed out and direct CDN returned HTTP 403; no asset file or product code is present. Resume when the user supplies the approved MP3 at the path recorded in `docs/tasks/T29-office-ambience.md`.
+- Done: T29 approved office ambience. User supplied the official MP3 at `apps/web/src/audio/office-quiet-traffic.mp3`; manifest/task include source, license and SHA-256. Gesture-gated local fetch/decode, procedural fallback/retry and Web Audio integration are covered in `docs/tasks/T29-office-ambience.md`.
 - Done: P03 local package/browser/scripts evidence; user explicitly waived waiting for GitHub E2E on 2026-09-26. Run [36239427269](https://github.com/hm1061998/My-Game/actions/runs/36239427269) was last observed with verify/Docker green and E2E in progress. Remote E2E is unverified and is not claimed green. No workflow change was made.
 - No other approved non-admin product feature tasks remain; approved admin tasks T15–T26 remain deferred and unchanged. P04 is optional infrastructure work pending a provider decision, not a player-facing feature.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
@@ -34,13 +34,14 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Verification commands (this machine)
 
 - Web: `npm --prefix apps/web run lint`, `typecheck`, `test:run`, `build`, `e2e:list`.
-- Headed E2E: `npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe` (launcher `scripts/run-e2e.mjs` uses `pwsh` if present, else Windows PowerShell 5.1). 4 tests: critical journey + 3 visual-state checks.
+- Headed E2E: `npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe` (launcher `scripts/run-e2e.mjs` uses `pwsh` if present, else Windows PowerShell 5.1). 6 tests: audio gesture/local fetch plus critical journey, onboarding and 3 visual-state checks.
 - Full: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`; agent docs: `scripts/check-agent-docs.ps1`.
 - Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
 - CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions. Route-correction run 36235584949 passed all jobs. Later reruns exposed slow-runner E2E behavior. User waived waiting for GitHub E2E; do not spend further time polling it, and do not describe the latest remote E2E as passed. CI remains enabled.
 - Docker (P01): `docker compose up -d` → `http://127.0.0.1:8080` (needs Docker Desktop running); progress in volume `office-case-files_ocf-data`; `down -v` deletes it. Runbook §7.
 - P03 (2026-09-26): packaged retest complete and isolated `ocf-smoke` resources cleaned. Docker client/server 29.3.1; default `office-case-files` containers remain stopped; `office-case-files_ocf-data` was preserved. P03 delivery report: `docs/quality/P03-delivery-readiness.md`.
 - T28 (2026-09-26): first-session briefing/tutorial and optional local audio completed. Visible headed Chromium E2E 5/5, including three isolated clean first-run contexts reaching E01; these were automated walkthroughs by one evaluator, not a three-person usability study. Web lint/typecheck/41 tests/build, agent-doc checks, full verify (12 API tests) and `git diff --check` passed. Local speech voices and audible quality remain device-dependent; GitHub E2E remains waived/unverified. Task and exact failures are recorded in `docs/tasks/T28-onboarding-audio.md`.
+- T29 (2026-09-26): Pixabay office ambience integrated. Visible headed Chromium E2E 6/6 confirms no audio-body fetch before activation, one successful same-origin fetch, mute/unmute and decoded signal (120.111 s, stereo, loop-edge step 0). 5 focused audio unit tests; full verify passed (46 web tests, 12 API tests); audio asset is ~3.84 MB. Browser/audio measurement is not a human subjective listening test; see `docs/tasks/T29-office-ambience.md`. Codex panel's standalone 5173 preview lacked API at 5062; isolated headed runner worked. GitHub E2E was not polled.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
 
 ## Verified product state (latest)
