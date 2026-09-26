@@ -207,7 +207,8 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expect(page.getByRole('dialog', { name: 'Sổ tay điều tra' })).toBeVisible()
   await closeOverlay(page)
 
-  await moveTo(page, 1090, 585, 'yx')
+  // From the minutes (x≈1160) go left first: going up first can clip the meeting table (x≥1190).
+  await moveTo(page, 1090, 585, 'xy')
   // Walk along the scanner row until detected; a fixed hold time depends on renderer speed.
   const scannerResult = page.getByRole('dialog', { name: 'Kết quả máy quét' })
   await page.keyboard.down('d')
@@ -235,7 +236,7 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await closeOverlay(page)
 
   await moveTo(page, 1460, 500)
-  await moveTo(page, 1460, 760, 'yx')
+  await moveTo(page, 1460, 760, 'xy') // right of the meeting table (x≤1415) before going down
   await expectNearby(page, 'npc-nora')
   await page.keyboard.press('e')
   await expect(page.getByRole('dialog', { name: 'Hội thoại' })).toContainText('Nora')
