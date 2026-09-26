@@ -5,7 +5,8 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   retries: 0,
-  timeout: 180_000,
+  // Hosted CI runners render without a GPU (~30 fps vs ~60 locally); the journey needs more wall time there.
+  timeout: process.env.CI ? 480_000 : 180_000,
   expect: { timeout: 12_000 },
   outputDir: '../../test-results/e2e',
   reporter: [['line'], ['html', { open: 'never', outputFolder: '../../playwright-report' }]],
