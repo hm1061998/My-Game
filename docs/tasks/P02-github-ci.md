@@ -1,12 +1,12 @@
 # P02 — GitHub workflow, PR template and branch-check guidance
 
-Status: in_progress
+Status: done
 Owner: Claude
 Depends on: P01
 Plan version: PROJECT_PLAN.md 1.4 (§9.3 row P02, §11.5), P02 plan 1.0
 Approval: user approved plan 1.0 on 2026-09-26 with “duyệt”
-Lifecycle phase: build
-Workflow step: approved; coding
+Lifecycle phase: handoff
+Workflow step: complete — CI green on GitHub (run 36213362487)
 
 ## Outcome and success signal
 
@@ -50,12 +50,32 @@ Risks and controls: Windows runner minutes cost more than Linux — only `verify
 
 ## Handoff
 
-Pending approval.
+Baseline `3e1ec08`; plan `41b3268`; first workflow `0bbb7e8`; green at `6a2f8f7`.
+
+Delivered: `.github/workflows/ci.yml` (verify + e2e on windows-latest, docker on ubuntu-latest; `contents: read`; concurrency; timeouts; all actions pinned to SHAs — checkout v7.0.1, setup-node v7.0.0, setup-dotnet v6.0.0, upload-artifact v7.0.1), `scripts/docker-smoke.sh` (shared by CI and local), `.github/pull_request_template.md`, `docs/runbooks/github.md`, README link. `actionlint` (official image) reports no issues.
+
+Remote verification (repository is public; runs observed through the public Actions pages/annotations — job logs need sign-in, `gh` not installed):
+
+| Run | Commit | Result | Finding / fix |
+| --- | --- | --- | --- |
+| #1 36206432456 | 0bbb7e8 | verify ✗, docker ✓ | verify failure without readable log; did not recur (cause unknown — user can read the log when signed in) |
+| #2–#3 | 73e7a56, 0e0bc24 | verify ✓, docker ✓, e2e ✗ | failures surfaced as public `::error` annotations; E2E movement budget (24 presses) too small on a GPU-less runner |
+| #4 | 521c778 | e2e ✗ | runner ~29 fps, journey exceeded 180 s; CI-only 480 s timeout; failure artifact 460 MB → screenshots + error-context only |
+| #5–#6 | 360f693, 169f076 | e2e ✗ | overshoot/oscillation around targets → halve hold time on direction flip, min 50 ms hold, 3 stuck presses = blocked |
+| #7–#9 | 7ee0bd4, 3f02e7a, a20db42 | e2e ✗ | fixed 1.8 s walk into the scanner → wait for the detection dialog; route clipped the meeting table → move x first |
+| #10–#11 | c56c728, 563efd5 | e2e ✗ | 300 ms dodge window missed by polling → E2E-only `dodgeCount`; 24 px tolerance entered the scanner edge (y≥509) → lane y=495 ±8 |
+| **#12 36213362487** | **6a2f8f7** | **all green** | verify 1m32s, docker 52s, e2e 8m2s (total 9m43s) |
+
+Product code changed only by the E2E-only `dodgeCount` in the scene snapshot (the snapshot exists only in the E2E build); gameplay, collision and scanner rules are unchanged. Local gates on the final revision: `verify.ps1` pass, `npm --prefix apps/web run e2e` 4/4, `bash scripts/docker-smoke.sh` pass.
+
+Not done (out of scope, for the user): branch protection/rulesets per `docs/runbooks/github.md`; base-image digest pinning; the `ubuntu-latest` → Ubuntu 26 migration notice (October 2026) needs no action now.
+
+Next action: P03 — retest the packaged build end to end and write the final delivery evidence toward `delivery_complete`; needs its own plan and approval.
 
 ## Improvement review
 
-- Result: pending
-- Observation/evidence: pending
-- Mechanism changed or no-change reason: pending
-- Validation: pending
-- Follow-up trigger: pending
+- Result: candidate (L012)
+- Observation/evidence: 11 red runs came from one root cause — the E2E journey relied on fixed hold times, a single-press "blocked" check and a wide 24 px position tolerance that happened to work at 60 fps and failed at ~29 fps on a GPU-less runner. Each fix replaced a timing assumption with a waited-for outcome or a damped, tighter control loop.
+- Mechanism changed or no-change reason: recorded as L012; the fixes live in `apps/web/e2e/critical-journey.spec.ts`; public failure annotations in `ci.yml` made remote diagnosis possible without sign-in.
+- Validation: CI run 36213362487 green; local 4/4.
+- Follow-up trigger: promote to an E2E rule if another spec adds fixed waits or positional routes.
