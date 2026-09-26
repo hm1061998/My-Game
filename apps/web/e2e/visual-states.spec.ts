@@ -42,8 +42,11 @@ test('game-first shell fits desktop viewports with every texture ready', async (
     })
   })
   await startCase(page)
-  await expect.poll(() => assetResponses.length).toBeGreaterThanOrEqual(21)
+  await expect.poll(() => assetResponses.length).toBeGreaterThanOrEqual(22)
   expect(assetResponses.filter(item => item.status !== 200 || !item.type.includes('svg'))).toEqual([])
+  expect(assetResponses).toContainEqual(expect.objectContaining({
+    url: '/assets/office/window-light.svg', status: 200,
+  }))
   await expect(page.getByText('Một số hình ảnh văn phòng không tải được')).toHaveCount(0)
 
   for (const size of [{ width: 1280, height: 800 }, { width: 1100, height: 720 }]) {
@@ -56,6 +59,9 @@ test('game-first shell fits desktop viewports with every texture ready', async (
   }
 
   await page.setViewportSize({ width: 1280, height: 800 })
+  await page.locator('canvas').evaluate(canvas => { canvas.style.filter = 'grayscale(1)' })
+  await attachShot(page, testInfo, 'shell-grayscale-1280x800.png')
+  await page.locator('canvas').evaluate(canvas => { canvas.style.filter = '' })
   const before = (await layout(page)).canvasWidth
   await page.getByRole('button', { name: /Thu gọn/ }).click()
   await expect(page.getByRole('button', { name: /Nhiệm vụ/ })).toHaveAttribute('aria-expanded', 'false')
@@ -73,7 +79,8 @@ test('game-first shell fits desktop viewports with every texture ready', async (
 
 test('an HTML fallback for a texture shows placeholders and a recoverable notice', async ({ page }, testInfo) => {
   const pageErrors = await trackErrors(page)
-  for (const path of ['**/assets/office/desk.svg', '**/assets/characters/player-sheet.svg']) {
+  for (const path of ['**/assets/office/desk.svg', '**/assets/office/window-light.svg',
+    '**/assets/characters/player-sheet.svg']) {
     await page.route(path, route => route.fulfill({
       status: 200, contentType: 'text/html', body: '<!doctype html><html><body>fallback</body></html>',
     }))
@@ -88,6 +95,16 @@ test('an HTML fallback for a texture shows placeholders and a recoverable notice
   } finally { await page.keyboard.up('d') }
   await attachShot(page, testInfo, 'missing-texture-fallback.png')
   expect(pageErrors).toEqual([])
+})
+
+test('the office keeps daylight static and disables mote motion under reduced motion', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await startCase(page)
+  const atmosphere = await page.evaluate(() => window.__officeCaseFilesE2E?.snapshot())
+  expect(atmosphere?.ambientMoteCount).toBe(8)
+  expect(atmosphere?.ambientMoteMotionEnabled).toBe(false)
+  expect(await page.locator('canvas').count()).toBe(1)
+  await attachShot(page, testInfo, 'office-daylight-reduced-motion.png')
 })
 
 test('offline API and reduced motion keep readable, non-color-only states', async ({ page }, testInfo) => {

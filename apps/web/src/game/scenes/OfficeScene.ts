@@ -15,12 +15,17 @@ declare global {
     __officeCaseFilesE2E?: { snapshot: () => {
       position: Point; paused: boolean; overlayPaused: boolean; nearestId: string | null
       checkpointId: string; encounterCleared: boolean; dodgeRemainingMs: number; dodgeCount: number
+      ambientMoteCount: number; ambientMoteMotionEnabled: boolean
     } }
   }
 }
 
 const WORLD_WIDTH = 1600
 const WORLD_HEIGHT = 1000
+const AMBIENT_MOTES = [
+  { x: 275, y: 244 }, { x: 345, y: 315 }, { x: 682, y: 225 }, { x: 756, y: 362 },
+  { x: 1092, y: 263 }, { x: 1176, y: 335 }, { x: 700, y: 468 }, { x: 1160, y: 458 },
+] as const
 const FLOOR: Rect = { x: 64, y: 142, width: 1472, height: 796 }
 const DESK: Rect = { x: 490, y: 375, width: 250, height: 86 }
 const CABINET: Rect = { x: 1015, y: 270, width: 120, height: 210 }
@@ -208,7 +213,8 @@ export class OfficeScene extends Phaser.Scene {
         position: { ...this.position }, paused: this.paused, overlayPaused: this.overlayPaused,
         nearestId: this.nearestId, checkpointId: this.checkpointId,
         encounterCleared: this.encounterCleared, dodgeRemainingMs: this.dodgeRemainingMs,
-        dodgeCount: this.dodgeCount,
+        dodgeCount: this.dodgeCount, ambientMoteCount: AMBIENT_MOTES.length,
+        ambientMoteMotionEnabled: !this.reducedMotion,
       }) }
     }
     this.emit({ type: 'play-state', state: 'playing' })
@@ -475,6 +481,12 @@ export class OfficeScene extends Phaser.Scene {
         this.add.rectangle(zone.x, zone.y, zone.width, zone.height, zone.fallback).setOrigin(0).setDepth(-80)
       }
     }
+    for (const x of [310, 720, 1130]) {
+      if (this.hasArt('window-light')) {
+        this.add.image(x, 145, 'window-light').setOrigin(0.5, 0).setDepth(-78).setAlpha(0.8)
+      }
+    }
+    this.createAmbientMotes()
     const seams = this.add.graphics().setDepth(-75)
     seams.lineStyle(4, OFFICE_PALETTE.ink, 0.35)
     seams.lineBetween(420, FLOOR.y, 420, FLOOR.y + FLOOR.height)
@@ -496,8 +508,17 @@ export class OfficeScene extends Phaser.Scene {
     this.add.rectangle(1518, 540, 22, 796, 0x6f8b94).setDepth(-58)
     this.add.rectangle(800, 932, 1488, 18, 0x6f8b94).setDepth(940)
 
+    const windowDetails = this.add.graphics().setDepth(-56)
     for (const x of [310, 720, 1130]) {
       this.add.rectangle(x, 105, 190, 31, 0x8fc9d8).setStrokeStyle(5, 0xf8f5e7).setDepth(-57)
+      windowDetails.lineStyle(3, 0xf8f5e7, 0.9)
+      windowDetails.lineBetween(x - 32, 91, x - 32, 119)
+      windowDetails.lineBetween(x + 32, 91, x + 32, 119)
+      windowDetails.lineBetween(x - 92, 105, x + 92, 105)
+      windowDetails.lineStyle(2, 0xffffff, 0.42)
+      windowDetails.lineBetween(x - 82, 94, x - 40, 94)
+      windowDetails.lineBetween(x + 42, 115, x + 84, 115)
+      this.add.rectangle(x, 126, 202, 6, 0xf3e2bd).setStrokeStyle(2, 0xb99767).setDepth(-56)
     }
     const sign = { color: COLOR.paperLight, backgroundColor: COLOR.wall, fontFamily: FONT.display,
       fontSize: '18px', fontStyle: 'bold', padding: { x: 10, y: 5 } }
@@ -509,6 +530,18 @@ export class OfficeScene extends Phaser.Scene {
       color: '#8e5a43', backgroundColor: '#fff1db', fontFamily: FONT.ui,
       fontSize: '17px', fontStyle: 'bold', padding: { x: 9, y: 5 },
     }).setDepth(-50)
+  }
+
+  /** Fixed, low-contrast dust motes in the daylight; no movement for reduced-motion users. */
+  private createAmbientMotes() {
+    AMBIENT_MOTES.forEach(({ x, y }, index) => {
+      const mote = this.add.circle(x, y, index % 3 === 0 ? 2.4 : 1.8, 0xfff4d5, 0.42).setDepth(-73)
+      if (!this.reducedMotion) {
+        this.tweens.add({ targets: mote, y: y - 14, alpha: 0.14,
+          duration: 3800 + index * 240, delay: index * 170, repeat: -1, yoyo: true,
+          ease: 'Sine.easeInOut' })
+      }
+    })
   }
 
   private drawFurniture() {

@@ -5,7 +5,7 @@ export type ArtKey =
   | 'floor-lobby' | 'floor-office' | 'floor-archive' | 'floor-meeting'
   | 'desk' | 'cabinet' | 'planter' | 'meeting-table'
   | 'lamp' | 'plant-small' | 'papers' | 'water-cooler' | 'rug-lobby' | 'restricted-tape'
-  | 'checkpoint-pad' | 'scanner-drone' | 'evidence-card'
+  | 'checkpoint-pad' | 'scanner-drone' | 'evidence-card' | 'window-light'
 
 export type ArtAsset = { key: ArtKey; width: number; height: number; footY?: number }
 
@@ -28,6 +28,7 @@ export const OFFICE_ART: readonly ArtAsset[] = [
   { key: 'checkpoint-pad', width: 140, height: 80 },
   { key: 'scanner-drone', width: 80, height: 80 },
   { key: 'evidence-card', width: 56, height: 56 },
+  { key: 'window-light', width: 256, height: 440 },
 ]
 
 export function artUrl(key: ArtKey, base = '/'): string {

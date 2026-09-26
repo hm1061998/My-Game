@@ -33,6 +33,13 @@ describe('office art manifest', () => {
     expect(footOrigin('papers').y).toBe(1)
   })
 
+  it('registers the authored daylight texture through the local validated asset manifest', () => {
+    expect(OFFICE_ART.find(asset => asset.key === 'window-light')).toEqual({
+      key: 'window-light', width: 256, height: 440,
+    })
+    expect(artUrl('window-light')).toBe('/assets/office/window-light.svg')
+  })
+
   it('keeps decor outside every interaction radius', () => {
     const { interactions } = JSON.parse(readFileSync(caseFile, 'utf8')) as {
       interactions: { id: string; x: number; y: number; radius: number }[] }

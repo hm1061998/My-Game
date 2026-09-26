@@ -9,6 +9,8 @@ type SceneSnapshot = {
   encounterCleared: boolean
   dodgeRemainingMs: number
   dodgeCount: number
+  ambientMoteCount: number
+  ambientMoteMotionEnabled: boolean
 }
 
 declare global {

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="440" viewBox="0 0 256 440">
+  <defs>
+    <linearGradient id="sun-shaft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff5ce" stop-opacity="0.46"/>
+      <stop offset="0.32" stop-color="#ffe8ae" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffe8ae" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="left-ray" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#fff7d9" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#ffe9b8" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="right-ray" x1="1" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#fff7d9" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#ffe9b8" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="sun-pool" cx="0.5" cy="0.1" r="0.9">
+      <stop offset="0" stop-color="#fff1c2" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#fff1c2" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path d="M57 0h142l55 440H2z" fill="url(#sun-shaft)"/>
+  <path d="M57 0h54L0 330z" fill="url(#left-ray)"/>
+  <path d="M145 0h54l57 330z" fill="url(#right-ray)"/>
+  <ellipse cx="128" cy="322" rx="124" ry="112" fill="url(#sun-pool)"/>
+</svg>
