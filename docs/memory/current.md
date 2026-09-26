@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: `3a41b19` on `main`, synchronized with `origin/main`
-Dirty workspace: P03 planning documentation only until the plan commit. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
+Baseline: `5e03c6d` on `main`, synchronized with `origin/main` before P03 evidence edits
+Dirty workspace: scoped P03 report/task/index/memory plus verified Windows Docker smoke runbook/lesson. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
 
@@ -17,9 +17,10 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Task state
 
 - Done: T01–T12, T13, T14, T27, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
-- Next: **P03 packaged retest and final delivery evidence** toward `delivery_complete`. Plan 1.0 is drafted in `docs/tasks/P03-packaged-delivery.md` and awaits approval. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
+- Active: **P03 packaged retest and final delivery evidence**. Plan 1.0 was approved by the user on 2026-09-26 (“duyệt plan”). Visible packaged gameplay, recreate/reload persistence and all local gates are verified; P03 evidence is ready to commit/push and observe remote CI. Do not mark `delivery_complete` until that run is green. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
 - `code_complete` is reached, so Docker/GitHub configuration may now be planned (still needs its own approval).
+- The user's current instruction is to finish all remaining tasks except admin without re-requesting plan approval. P03 is the only open non-admin task; leave T15–T26 admin implementation deferred and unchanged.
 
 ## Standing approvals and boundaries
 
@@ -36,7 +37,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
 - CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions; first green run 36213362487. Failures appear as public annotations (logs need sign-in). Each push uses Actions minutes (~10 min, mostly the Windows e2e job).
 - Docker (P01): `docker compose up -d` → `http://127.0.0.1:8080` (needs Docker Desktop running); progress in volume `office-case-files_ocf-data`; `down -v` deletes it. Runbook §7.
-- P03 planning preflight (2026-09-26): Docker client/server 29.3.1; no running containers; `office-case-files_ocf-data` exists and must be preserved; ports 8080/5062/5173 had no listener. `scripts/docker-smoke.sh` uses isolated `ocf-smoke` and host 8080; recheck its exact container/volume/port immediately before use.
+- P03 preflight (2026-09-26): Docker client/server 29.3.1; default `office-case-files` containers are stopped; `office-case-files_ocf-data` exists and must be preserved; port 8080 had no listener. P03 uses only isolated project `ocf-smoke`; recheck its exact containers/volume before use.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
 
 ## Verified product state (latest)

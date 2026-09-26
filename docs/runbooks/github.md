@@ -14,6 +14,14 @@ Chạy khi push/PR vào `main` và khi bấm "Run workflow". Quyền mặc đị
 
 Chạy lại cục bộ đúng các bước đó: `scripts/verify.ps1`, `npm --prefix apps/web run e2e`, `bash scripts/docker-smoke.sh` (cần Docker Desktop).
 
+Trên Windows PowerShell, nếu `bash` gọi WSL shim và báo `/bin/bash: not found`, hãy gọi Git Bash for Windows trực tiếp (điều chỉnh đường dẫn nếu Git cài ở vị trí khác):
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" scripts/docker-smoke.sh
+```
+
+Hoặc chạy `bash scripts/docker-smoke.sh` trong Git Bash.
+
 ## Bảo vệ nhánh `main` (khuyến nghị)
 
 GitHub → **Settings → Rules → Rulesets** (hoặc **Branches → Branch protection rules**) cho `main`:

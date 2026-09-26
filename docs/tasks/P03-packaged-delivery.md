@@ -1,12 +1,12 @@
 # P03 — Packaged retest and final delivery evidence
 
-Status: awaiting_approval
+Status: in_progress
 Owner: Codex
 Depends on: P01, P02, code_complete
 Plan version: PROJECT_PLAN.md 1.4 (§9.3, §11.4–11.5), P03 plan 1.0
-Approval: pending user approval of this exact local retest scope
-Lifecycle phase: define/design
-Workflow step: handoff restored; evidence baseline checked; plan ready for review; no package, data volume or repository setting changed
+Approval: user approved plan 1.0 on 2026-09-26 with “duyệt plan”
+Lifecycle phase: handoff
+Workflow step: package/browser acceptance and local script gates passed; scoped evidence ready to commit/push; remote CI pending
 
 ## Outcome and success signal
 
@@ -19,9 +19,9 @@ The user can follow the README/runbook, open the packaged game in a visible brow
 - `code_complete` was recorded on 2026-09-26 in `docs/tasks/BUFFER-code-complete.md`.
 - P01 Docker/Compose implementation and visible container playthrough are complete. It also verified private-file 404s, secure session cookie, recreate/down-up persistence, backup/restore, image contents and a clean-clone build.
 - P02 CI configuration is complete. The recorded all-green remote run is GitHub Actions run `36213362487` on commit `6a2f8f7`; verify, headed Chromium E2E and Docker smoke all passed. P03 must verify the CI run for its final pushed implementation revision, not reuse the older run as current evidence.
-- Current checkout is clean `main` at `3a41b19`, synchronized with `origin/main`; this is the documentation/review baseline for P03.
-- Read-only Docker preflight on 2026-09-26 found Docker client/server 29.3.1, no running container, the developer's persistent `office-case-files_ocf-data` volume, and no listener on ports 8080, 5062 or 5173. Preserve that developer volume and all unrecognized containers/volumes.
-- `scripts/docker-smoke.sh` uses the isolated Compose project `ocf-smoke`, binds host port 8080, and normally removes that project's volume on exit. Before using it, confirm no existing `ocf-smoke` container/volume and that 8080 is still free. Its `--keep` option intentionally leaves the smoke stack for the visible gameplay and recreate test.
+- Approved P03 baseline was `5e03c6d` on `main`, synchronized with `origin/main`; P03 currently changes only scoped documentation/evidence files, not runtime code.
+- Planning preflight on 2026-09-26 found Docker client/server 29.3.1, no running container, the developer's persistent `office-case-files_ocf-data` volume, and no listener on ports 8080, 5062 or 5173. The implementation preflight reconfirmed port 8080 is free and found two stopped containers from the default `office-case-files` project; preserve those, the developer volume and all unrecognized resources.
+- `scripts/docker-smoke.sh` uses the isolated Compose project `ocf-smoke`, binds host port 8080, and normally removes that project's volume on exit. Preflight confirmed its project/volume absent and port free before smoke; the final report records cleanup and preservation of `office-case-files_ocf-data`.
 - The user requires each completed work session to commit scoped changes and push the current branch to configured `origin`. The configured remote is `https://github.com/hm1061998/My-Game.git`; do not change GitHub settings as part of this plan.
 
 ## Scope
@@ -82,18 +82,22 @@ The user can follow the README/runbook, open the packaged game in a visible brow
 
 ### Workflow and delivery boundary
 
-Plan approval authorizes only the P03 checks and minimal in-scope fixes above. After approval: preflight → package smoke/build → visible browser test → container-recreate recovery → fix/retest → final visible confirmation → full scripts → final CI → improvement review → update task then memory → commit scoped changes and push `main`. Stop before deploy/publish or GitHub settings changes.
+Plan approval authorizes only the P03 checks and minimal in-scope fixes above. Local sequence is complete: preflight → package smoke/build → visible browser test → container-recreate recovery → final visible confirmation → full scripts → improvement review → task/memory/report update. Next: commit and push the scoped files to `main`, observe the CI run for that commit, then record its run URL/job results. Stop before deploy/publish or GitHub settings changes.
 
 ## Handoff
 
-Planning only; baseline `3a41b19`, clean and synchronized with `origin/main`. The inspected Docker daemon has no running containers. The existing `office-case-files_ocf-data` volume is user progress and is explicitly protected. No package, container, volume, source file or GitHub setting was changed during planning.
+Baseline `5e03c6d` on `main`, synchronized with `origin/main` before these P03 evidence edits. Dirty paths are scoped: `docs/agent/lessons.md`, `docs/memory/current.md`, `docs/runbooks/github.md`, `docs/tasks/P03-packaged-delivery.md`, `docs/tasks/index.md`, and `docs/quality/P03-delivery-readiness.md`; no runtime source changed. Plan 1.0 approval remains the user's 2026-09-26 “duyệt plan”.
 
-Next action: user reviews and approves P03 plan 1.0. Once approved, begin with the exact Docker resource/port preflight and run the smoke/build using only the isolated `ocf-smoke` project.
+Verified this session: visible production case/result/review; same Chrome session survived app force-recreate and reload at revision 21; Secure/HttpOnly cookie and empty `document.cookie`; Docker health/routes/private-file 404s; non-root runtime with no Node/.NET SDK; client answer-string scan and 24-line log token scan; full `verify.ps1`, 4/4 headed E2E, clean-preflight Docker smoke, agent-doc checks and `git diff --check`. P03-owned containers/network/volume were removed after ownership verification; `office-case-files_ocf-data` remains present. The WSL `bash` shim failure was corrected in the runbook with the tested Git Bash invocation.
+
+Failed/not-run notes: initial bare `bash` invocation did not run the smoke because its WSL shim had no `/bin/bash`; explicit Git Bash passed. The first headed E2E launch was not started because automatic permission review timed out; a single retry ran successfully. Codex in-app browser automation also hit the Windows sandbox helper error; the package journey was completed in visible Chrome instead. Remote GitHub Actions for this evidence commit is not yet observed.
+
+Next action: commit and push these scoped documentation/evidence changes to `main`, then inspect the associated GitHub Actions run and record its URL and job conclusions. Do not mark P03 or `delivery_complete` done until that run is green. Preserve default stopped containers and `office-case-files_ocf-data`; no deployment, image publication or repository settings changes.
 
 ## Improvement review
 
-- Result: none
-- Observation/evidence: P01 already validated isolated Compose volumes and P03 begins with a clean Docker container inventory. No new runner failure or cross-task lesson was observed during planning.
-- Mechanism changed or no-change reason: no rule, skill, script or runtime mechanism changed. The plan makes the existing volume-preservation guarantee explicit for final delivery retesting.
-- Validation: compared the current memory, P01/P02/BUFFER handoffs, `PROJECT_PLAN.md` §9.3/§11.4–11.5, Docker Compose/runbook, CI workflow, Docker daemon/container/volume inventory and Git baseline.
-- Follow-up trigger: reassess after P03 package/browser recovery; promote a lesson only if a repeatable failure mode appears.
+- Result: verified (L013)
+- Observation/evidence: in Windows PowerShell, bare `bash` resolved to a WSL shim and failed with `/bin/bash` unavailable; the same `scripts/docker-smoke.sh` passed when invoked with Git for Windows' `bin/bash.exe`.
+- Mechanism changed: documented the explicit Windows invocation in `docs/runbooks/github.md` and added L013 to `docs/agent/lessons.md`; no quality gate, permission or runtime behavior changed.
+- Validation: explicit Git Bash smoke passed from a clean Docker project; agent-doc and diff checks remain final gates after report updates.
+- Follow-up trigger: reuse for local Docker smoke on Windows; revisit if a future runner should discover Git Bash automatically.
