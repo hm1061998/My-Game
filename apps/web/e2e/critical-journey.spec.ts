@@ -129,6 +129,32 @@ async function samplePerformance(page: Page, testInfo: TestInfo) {
   expect(metrics.longestFrameMs).toBeLessThan(1000)
 }
 
+test('fresh-state onboarding makes the first clue discoverable in three isolated runs', async ({ browser }) => {
+  for (let run = 1; run <= 3; run += 1) {
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    try {
+      await page.goto('/')
+      await expect(page.getByRole('button', { name: 'Bắt đầu lượt điều tra' })).toBeVisible()
+      await expect(page.getByText(/manh mối đầu tiên là email trên bàn/i)).toBeVisible()
+      await page.getByRole('button', { name: 'Bắt đầu lượt điều tra' }).click()
+      await expect.poll(async () => (await snapshot(page))?.position).toEqual({ x: 260, y: 645 })
+
+      await moveTo(page, 260, 535, 'yx')
+      await expect(page.getByRole('status')).toContainText('Tìm nhãn HỒ SƠ · EMAIL')
+      await moveTo(page, 455, 535)
+      await expectNearby(page, 'desk-email')
+      await expect(page.getByRole('status')).toContainText('Nhấn E để đọc manh mối')
+      await page.keyboard.press('e')
+      await expect(page.getByRole('dialog', { name: 'Sổ tay điều tra' })).toBeVisible()
+      await expect(page.getByText(/Đọc hoặc nghe manh mối tiếng Anh/i)).toBeVisible()
+      console.log(`T28 fresh-state run ${run}/3 reached clue E01 without external guidance`)
+    } finally {
+      await context.close()
+    }
+  }
+})
+
 test('complete case survives retry, reload and replay', async ({ page }, testInfo) => {
   const consoleErrors: string[] = []
   const pageErrors: string[] = []
@@ -148,6 +174,11 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expect(page.getByRole('heading', { name: 'The Swapped Report' })).toBeVisible()
   await expect(page.getByText('Đã kết nối')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Bắt đầu lượt điều tra' })).toBeVisible()
+  await expect(page.getByText(/manh mối đầu tiên là email trên bàn/i)).toBeVisible()
+  const audioSettings = page.locator('details.audio-settings')
+  await audioSettings.locator('summary').click()
+  await expect(audioSettings.getByRole('checkbox', { name: 'Âm thanh văn phòng' })).toBeChecked()
+  await expect(audioSettings.getByRole('checkbox', { name: 'Hiệu ứng điều tra' })).toBeChecked()
   expect(await page.evaluate(() => document.cookie)).toBe('')
 
   const sessionCreated = page.waitForResponse(response =>
@@ -162,10 +193,22 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await samplePerformance(page, testInfo)
 
   await moveTo(page, 260, 535, 'yx')
+  await expect(page.getByRole('status')).toContainText('Tìm nhãn HỒ SƠ · EMAIL')
   await moveTo(page, 455, 535)
   await expectNearby(page, 'desk-email')
+  await expect(page.getByRole('status')).toContainText('Nhấn E để đọc manh mối')
   await page.keyboard.press('e')
   await expect(page.getByRole('dialog', { name: 'Sổ tay điều tra' })).toBeVisible()
+  await expect(page.getByText(/Đọc hoặc nghe manh mối tiếng Anh/i)).toBeVisible()
+  const listenButton = page.getByRole('button', { name: '▶ Nghe' })
+  if (await listenButton.isEnabled()) {
+    await listenButton.click()
+    await expect(page.getByRole('button', { name: 'Dừng' })).toBeEnabled()
+    await page.getByRole('button', { name: 'Dừng' }).click()
+  } else {
+    await expect(page.getByRole('status')).toContainText('không có giọng tiếng Anh cục bộ')
+    await page.getByRole('button', { name: 'Đã hiểu · tiếp tục' }).click()
+  }
 
   const firstAnswerRequest = page.waitForRequest(request =>
     request.method() === 'POST' && request.url().endsWith('/api/v1/session/questions/Q01/answers'))
@@ -177,7 +220,7 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   expect(originalResponse?.status()).toBe(200)
   const firstResult = await originalResponse!.json() as { attempts: number; revision: number }
   expect(firstResult.attempts).toBe(1)
-  await expect(page.getByRole('status')).toContainText('Chưa đúng')
+  await expect(page.locator('.answer-feedback')).toContainText('Chưa đúng')
 
   const replayResponse = await page.request.post(originalRequest.url(), {
     headers: { 'Content-Type': 'application/json', 'X-Office-Request': '1' },
@@ -188,7 +231,7 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   expect(replayResult).toEqual(firstResult)
 
   await chooseQuestion(page, 'Q01', 'The approved version three')
-  await expect(page.getByRole('status')).toContainText('Chính xác!')
+  await expect(page.locator('.answer-feedback')).toContainText('Chính xác!')
   await closeOverlay(page)
 
   await moveTo(page, 455, 250, 'yx')
@@ -205,7 +248,7 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await page.keyboard.press('e')
   await expect(page.getByRole('dialog', { name: 'Sổ tay điều tra' })).toBeVisible()
   await chooseQuestion(page, 'Q02', 'Whether she should send the previous version')
-  await expect(page.getByRole('status')).toContainText('Chính xác!')
+  await expect(page.locator('.answer-feedback')).toContainText('Chính xác!')
   await closeOverlay(page)
 
   await moveTo(page, 1090, 570)
@@ -255,7 +298,7 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await page.keyboard.press('e')
   await expect(page.getByRole('dialog', { name: 'Sổ tay điều tra' })).toBeVisible()
   await chooseQuestion(page, 'Q03', "Nora's account replaced the file with version two")
-  await expect(page.getByRole('status')).toContainText('Chính xác!')
+  await expect(page.locator('.answer-feedback')).toContainText('Chính xác!')
   await closeOverlay(page)
 
   await moveTo(page, 1460, 495, 'xy', 8)

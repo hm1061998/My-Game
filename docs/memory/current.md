@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: `d25ce7f` on `main`, pushed to `origin`; P03 local evidence was complete and its closeout records the user's explicit GitHub E2E waiver.
-Dirty workspace: scoped P03 closeout docs only. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
+Baseline: `main` at the T28 handoff. T28 implementation, final verification and handoff are complete.
+Dirty workspace before handoff commit: scoped T28 onboarding/audio implementation and evidence only. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
 
@@ -16,7 +16,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 
 ## Task state
 
-- Done: T01–T12, T13, T14, T27, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
+- Done: T01–T12, T13, T14, T27, T28, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
 - Done: P03 local package/browser/scripts evidence; user explicitly waived waiting for GitHub E2E on 2026-09-26. Run [36239427269](https://github.com/hm1061998/My-Game/actions/runs/36239427269) was last observed with verify/Docker green and E2E in progress. Remote E2E is unverified and is not claimed green. No workflow change was made.
 - No other approved non-admin product feature tasks remain; approved admin tasks T15–T26 remain deferred and unchanged. P04 is optional infrastructure work pending a provider decision, not a player-facing feature.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
@@ -39,6 +39,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions. Route-correction run 36235584949 passed all jobs. Later reruns exposed slow-runner E2E behavior. User waived waiting for GitHub E2E; do not spend further time polling it, and do not describe the latest remote E2E as passed. CI remains enabled.
 - Docker (P01): `docker compose up -d` → `http://127.0.0.1:8080` (needs Docker Desktop running); progress in volume `office-case-files_ocf-data`; `down -v` deletes it. Runbook §7.
 - P03 (2026-09-26): packaged retest complete and isolated `ocf-smoke` resources cleaned. Docker client/server 29.3.1; default `office-case-files` containers remain stopped; `office-case-files_ocf-data` was preserved. P03 delivery report: `docs/quality/P03-delivery-readiness.md`.
+- T28 (2026-09-26): first-session briefing/tutorial and optional local audio completed. Visible headed Chromium E2E 5/5, including three isolated clean first-run contexts reaching E01; these were automated walkthroughs by one evaluator, not a three-person usability study. Web lint/typecheck/41 tests/build, agent-doc checks, full verify (12 API tests) and `git diff --check` passed. Local speech voices and audible quality remain device-dependent; GitHub E2E remains waived/unverified. Task and exact failures are recorded in `docs/tasks/T28-onboarding-audio.md`.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
 
 ## Verified product state (latest)
@@ -53,6 +54,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Phaser is built from `phaser-no-physics.js` with shared build flags (`apps/web/vite.config.ts`); vendor chunk 1,167.5 kB. After any bundler change, also check `vite preview` in the browser (L011).
 - `verify.ps1` may report a Node engine warning when the shell resolves an older Node; the approved Node 24/npm 11 path passes.
 - The Codex in-app browser previously failed with a Windows sandbox helper error; the Claude in-app browser and visible Chrome both work.
+- T28: `exec_command` repeatedly failed in the workspace sandbox with `helper_unknown_error: setup refresh had errors`; scoped commands worked through elevated-shell fallback. Codex CUA Node kernel also exited. Candidate L014 records the incident; do not broaden project permissions. npm 11 verification emitted a non-blocking Node 22.22.2 engine warning despite the bundled Node 24.19.0 path; all scripts passed.
 
 ## Relevant references
 

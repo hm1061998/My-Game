@@ -13,6 +13,7 @@
 | [T09](T09-art-hud-focus.md) art/HUD/focus | done | Codex | T08 |
 | [T10](T10-browser-e2e-playtest.md) browser/E2E/playtest | done | Codex | T08, T09 |
 | [T27](T27-visual-ui-upgrade.md) game-first visual/UI upgrade | done | Claude | T10 |
+| [T28](T28-onboarding-audio.md) first-session onboarding and audio | done | Codex | T27 |
 | [T11](T11-handoff-verification.md) handoff verification | done | Claude | T01-T10 |
 | [T12](T12-storage-roundtrip-runbook.md) storage round-trip/local runbook | done | Claude | T10, T11 |
 | [BUFFER](BUFFER-code-complete.md) fixes, persistence verification, `code_complete` record | done | Claude | T12 |

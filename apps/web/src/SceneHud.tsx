@@ -7,9 +7,11 @@ type Props = {
   nearby: WorldInteraction | null
   notice: string | null
   mapError: boolean
+  tutorialHint?: string | null
+  onDismissTutorial?: () => void
 }
 
-export function SceneHud({ objective, session, nearby, notice, mapError }: Props) {
+export function SceneHud({ objective, session, nearby, notice, mapError, tutorialHint, onDismissTutorial }: Props) {
   return <div className="scene-hud" aria-label="Thông tin hiện trường">
     <div className="hud-objective"><span>NHIỆM VỤ</span><strong>{objective}</strong></div>
     {session && <div className="hud-chips" aria-label="Tiến độ nhanh">
@@ -23,6 +25,10 @@ export function SceneHud({ objective, session, nearby, notice, mapError }: Props
       {nearby && session && <p className="interaction-prompt"><kbd>E</kbd><span>
         {nearby.kind === 'npc' ? 'Đồng nghiệp' : 'Hồ sơ'}<strong>{nearby.labelVi}</strong>
       </span></p>}
+      {tutorialHint && <div className="tutorial-hint" role="status" aria-live="polite">
+        <p>{tutorialHint}</p>
+        {onDismissTutorial && <button type="button" onClick={onDismissTutorial}>Bỏ qua hướng dẫn</button>}
+      </div>}
       {notice && <p role="alert">{notice}</p>}
     </div>
   </div>

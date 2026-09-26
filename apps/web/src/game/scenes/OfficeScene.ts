@@ -56,6 +56,7 @@ export class OfficeScene extends Phaser.Scene {
   private interactions: WorldInteraction[] = []
   private markers: Phaser.GameObjects.Container[] = []
   private nearestId: string | null = null
+  private movementTutorialSignalSent = false
   private checkpointId = 'office-entry'
   private encounterCleared = false
   private assistEnabled = false
@@ -273,7 +274,13 @@ export class OfficeScene extends Phaser.Scene {
       const length = Math.hypot(input.x, input.y)
       this.lastMoveDirection = { x: input.x / length, y: input.y / length }
     }
+    const previousPosition = this.position
     this.position = moveWithCollision(this.position, movement, FLOOR, OBSTACLES)
+    if (!this.movementTutorialSignalSent && Math.hypot(this.position.x - previousPosition.x,
+      this.position.y - previousPosition.y) > 0.5) {
+      this.movementTutorialSignalSent = true
+      this.emit({ type: 'player-moved' })
+    }
     this.player?.setPosition(this.position.x, this.position.y).setDepth(this.position.y)
     this.shadow?.setPosition(this.position.x, this.position.y + 1).setDepth(this.position.y - 1)
     this.updateNearby()

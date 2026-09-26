@@ -11,6 +11,12 @@ import {
 } from "./api/session";
 import type { GameLifecycleEvent, WorldInteraction } from "./game/bridge/events";
 import { currentObjective } from "./game/presentation";
+import { AudioSettings } from "./audio/AudioSettings";
+import { EnglishAudioPlayer } from "./audio/EnglishAudioPlayer";
+import { gameAudio } from "./audio/gameAudio";
+import { loadAudioPreferences, saveAudioPreferences, type AudioPreferences } from "./audio/preferences";
+import { stopSpeech } from "./audio/speech";
+import { isOnboardingDismissed, setOnboardingDismissed } from "./onboarding";
 import { ResolutionPanel } from "./ResolutionPanel";
 import { SceneHud } from "./SceneHud";
 import { StatusBadge } from "./StatusBadge";
@@ -23,6 +29,7 @@ const GameCanvas = lazy(async () => {
 });
 
 type HealthResponse = { status: string; service: string; utc: string };
+type TutorialStep = "move" | "interact" | "listen" | null;
 
 async function getHealth(): Promise<HealthResponse> {
   const response = await fetch("/api/v1/health");
@@ -48,6 +55,10 @@ export default function App() {
   const [encounterError, setEncounterError] = useState<string | null>(null);
   const [encounterOutcome, setEncounterOutcome] = useState<"detected" | "cleared" | null>(null);
   const [gameGeneration, setGameGeneration] = useState(0);
+  const [audioPreferences, setAudioPreferences] = useState<AudioPreferences>(loadAudioPreferences);
+  const [audioActive, setAudioActive] = useState(false);
+  const [tutorialDismissed, setTutorialDismissedState] = useState(isOnboardingDismissed);
+  const [tutorialStep, setTutorialStep] = useState<TutorialStep>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const retryRef = useRef<{ id: string; submissionId: string; revision: number } | null>(null);
   const answerRetryRef = useRef<{ id: string; choiceId: string; submissionId: string; revision: number } | null>(null);
@@ -75,16 +86,68 @@ export default function App() {
     queryKey: ["evidence", selectedEvidenceId], queryFn: () => getEvidence(selectedEvidenceId!),
     enabled: !!selectedEvidenceId && overlay === "notebook",
   });
+  const activeTutorialStep: TutorialStep = tutorialDismissed ? null : tutorialStep ??
+    (session.data ? notebook.data?.evidence.some(item => item.id === "E01") ? "listen" : "move" : null);
+  const activateAudio = useCallback(() => {
+    void gameAudio.activate().then(setAudioActive)
+  }, []);
+  const updateAudioPreferences = useCallback((next: AudioPreferences) => {
+    setAudioPreferences(next)
+    saveAudioPreferences(next)
+    gameAudio.setPreferences(next)
+  }, [])
+  const dismissTutorial = useCallback(() => {
+    setOnboardingDismissed(true)
+    setTutorialDismissedState(true)
+    setTutorialStep(null)
+  }, [])
+  const replayTutorial = useCallback(() => {
+    const hasFirstEvidence = !!notebook.data?.evidence.some(item => item.id === "E01")
+    setOnboardingDismissed(false)
+    setTutorialDismissedState(false)
+    setTutorialStep(hasFirstEvidence ? "listen" : "move")
+    if (hasFirstEvidence) {
+      setSelectedEvidenceId("E01")
+      setOverlay("notebook")
+    }
+  }, [notebook.data])
+  const finishTutorial = useCallback(() => {
+    setOnboardingDismissed(true)
+    setTutorialDismissedState(true)
+    setTutorialStep(null)
+  }, [])
+
+  useEffect(() => {
+    gameAudio.setPreferences(audioPreferences)
+  }, [audioPreferences])
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        gameAudio.suspend()
+        setAudioActive(false)
+        stopSpeech()
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility)
+      gameAudio.suspend()
+      stopSpeech()
+    }
+  }, [])
+
   const started = useMutation({
     mutationFn: startSession,
     onSuccess: (progress) => {
       queryClient.setQueryData<SessionProgress>(["session"], progress);
-      void queryClient.invalidateQueries({ queryKey: ["notebook"] });
+      void queryClient.removeQueries({ queryKey: ["notebook"] });
       void queryClient.invalidateQueries({ queryKey: ["questions"] });
       void queryClient.removeQueries({ queryKey: ["result"] });
       void queryClient.removeQueries({ queryKey: ["review"] });
       void queryClient.removeQueries({ queryKey: ["conclusion"] });
       setGameGeneration(value => value + 1);
+      if (!tutorialDismissed) setTutorialStep("move");
       setOverlay(null); setSelectedEvidenceId(null); setSelectedQuestionId(null);
     },
   });
@@ -92,6 +155,7 @@ export default function App() {
     mutationFn: () => saveMeetingCheckpoint(session.data!.revision),
     onSuccess: (progress) => {
       queryClient.setQueryData<SessionProgress>(["session"], progress);
+      gameAudio.play("checkpoint");
       setNotice("Đã lưu mốc an toàn tại khu họp.");
     },
     onError: () => {
@@ -107,6 +171,7 @@ export default function App() {
     onSuccess: (progress, request) => {
       encounterRetryRef.current = null;
       queryClient.setQueryData<SessionProgress>(["session"], progress);
+      gameAudio.play(request.outcome === "cleared" ? "checkpoint" : "scanner");
       setEncounterError(null);
       if (request.outcome === "cleared") {
         setOverlay(null);
@@ -124,6 +189,9 @@ export default function App() {
       interact(id, submissionId, revision),
     onSuccess: (result) => {
       retryRef.current = null;
+      gameAudio.play(result.kind === "evidence" ? "clue" : "dialogue");
+      if (!tutorialDismissed && result.interactionId === "desk-email" && result.collectedEvidenceId)
+        setTutorialStep("listen");
       queryClient.setQueryData<SessionProgress>(["session"], previous =>
         previous ? { ...previous, revision: result.revision } : previous);
       void queryClient.invalidateQueries({ queryKey: ["notebook"] });
@@ -156,6 +224,7 @@ export default function App() {
       answerQuestion(id, choiceId, submissionId, revision),
     onSuccess: (result) => {
       answerRetryRef.current = null;
+      gameAudio.play(result.isCorrect ? "correct" : "incorrect");
       queryClient.setQueryData<SessionProgress>(["session"], previous =>
         previous ? { ...previous, revision: result.revision } : previous);
       void queryClient.invalidateQueries({ queryKey: ["questions"] });
@@ -178,6 +247,8 @@ export default function App() {
     if (event.type === "destroyed") setGameStatus("Hiện trường đã đóng");
     if (event.type === "play-state")
       setGameStatus(event.state === "paused" ? "Đã tạm dừng" : "Đang khám phá");
+    if (event.type === "player-moved" && activeTutorialStep === "move")
+      setTutorialStep("interact");
     if (event.type === "interaction-nearby") setNearby(event.interaction);
     if (event.type === "checkpoint-reached" && session.data?.checkpointId === "office-entry" &&
         !checkpoint.isPending) checkpoint.mutate();
@@ -204,7 +275,7 @@ export default function App() {
       retryRef.current = request;
       interaction.mutate(request);
     }
-  }, [session.data, interaction, overlay, checkpoint, encounter, assistEnabled]);
+  }, [session.data, interaction, overlay, checkpoint, encounter, assistEnabled, activeTutorialStep]);
 
   useEffect(() => {
     if (!overlay) return;
@@ -249,6 +320,13 @@ export default function App() {
     assistEnabled,
   } : undefined, [session.data, assistEnabled]);
   const objective = currentObjective(session.data ?? null);
+  const tutorialHint = session.data && activeTutorialStep === "move"
+    ? "Di chuyển tới nhãn HỒ SƠ · EMAIL trên bàn bằng WASD hoặc phím mũi tên."
+    : session.data && activeTutorialStep === "interact"
+      ? nearby?.id === "desk-email"
+        ? "Bạn đã tới gần email đầu tiên. Nhấn E để đọc manh mối."
+        : "Tìm nhãn HỒ SƠ · EMAIL trên bàn; vòng sáng đánh dấu nơi có thể tương tác."
+      : null;
 
   return (
     <main className="app-shell">
@@ -276,7 +354,7 @@ export default function App() {
         <div className="scene-card">
           <div className="scene-stage">
             <SceneHud objective={objective} session={session.data ?? null} nearby={nearby}
-              notice={notice} mapError={caseMap.isError} />
+              notice={notice} mapError={caseMap.isError} tutorialHint={tutorialHint} onDismissTutorial={dismissTutorial} />
             <Suspense fallback={<div className="game-loading"><StatusBadge tone="loading">Đang dựng hiện trường…</StatusBadge></div>}>
               <GameCanvas key={gameGeneration} onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
                 overlayOpen={!!overlay} worldState={worldState} />
@@ -310,14 +388,22 @@ export default function App() {
               {session.isSuccess && !session.data && (
                 <>
                   <StatusBadge tone="missing">Chưa có lượt chơi trên trình duyệt này.</StatusBadge>
+                  <div className="first-briefing">
+                    <p className="label">VỤ ÁN · 8–12 PHÚT</p>
+                    <p>Một bản báo cáo quan trọng đã bị tráo. Dùng bàn phím để khám phá; manh mối đầu tiên là email trên bàn có vòng sáng.</p>
+                    <p>Âm thanh tùy chọn: hiệu ứng trong game và nút nghe câu tiếng Anh trong hồ sơ.</p>
+                  </div>
                   <button type="button" className="primary-action" disabled={started.isPending}
-                    onClick={() => started.mutate()}>
+                    onClick={() => { activateAudio(); started.mutate(); }}>
                     {started.isPending ? "Đang tạo lượt…" : "Bắt đầu lượt điều tra"}
                   </button>
                 </>
               )}
               {session.data && (
                 <>
+                  <button type="button" className="secondary-action tutorial-replay" onClick={replayTutorial}>
+                    Cách chơi · xem lại hướng dẫn
+                  </button>
                   <button type="button" className="primary-action" onClick={openNotebook}>Mở sổ tay điều tra</button>
                   <button type="button" className="secondary-action" onClick={() => setOverlay("resolution")}>
                     {session.data.status === "Completed" ? "Xem kết quả vụ án" : "Kết luận vụ án"}
@@ -336,6 +422,8 @@ export default function App() {
               {started.isError && <StatusBadge tone="offline" role="alert">
                 Không lưu được tiến độ. Hãy kiểm tra API hoặc tải lại trang rồi thử lại.</StatusBadge>}
             </div>
+            <AudioSettings preferences={audioPreferences} active={audioActive}
+              onChange={updateAudioPreferences} onActivate={activateAudio} />
           </div>
         </aside>
       </section>
@@ -392,7 +480,13 @@ export default function App() {
                 <div className="case-document">
                 {selectedEvidenceId && evidence.isPending && <p>Đang tải nội dung…</p>}
                 {selectedEvidenceId && evidence.isError && <p role="alert">Không đọc được manh mối này.</p>}
-                {selectedEvidenceId && evidence.data && <EvidenceDetail evidence={evidence.data} />}
+                {selectedEvidenceId && evidence.data && <>
+                  {tutorialStep === "listen" && !tutorialDismissed && <div className="learning-briefing">
+                    <p>Đọc hoặc nghe manh mối tiếng Anh. Có thể tra nghĩa từ bên dưới, rồi tiếp tục điều tra.</p>
+                    <button type="button" onClick={finishTutorial}>Đã hiểu · tiếp tục</button>
+                  </div>}
+                  <EvidenceDetail evidence={evidence.data} onPlaybackStarted={finishTutorial} />
+                </>}
                 {!selectedEvidenceId && <p className="muted">Chọn một manh mối để đọc.</p>}
                 </div>
                 <div className="question-head">
@@ -458,6 +552,8 @@ export default function App() {
   );
 }
 
-function EvidenceDetail({ evidence }: { evidence: Evidence }) {
-  return <><h3>{evidence.id} · {evidence.title}</h3><p lang="en">{evidence.body}</p></>;
+function EvidenceDetail({ evidence, onPlaybackStarted }: { evidence: Evidence; onPlaybackStarted?: () => void }) {
+  return <><h3>{evidence.id} · {evidence.title}</h3><p lang="en">{evidence.body}</p>
+    <EnglishAudioPlayer text={evidence.body} onPlaybackStarted={onPlaybackStarted} />
+  </>;
 }

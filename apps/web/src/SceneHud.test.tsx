@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
 import { SceneHud } from './SceneHud'
 
 const session = {
@@ -22,5 +22,15 @@ describe('SceneHud', () => {
     render(<SceneHud objective="Điều tra" session={null} nearby={null}
       notice="Tiến độ đã thay đổi" mapError />)
     expect(screen.getAllByRole('alert')).toHaveLength(2)
+  })
+
+  it('shows a dismissible first-action hint without hiding gameplay status', async () => {
+    const onDismiss = vi.fn()
+    render(<SceneHud objective="Tìm email" session={session} nearby={null}
+      notice={null} mapError={false} tutorialHint="Đi tới email trên bàn bằng WASD."
+      onDismissTutorial={onDismiss} />)
+    expect(screen.getByRole('status')).toHaveTextContent('Đi tới email trên bàn bằng WASD.')
+    fireEvent.click(screen.getByRole('button', { name: 'Bỏ qua hướng dẫn' }))
+    expect(onDismiss).toHaveBeenCalledOnce()
   })
 })

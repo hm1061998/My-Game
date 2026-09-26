@@ -2,6 +2,7 @@ export type GameLifecycleEvent =
   | { type: 'ready' }
   | { type: 'destroyed' }
   | { type: 'play-state'; state: 'playing' | 'paused' }
+  | { type: 'player-moved' }
   | { type: 'interaction-nearby'; interaction: WorldInteraction | null }
   | { type: 'interaction-requested'; interactionId: string }
   | { type: 'checkpoint-reached' }

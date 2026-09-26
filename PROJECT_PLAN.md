@@ -36,6 +36,8 @@ Các mặc định dưới đây giúp kế hoạch có thể thực hiện đư
 | D09 | Hành động | Di chuyển, chạy, né và vượt một khu tuần tra; công cụ làm choáng đơn giản nếu đủ thời gian | Chiến đấu cận chiến là trọng tâm: giảm nội dung điều tra để dành thời gian hitbox/AI/animation |
 | D10 | Điều khiển MVP | Desktop, bàn phím + chuột | Mobile có joystick ảo và điều khiển chạm cần thêm scope |
 | D11 | Engine phía client | Phaser cho phương án sprite 2.5D, nhúng trong React | Nếu chọn 3D thật: đánh giá Three.js/React Three Fiber và kế hoạch lại |
+| D12 | Onboarding và audio | Người dùng chọn onboarding phút đầu, âm thanh game và audio học tiếng Anh; T28 triển khai như increment sau MVP | Không thay đổi scoring/privacy/trust boundaries; nội dung vẫn đọc được khi tắt/không hỗ trợ audio |
+| D13 | Nguồn audio T28 | Đề xuất Web Audio cục bộ cho ambience/SFX và chỉ dùng Web Speech voice `localService` cho phát âm theo nút bấm; không dùng voice từ xa, không tự phát | Giọng đọc phụ thuộc browser/OS và có thể không có voice tiếng Anh cục bộ; nếu playtest không đạt, cần duyệt lựa chọn asset/voice nhất quán riêng |
 
 **D05 cập nhật theo yêu cầu mở rộng:** SQLite lưu lượt chơi, JSON lưu nội dung qua hai adapter độc lập. localStorage chỉ giữ tùy chọn UI/cache có thể bỏ, không là nguồn tiến độ chính. SQLite là điểm khởi đầu đề xuất, không ràng buộc domain/API. PostgreSQL là đích đầu tiên để kiểm chứng portability khi được chọn; document database/object storage cần adapter và đánh giá transaction riêng, không hứa thay bằng cấu hình là đủ.
 
@@ -842,7 +844,7 @@ Pipeline GitHub được hiện thực ở P02 sau code; trước đó chuỗi k
 - Test report ngắn: passed/failed/not-run, thời điểm, môi trường và known limitations.
 - URL demo nếu đã có hosting, hoặc artifact và hướng dẫn chạy.
 - Sau mốc code_complete: Dockerfile, Compose, GitHub workflows và báo cáo P01–P03; phân biệt cấu hình đã tạo với container/CI đã chạy thành công.
-- Backlog tiếp theo để chọn: mở rộng combat/RPG, audio học tiếng Anh, vụ án/map thứ hai, mobile controls, tài khoản/đồng bộ hoặc CMS; chưa tự chốt thứ tự.
+- Backlog tiếp theo để chọn: mở rộng combat/RPG, vụ án/map thứ hai, mobile controls, tài khoản/đồng bộ hoặc CMS. Audio học tiếng Anh/onboarding đã được người dùng chọn cho T28; chưa tự chốt các phần còn lại.
 
 ### 11.4. Cấu hình Docker sau khi code hoàn tất
 

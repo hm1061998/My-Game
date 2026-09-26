@@ -21,7 +21,8 @@ const phaserFlags = {
 export default defineConfig({
   plugins: [react()],
   // BUFFER: build Phaser from its no-physics source entry. The game uses its own collision
-  // (src/game/movement.ts) and runs with noAudio, so Arcade/Matter physics and sound are dropped.
+  // (src/game/movement.ts) and runs with noAudio. Game audio uses the app's native Web Audio layer,
+  // not Phaser's sound subsystem, so the no-audio Phaser build remains intentionally lean.
   resolve: {
     alias: {
       phaser: fileURLToPath(new URL('./node_modules/phaser/src/phaser-no-physics.js', import.meta.url)),

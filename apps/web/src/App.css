@@ -193,3 +193,29 @@ kbd { display: inline-block; min-width: 28px; margin: 0 4px 0 0; padding: 2px 6p
   .dialog-notebook .notebook-layout { grid-template-columns: 1fr; }
   .evidence-index { max-height: 30vh; padding-right: 0; }
 }
+
+/* T28 first-session onboarding and local audio controls */
+.first-briefing { display: grid; gap: var(--space-2); padding: var(--space-3); border: 2px solid var(--line); border-left: 6px solid var(--coral); border-radius: var(--radius-m); background: var(--paper); }
+.first-briefing p { margin: 0; color: var(--ink-soft); font-size: .85rem; line-height: 1.45; }
+.audio-settings { margin-top: var(--space-3); border-top: 2px dashed var(--line); padding-top: var(--space-3); }
+.audio-settings summary { color: var(--ink); font-weight: 800; cursor: pointer; }
+.audio-settings-body { display: grid; gap: var(--space-2); padding-top: var(--space-2); }
+.audio-settings-body label { display: flex; gap: var(--space-2); align-items: center; min-height: 36px; cursor: pointer; }
+.audio-settings-body p { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.4; }
+.audio-activate { min-height: 36px; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--paper); color: var(--ink); font-weight: 700; cursor: pointer; }
+.audio-activate:disabled { opacity: .65; cursor: default; }
+.tutorial-hint { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-2); max-width: min(720px, 96%); padding: 8px 12px; border: 2px solid var(--coral); border-radius: var(--radius-m); background: var(--paper-light); color: var(--ink); box-shadow: var(--elev-1); pointer-events: auto; }
+.tutorial-hint p { margin: 0; font-size: .86rem; line-height: 1.35; }
+.tutorial-hint button, .learning-briefing button { padding: 6px 9px; border: 1px solid var(--ink); border-radius: var(--radius-s); background: var(--paper); color: var(--ink); font: inherit; font-size: .78rem; font-weight: 750; cursor: pointer; }
+.learning-briefing { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-3); border-left: 5px solid var(--coral); border-radius: var(--radius-s); background: #fff0dc; }
+.learning-briefing p { margin: 0; font-size: .9rem; }
+.english-audio { display: grid; gap: 4px; margin-top: var(--space-3); }
+.english-audio-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.english-audio-actions button { padding: 7px 11px; border: 2px solid var(--ink); border-bottom-width: 3px; border-radius: var(--radius-s); background: var(--paper); color: var(--ink); font: inherit; font-weight: 750; cursor: pointer; }
+.english-audio-actions button:disabled { opacity: .55; cursor: not-allowed; }
+.english-audio > p { min-height: 1.2em; margin: 0; color: var(--muted); font-size: .78rem; }
+@media (max-width: 600px) {
+  .tutorial-hint { grid-template-columns: 1fr; max-width: 100%; }
+  .tutorial-hint button { justify-self: start; }
+  .learning-briefing { align-items: flex-start; }
+}
