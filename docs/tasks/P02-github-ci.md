@@ -1,12 +1,12 @@
 # P02 — GitHub workflow, PR template and branch-check guidance
 
-Status: awaiting_approval
+Status: in_progress
 Owner: Claude
 Depends on: P01
 Plan version: PROJECT_PLAN.md 1.4 (§9.3 row P02, §11.5), P02 plan 1.0
-Approval: pending user approval of plan 1.0
-Lifecycle phase: define
-Workflow step: plan drafted; no code changed
+Approval: user approved plan 1.0 on 2026-09-26 with “duyệt”
+Lifecycle phase: build
+Workflow step: approved; coding
 
 ## Outcome and success signal
 
