@@ -82,10 +82,10 @@ test('an HTML fallback for a texture shows placeholders and a recoverable notice
   await expect(page.getByText('Một số hình ảnh văn phòng không tải được')).toBeVisible()
   await page.locator('.game-canvas').focus()
   await page.keyboard.down('d')
-  await page.waitForTimeout(300)
-  await page.keyboard.up('d')
-  await expect.poll(() => page.evaluate(() => window.__officeCaseFilesE2E?.snapshot().position.x ?? 0))
-    .toBeGreaterThan(260)
+  try {
+    await expect.poll(() => page.evaluate(() => window.__officeCaseFilesE2E?.snapshot().position.x ?? 0))
+      .toBeGreaterThan(260)
+  } finally { await page.keyboard.up('d') }
   await attachShot(page, testInfo, 'missing-texture-fallback.png')
   expect(pageErrors).toEqual([])
 })

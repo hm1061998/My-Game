@@ -8,7 +8,7 @@ Branch/evidence commit: `main` at `a63e3072eb26efe83939ff4353f06c28441165dd` (pu
 GitHub Actions: [run 36233739417](https://github.com/hm1061998/My-Game/actions/runs/36233739417) — `verify`, headed Chromium `e2e`, and `docker` all succeeded.
 Follow-up: [run 36234356486](https://github.com/hm1061998/My-Game/actions/runs/36234356486) passed `verify` and `docker`, but E2E failed because the test targeted the cabinet collision boundary (`y=495`) and slow CI movement stopped at `y=503.308`. The route now targets safe `y=500`; local headed E2E is 4/4 and full `verify.ps1` passes. Final remote rerun [36235584949](https://github.com/hm1061998/My-Game/actions/runs/36235584949) passed all three jobs.
 Final correction commit `98448555c85815d0523c5ced457080b5c0b2da6d`: [run 36235584949](https://github.com/hm1061998/My-Game/actions/runs/36235584949) — `verify`, headed Chromium `e2e`, and `docker` all succeeded.
-Later docs-only commit `a7c540c11a35f6cfb25729b6167a90287f9c8c58`: [run 36236199020](https://github.com/hm1061998/My-Game/actions/runs/36236199020) passed `verify` and `docker`; E2E timed out waiting for revision-zero UI text after starting a session (no public failed HTTP detail; detailed logs require authentication). The test now asserts the session-start POST status/revision directly. Local headed E2E and full verify pass; remote rerun is pending.
+Later docs-only commit `a7c540c11a35f6cfb25729b6167a90287f9c8c58`: [run 36236199020](https://github.com/hm1061998/My-Game/actions/runs/36236199020) passed `verify` and `docker`; E2E timed out waiting for revision-zero UI text. Diagnostic commit `3bd397873ebf6b56517ebd463a3fdf649c69646a`: [run 36236947169](https://github.com/hm1061998/My-Game/actions/runs/36236947169) confirmed session start, then exposed dodge hitting the cabinet edge because the last movement vector was upward; a visual fallback test also used a fixed movement wait. The tests now set dodge direction explicitly and poll position changes. Local headed E2E and full verify pass; remote rerun is pending.
 
 Package URL: `http://127.0.0.1:8080/` (production Docker Compose package)
 
@@ -59,6 +59,7 @@ The previous P01 957-line log review also recorded no `ocf_session` cookie name 
 | Follow-up CI run 36234356486 for `0af22cd91ca716e25eb0d20383a45a5d10973a56` | verify/docker pass; E2E failure diagnosed as route targeting exact collider boundary |
 | Final route-correction CI run 36235584949 for `98448555c85815d0523c5ced457080b5c0b2da6d` | pass: verify, headed Chromium E2E, Docker smoke |
 | Follow-up CI run 36236199020 for `a7c540c11a35f6cfb25729b6167a90287f9c8c58` | verify/docker pass; E2E startup UI timeout; direct API status/revision assertions added; local 4/4 and full verify pass; remote diagnostic rerun pending |
+| Diagnostic CI run 36236947169 for `3bd397873ebf6b56517ebd463a3fdf649c69646a` | session creation confirmed; slow-runner dodge direction/collider edge and fixed-hold movement assertion failed; local fixes pass headed 4/4/full verify; remote rerun pending |
 
 The Vite build emits the already-known `advancedChunks` deprecation warning; the build succeeds. No product fix was needed.
 

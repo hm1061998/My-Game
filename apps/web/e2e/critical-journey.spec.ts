@@ -231,10 +231,16 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await moveTo(page, 1090, 500, 'yx', 8)
   // A dodge lasts ~300 ms, which a slow runner's snapshot polling can miss; count dodges instead.
   const dodgesBefore = (await snapshot(page))?.dodgeCount ?? 0
+  // Dodge follows the last movement direction. Set it to the corridor before triggering so
+  // the player doesn't dash upward into the cabinet edge when a slow runner is near its boundary.
+  const dodgeStartX = (await snapshot(page))?.position.x ?? 0
+  await page.keyboard.down('d')
+  await page.waitForTimeout(100)
+  await page.keyboard.up('d')
+  await expect.poll(async () => (await snapshot(page))?.position.x ?? 0).toBeGreaterThan(dodgeStartX)
   await page.keyboard.down('Space')
   await page.keyboard.up('Space')
   await expect.poll(async () => (await snapshot(page))?.dodgeCount ?? 0).toBeGreaterThan(dodgesBefore)
-  await moveTo(page, 1090, 500, 'yx', 8)
   await moveTo(page, 1400, 500, 'xy', 8)
   await expectNearby(page, 'archive-terminal')
   await page.keyboard.press('e')
