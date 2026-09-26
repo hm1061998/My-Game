@@ -31,7 +31,18 @@ jobs:
           global-json-file: global.json
       - name: Repository verification script
         shell: pwsh
-        run: ./scripts/verify.ps1
+        run: |
+          # Surface the tail of a failure as a public annotation (job logs need sign-in to read).
+          $output = [System.Collections.Generic.List[string]]::new()
+          try {
+            ./scripts/verify.ps1 *>&1 | ForEach-Object { $output.Add("$_"); $_ }
+            if ($LASTEXITCODE -ne 0) { throw "verify.ps1 exited with $LASTEXITCODE" }
+          } catch {
+            $output.Add("ERROR: $($_.Exception.Message)")
+            $tail = ($output | Select-Object -Last 40) -join '%0A'
+            Write-Output "::error title=verify.ps1 failed::$tail"
+            exit 1
+          }
 
   e2e:
     name: e2e (headed Chromium journey)
