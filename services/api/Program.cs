@@ -9,6 +9,23 @@ using OfficeCaseFiles.Api.Features.Conclusions;
 using OfficeCaseFiles.Api.Infrastructure.Content;
 using OfficeCaseFiles.Api.Infrastructure.Sqlite;
 
+if (args.Contains("--healthcheck", StringComparer.Ordinal))
+{
+    // Container health probe without curl/wget in the runtime image.
+    var port = (Environment.GetEnvironmentVariable("ASPNETCORE_HTTP_PORTS") ?? "8080").Split(';', ',')[0];
+    using var probe = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
+    try
+    {
+        using var health = await probe.GetAsync($"http://127.0.0.1:{port}/api/v1/health");
+        Environment.ExitCode = health.IsSuccessStatusCode ? 0 : 1;
+    }
+    catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException)
+    {
+        Environment.ExitCode = 1;
+    }
+    return;
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
@@ -62,6 +79,17 @@ app.Use(async (context, next) =>
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+}
+
+// Container/same-origin hosting: serve the built React app from wwwroot when it exists.
+// Dev keeps using the Vite server. Case content lives outside wwwroot and is never served.
+var webRoot = app.Environment.WebRootPath;
+if (webRoot is not null && File.Exists(Path.Combine(webRoot, "index.html")))
+{
+    app.UseStaticFiles();
+    app.MapFallbackToFile("index.html");
+    // Unknown API paths stay real 404s instead of falling back to the SPA shell.
+    app.Map("/api/{**rest}", () => Results.NotFound());
 }
 
 app.MapGet("/api/v1/health", () => Results.Ok(HealthResponse.Create()))

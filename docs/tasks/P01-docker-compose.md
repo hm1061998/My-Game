@@ -1,12 +1,12 @@
 # P01 — Docker image, Compose and container smoke test
 
-Status: awaiting_approval
+Status: in_progress
 Owner: Claude
 Depends on: code_complete (recorded 2026-09-26)
 Plan version: PROJECT_PLAN.md 1.4 (§9.3 row P01, §11.4), P01 plan 1.0
-Approval: pending user approval of plan 1.0
-Lifecycle phase: define
-Workflow step: plan drafted; no code changed
+Approval: user approved plan 1.0 on 2026-09-26 with “duyệt kế hoạch”
+Lifecycle phase: build
+Workflow step: approved; coding
 
 ## Outcome and success signal
 

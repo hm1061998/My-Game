@@ -1,0 +1,30 @@
+# Local container run. Progress lives in the named volume `ocf-data`;
+# `docker compose down -v` deletes it. See docs/runbooks/local.md ("Docker").
+name: office-case-files
+
+services:
+  migrate:
+    build: .
+    image: office-case-files:local
+    command: ["--migrate"]
+    volumes:
+      - ocf-data:/data
+    healthcheck:
+      disable: true
+    restart: "no"
+
+  app:
+    image: office-case-files:local
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ocf-data:/data
+    restart: unless-stopped
+
+volumes:
+  ocf-data:

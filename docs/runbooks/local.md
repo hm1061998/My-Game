@@ -76,3 +76,40 @@ npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe
 ```
 
 E2E chạy trình duyệt hiển thị với database tạm riêng, không chạm vào database của bạn.
+
+## 7. Chạy bằng Docker (một container, cùng origin)
+
+Cần Docker Desktop đang chạy. Image gồm API ASP.NET Core và bản build React; không chứa Node/.NET SDK, chạy bằng user thường `app`. Tiến độ nằm trong named volume `office-case-files_ocf-data` (SQLite tại `/data/office-case-files.db`).
+
+```powershell
+docker compose build            # build image office-case-files:local
+docker compose up -d            # chạy migrate một lần rồi khởi động app
+docker compose ps               # app phải "healthy"
+docker compose logs -f app      # xem log (không chứa token)
+```
+
+Mở `http://127.0.0.1:8080`. Cổng chỉ mở trên máy local. Container chạy chế độ Production: cookie phiên có `Secure`, trình duyệt chấp nhận trên `127.0.0.1`/`localhost`; dùng tên máy khác thì phải đặt sau HTTPS reverse proxy (chưa thuộc phạm vi).
+
+Dừng và chạy lại **không mất tiến độ**:
+
+```powershell
+docker compose stop             # dừng
+docker compose up -d --force-recreate app   # tạo lại container, giữ volume
+docker compose down             # xóa container/network, GIỮ volume
+```
+
+> Cảnh báo: `docker compose down -v` hoặc `docker volume rm office-case-files_ocf-data` **xóa toàn bộ tiến độ**. Sao lưu trước.
+
+Sao lưu/khôi phục (dừng app trước; thư mục `D:\OfficeCaseFiles` là ví dụ):
+
+```powershell
+docker compose stop app
+docker compose run --rm -v D:\OfficeCaseFiles:/backup app --export /backup/backup.export.json
+# khôi phục vào volume mới, rỗng:
+docker volume create ocf-restored
+docker run --rm -v ocf-restored:/data office-case-files:local --migrate
+docker run --rm -v ocf-restored:/data -v D:\OfficeCaseFiles:/backup office-case-files:local --import /backup/backup.export.json
+docker compose start app
+```
+
+Muốn app dùng volume đã khôi phục, đổi tên volume trong `compose.yaml` (hoặc khôi phục thẳng vào `office-case-files_ocf-data` sau khi đã sao lưu và làm rỗng nó). Import luôn từ chối database đã có dữ liệu.
