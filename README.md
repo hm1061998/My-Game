@@ -100,7 +100,7 @@ Mở hai terminal tại thư mục gốc repository. Trước lần chạy API �
 dotnet run --project services/api --no-launch-profile -- --migrate
 ```
 
-Lệnh này cập nhật file SQLite `office-case-files.db` tại thư mục gốc; file được Git ignore. API không tự sửa schema khi khởi động, và sẽ báo rõ nếu còn migration chưa áp dụng. Không xóa file database để “sửa lỗi” vì nó chứa tiến độ local của bạn. Có thể đổi vị trí database bằng biến môi trường `ConnectionStrings__Game`; đường dẫn mới phải nằm trên ổ lưu bền vững.
+Lệnh này tạo/cập nhật file SQLite `services/api/office-case-files.db` (đường dẫn tương đối được tính từ thư mục project API); file được Git ignore. API không tự sửa schema khi khởi động, và sẽ báo rõ nếu còn migration chưa áp dụng. Không xóa file database để “sửa lỗi” vì nó chứa tiến độ local của bạn. Có thể đổi vị trí database bằng biến môi trường `ConnectionStrings__Game`; đường dẫn mới phải nằm trên ổ lưu bền vững.
 
 Terminal 1 — API:
 

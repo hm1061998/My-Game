@@ -5,8 +5,8 @@ Owner: Claude
 Depends on: T12
 Plan version: PROJECT_PLAN.md 1.4 (§9 row BUFFER, §9.3), BUFFER plan 1.0
 Approval: user approved plan 1.0 on 2026-09-26 with “duyệt kế hoạch”
-Lifecycle phase: build
-Workflow step: approved; implementing fixes
+Lifecycle phase: verify
+Workflow step: fixes, fresh-clone rehearsal, persistence pass and final scripts done; awaiting user confirmation to record code_complete
 
 ## Outcome and success signal
 
@@ -53,12 +53,29 @@ Risks: the rehearsal clone downloads npm/NuGet packages (network, time) — uses
 
 ## Handoff
 
-Pending approval. Baseline `5fb512c`, clean tree.
+Baseline `5fb512c`; plan `6bcf08e`; fixes `45c756c`.
+
+Fixes and decisions applied:
+
+- `scripts/run-e2e.mjs` + `apps/web/package.json`: `npm --prefix apps/web run e2e` uses `pwsh` if present, else Windows PowerShell 5.1, runs from the repo root and forwards arguments/exit code. Verified: 4/4 via npm on Node 24.15.0 / npm 11.12.1.
+- `apps/web/vite.config.ts`: `chunkSizeWarningLimit: 1600` with a comment; build no longer warns at ~1.40 MB; a temporary 1000 kB limit still warned (checked, reverted).
+- OpenAPI → TypeScript codegen stays deferred (non-blocking).
+- README: Node 24 activation for nvm-windows (global `nvm use` or per-terminal PATH), no `pwsh` requirement, SDK installer invoked with `powershell`; runbook/memory use the npm E2E entry point.
+
+Fresh-clone rehearsal (`git clone` of `origin/main` at `45c756c` into the session scratchpad; deleted afterwards; the repo's `.tools/dotnet` SDK reused instead of re-downloading, as README allows): `npm ci` (0 vulnerabilities), locked restore, `--migrate`, API + web, visible-browser playthrough, `--export` → new `restored.db` `--migrate` + `--import` (all 10 tables incl. conclusion and review), `verify.ps1` pass (30 web / 11 API tests, 0 warnings), headed E2E 4/4. Doc gap found and fixed: README said the default DB is created at the repo root; it is `services/api/office-case-files.db`.
+
+Visible-browser persistence pass (on the clone): new session; E01 collected with real keyboard movement and `E`; notebook stamp; Q01 wrong then right in the UI; Escape → canvas focus; reload → identical facts (revision 3); window blur → "Đã tạm dừng", Escape → "Đang khám phá"; remaining steps prepared through the app's API modules (L010), then the conclusion submitted through the evidence board (2/2, confirmation) → 67/100 and 100/100; review R01 correct (1/5); API stopped → two ⚠ offline alerts, one canvas; restore into a clean DB and API restart → result 67/100 and review 1/5 persist; "Chơi lại vụ án" → revision 0 at the lobby, one canvas.
+
+Final scripts on the main repo: `verify.ps1` pass (28 task files, 30 web tests, build without chunk warning, .NET 0 warnings/0 errors, 11/11 API tests); `npm --prefix apps/web run e2e` 4/4; `check-agent-docs.ps1`, `git diff --check` pass.
+
+Open items (non-blocking, accepted): OpenAPI TypeScript codegen; Phaser chunk splitting deferred to the graphics big update (`docs/design/graphics-technology-options.md`); the default shell here still resolves Node 22 until the developer switches (documented).
+
+No blocking defect is open. Next action: on user confirmation, record `code_complete` here and in `docs/memory/current.md`; then Docker/GitHub packaging (P01–P03) needs its own approved plan.
 
 ## Improvement review
 
-- Result: pending
-- Observation/evidence: pending
-- Mechanism changed or no-change reason: pending
-- Validation: pending
-- Follow-up trigger: pending
+- Result: none (new)
+- Observation/evidence: the fresh-clone rehearsal found one real doc error (DB location) that no in-repo check caught; L008 preflight (stop dev servers before `verify.ps1`) and L010 were applied without incident.
+- Mechanism changed or no-change reason: fixed the README; no new rule — rehearsing from a clean clone before a milestone is already required by this plan and PROJECT_PLAN §9.3.
+- Validation: rehearsal and final scripts above.
+- Follow-up trigger: repeat the fresh-clone rehearsal before `delivery_complete`.
