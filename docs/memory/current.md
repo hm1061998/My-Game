@@ -1,8 +1,8 @@
 # Current context
 
-Updated: 2026-09-25
-Baseline: `main` at the T11 completion commit (see `git log -1`); previous `87bfb7f` (T27 V5)
-Dirty workspace: none expected after T11. Never commit `office-case-files.db`, `.tools/`, `test-results/` or `playwright-report/`.
+Updated: 2026-09-26
+Baseline: `3a41b19` on `main`, synchronized with `origin/main`
+Dirty workspace: P03 planning documentation only until the plan commit. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
 
@@ -17,7 +17,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Task state
 
 - Done: T01–T12, T13, T14, T27, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
-- Next: **P03 packaged retest and final delivery evidence** toward `delivery_complete`. No plan yet: draft and get approval. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
+- Next: **P03 packaged retest and final delivery evidence** toward `delivery_complete`. Plan 1.0 is drafted in `docs/tasks/P03-packaged-delivery.md` and awaits approval. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
 - `code_complete` is reached, so Docker/GitHub configuration may now be planned (still needs its own approval).
 
@@ -36,6 +36,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
 - CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions; first green run 36213362487. Failures appear as public annotations (logs need sign-in). Each push uses Actions minutes (~10 min, mostly the Windows e2e job).
 - Docker (P01): `docker compose up -d` → `http://127.0.0.1:8080` (needs Docker Desktop running); progress in volume `office-case-files_ocf-data`; `down -v` deletes it. Runbook §7.
+- P03 planning preflight (2026-09-26): Docker client/server 29.3.1; no running containers; `office-case-files_ocf-data` exists and must be preserved; ports 8080/5062/5173 had no listener. `scripts/docker-smoke.sh` uses isolated `ocf-smoke` and host 8080; recheck its exact container/volume/port immediately before use.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
 
 ## Verified product state (latest)
@@ -55,4 +56,5 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 
 - `AGENTS.md`, `CLAUDE.md`, `docs/agent/protocol.md`, `docs/agent/improvement.md`, `docs/agent/lessons.md`, `docs/agent/skills-index.md`
 - `docs/tasks/index.md`, `docs/tasks/TEMPLATE.md`, `PROJECT_PLAN.md` (§9 BUFFER row, §9.3 code_complete), `docs/runbooks/local.md`
+- `docs/tasks/P03-packaged-delivery.md`
 - `apps/web/AGENTS.md`, `services/api/AGENTS.md`, `docs/assets/manifest.md`, `README.md`
