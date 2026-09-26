@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: `main` at the T28 handoff. T28 implementation, final verification and handoff are complete.
-Dirty workspace before handoff commit: scoped T28 onboarding/audio implementation and evidence only. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
+Baseline: `main` at T28 handoff commit `0a7ba42`, pushed to `origin/main`. Working tree is clean; T28 implementation, final verification and handoff are complete.
+Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
 
