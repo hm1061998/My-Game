@@ -1,7 +1,7 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: `main` at T28 handoff commit `0a7ba42`, pushed to `origin/main`. Working tree is clean; T28 implementation, final verification and handoff are complete.
+Baseline: `b7c7f48` on `main`, pushed to `origin/main`; T28 is complete. T29 source selection is approved in D14, but official download failed; no audio file or product code has been added. Workspace has a documentation checkpoint recording the blocker pending commit/push.
 Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
@@ -17,6 +17,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Task state
 
 - Done: T01–T12, T13, T14, T27, T28, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
+- Blocked: T29 integration of the approved Pixabay “Quiet room ambience with traffic outside” clip. The official download control timed out and direct CDN returned HTTP 403; no asset file or product code is present. Resume when the user supplies the approved MP3 at the path recorded in `docs/tasks/T29-office-ambience.md`.
 - Done: P03 local package/browser/scripts evidence; user explicitly waived waiting for GitHub E2E on 2026-09-26. Run [36239427269](https://github.com/hm1061998/My-Game/actions/runs/36239427269) was last observed with verify/Docker green and E2E in progress. Remote E2E is unverified and is not claimed green. No workflow change was made.
 - No other approved non-admin product feature tasks remain; approved admin tasks T15–T26 remain deferred and unchanged. P04 is optional infrastructure work pending a provider decision, not a player-facing feature.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.

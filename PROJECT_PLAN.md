@@ -38,6 +38,7 @@ Các mặc định dưới đây giúp kế hoạch có thể thực hiện đư
 | D11 | Engine phía client | Phaser cho phương án sprite 2.5D, nhúng trong React | Nếu chọn 3D thật: đánh giá Three.js/React Three Fiber và kế hoạch lại |
 | D12 | Onboarding và audio | Người dùng chọn onboarding phút đầu, âm thanh game và audio học tiếng Anh; T28 triển khai như increment sau MVP | Không thay đổi scoring/privacy/trust boundaries; nội dung vẫn đọc được khi tắt/không hỗ trợ audio |
 | D13 | Nguồn audio T28 | Đề xuất Web Audio cục bộ cho ambience/SFX và chỉ dùng Web Speech voice `localService` cho phát âm theo nút bấm; không dùng voice từ xa, không tự phát | Giọng đọc phụ thuộc browser/OS và có thể không có voice tiếng Anh cục bộ; nếu playtest không đạt, cần duyệt lựa chọn asset/voice nhất quán riêng |
+| D14 | Ambience văn phòng T29 | Người dùng duyệt tích hợp asset “Quiet room ambience with traffic outside” của AntonLD từ Pixabay; lưu cục bộ trong game, chỉ phát sau gesture, giữ procedural fallback | Ghi provenance + license ở manifest; không hotlink/stream từ dịch vụ bên ngoài, không phân phối asset độc lập |
 
 **D05 cập nhật theo yêu cầu mở rộng:** SQLite lưu lượt chơi, JSON lưu nội dung qua hai adapter độc lập. localStorage chỉ giữ tùy chọn UI/cache có thể bỏ, không là nguồn tiến độ chính. SQLite là điểm khởi đầu đề xuất, không ràng buộc domain/API. PostgreSQL là đích đầu tiên để kiểm chứng portability khi được chọn; document database/object storage cần adapter và đánh giá transaction riêng, không hứa thay bằng cấu hình là đủ.
 
