@@ -220,15 +220,17 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await page.getByRole('button', { name: 'Thử lại' }).click()
   await expect(page.locator('.game-canvas')).toBeFocused()
 
-  // Stay in the lane between the cabinet (y<=480) and the scanner edge (y>=509).
-  await moveTo(page, 1090, 495, 'yx', 8)
+  // Stay clear of the cabinet (y<=480, plus the 15 px player radius) and outside scanner range.
+  // Aim inside the reachable lane instead of its collision boundary; slow CI frames can stop at
+  // y≈503 when moving from the meeting lane, which is already a safe corridor position.
+  await moveTo(page, 1090, 500, 'yx', 8)
   // A dodge lasts ~300 ms, which a slow runner's snapshot polling can miss; count dodges instead.
   const dodgesBefore = (await snapshot(page))?.dodgeCount ?? 0
   await page.keyboard.down('Space')
   await page.keyboard.up('Space')
   await expect.poll(async () => (await snapshot(page))?.dodgeCount ?? 0).toBeGreaterThan(dodgesBefore)
-  await moveTo(page, 1090, 495, 'yx', 8)
-  await moveTo(page, 1400, 495, 'xy', 8)
+  await moveTo(page, 1090, 500, 'yx', 8)
+  await moveTo(page, 1400, 500, 'xy', 8)
   await expectNearby(page, 'archive-terminal')
   await page.keyboard.press('e')
   await expect(page.getByText('Máy quét: Đã vượt')).toBeVisible()

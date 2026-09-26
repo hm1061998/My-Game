@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: P03 evidence commit `a63e307` on `main`, pushed to `origin`; final documentation handoff update is pending its required commit/push.
-Dirty workspace: only scoped P03 handoff/report/index/memory documentation. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
+Baseline: `0af22cd` on `main`, pushed to `origin`; a P03 E2E reliability correction and its scoped rule/evidence updates are pending commit/push.
+Dirty workspace: scoped P03 headed E2E route correction and task/rule/report/index/memory documentation. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
 
@@ -17,11 +17,11 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Task state
 
 - Done: T01–T12, T13, T14, T27, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
-- Done: **P03 packaged retest and final delivery evidence**. Plan 1.0 was approved by the user on 2026-09-26 (“duyệt plan”). Visible packaged gameplay, recreate/reload persistence and all local gates passed. GitHub Actions run [36233739417](https://github.com/hm1061998/My-Game/actions/runs/36233739417) for commit `a63e3072eb26efe83939ff4353f06c28441165dd` passed `verify`, headed Chromium `e2e`, and `docker`; `delivery_complete` is recorded. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
-- No remaining non-admin tasks are open. The user asked to complete all work except admin; therefore leave approved admin tasks T15–T26 deferred and unchanged.
+- Active: **P03 follow-up headed-E2E reliability correction**. Initial package evidence run [36233739417](https://github.com/hm1061998/My-Game/actions/runs/36233739417) passed all three jobs for `a63e307`. Later docs-closeout run [36234356486](https://github.com/hm1061998/My-Game/actions/runs/36234356486) exposed the journey targeting the cabinet collider boundary (`y=495`), with slow CI movement stopping at `503.308`; E2E test route now targets safe `y=500`. Local headed E2E is 4/4 and full `verify.ps1` passes. Re-close P03/delivery only after CI passes on the route-correction commit. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
+- No other non-admin tasks remain. The user asked to complete all work except admin; leave approved admin tasks T15–T26 deferred and unchanged.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
-- `code_complete` and `delivery_complete` are recorded. P01/P02/P03 delivery work is finished; no deployment, image publishing, or GitHub settings changes were authorized or performed.
-- The user's current instruction was to finish all remaining tasks except admin without re-requesting plan approval. There are no remaining non-admin tasks; leave T15–T26 admin implementation deferred and unchanged.
+- `code_complete` is recorded. `delivery_complete` had been recorded after initial P03 acceptance, but is held open again until the E2E reliability follow-up passes on the pushed revision. No deployment, image publishing, or GitHub settings changes were authorized or performed.
+- The user's current instruction is to finish all remaining tasks except admin without re-requesting plan approval. Complete this P03 reliability follow-up; leave T15–T26 admin implementation deferred and unchanged.
 
 ## Standing approvals and boundaries
 
@@ -36,7 +36,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Headed E2E: `npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe` (launcher `scripts/run-e2e.mjs` uses `pwsh` if present, else Windows PowerShell 5.1). 4 tests: critical journey + 3 visual-state checks.
 - Full: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`; agent docs: `scripts/check-agent-docs.ps1`.
 - Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
-- CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions. P03 evidence run 36233739417 for `a63e3072eb26efe83939ff4353f06c28441165dd` passed all three jobs. Failures appear as public annotations (logs need sign-in). Each push uses Actions minutes (~10 min, mostly the Windows e2e job).
+- CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions. P03 evidence run 36233739417 for `a63e3072eb26efe83939ff4353f06c28441165dd` passed all three jobs. Follow-up run 36234356486 exposed and annotated the collider-boundary E2E route issue; correction awaits CI. Failures appear as public annotations (logs need sign-in). Each push uses Actions minutes (~10 min, mostly the Windows e2e job).
 - Docker (P01): `docker compose up -d` → `http://127.0.0.1:8080` (needs Docker Desktop running); progress in volume `office-case-files_ocf-data`; `down -v` deletes it. Runbook §7.
 - P03 (2026-09-26): packaged retest complete and isolated `ocf-smoke` resources cleaned. Docker client/server 29.3.1; default `office-case-files` containers remain stopped; `office-case-files_ocf-data` was preserved. P03 delivery report: `docs/quality/P03-delivery-readiness.md`.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
