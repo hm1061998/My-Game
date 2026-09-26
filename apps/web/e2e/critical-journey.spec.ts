@@ -144,7 +144,12 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expect(page.getByRole('button', { name: 'Bắt đầu lượt điều tra' })).toBeVisible()
   expect(await page.evaluate(() => document.cookie)).toBe('')
 
+  const sessionCreated = page.waitForResponse(response =>
+    response.request().method() === 'POST' && response.url().endsWith('/api/v1/sessions'))
   await page.getByRole('button', { name: 'Bắt đầu lượt điều tra' }).click()
+  const sessionResponse = await sessionCreated
+  expect(sessionResponse.status(), 'session start API response').toBe(201)
+  expect((await sessionResponse.json()).revision, 'new session starts at revision zero').toBe(0)
   await expect(page.getByText('Phiên bản tiến độ: 0')).toBeVisible()
   await expect(page.locator('canvas')).toHaveCount(1)
   await expect.poll(async () => (await snapshot(page))?.position).toEqual({ x: 260, y: 645 })

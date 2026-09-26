@@ -1,8 +1,8 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: P03 route-correction commit `9844855` on `main`, pushed to `origin`; final documentation handoff update is pending commit/push.
-Dirty workspace: scoped P03 final task/report/index/memory documentation only. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
+Baseline: `a7c540c` on `main`, pushed to `origin`; session-start E2E diagnostics and scoped task/report/memory updates are pending commit/push.
+Dirty workspace: scoped P03 E2E diagnostic and task/report/index/memory checkpoint. Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
 
@@ -17,11 +17,11 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Task state
 
 - Done: T01–T12, T13, T14, T27, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
-- Done: **P03 packaged retest, delivery evidence, and E2E reliability correction**. Plan 1.0 was approved by the user on 2026-09-26 (“duyệt plan”). The scanner corridor E2E now targets reachable safe `y=500` instead of the cabinet collision boundary. Local headed E2E passed 4/4; full verify passed. Final route-correction commit `98448555c85815d0523c5ced457080b5c0b2da6d` passed GitHub Actions run [36235584949](https://github.com/hm1061998/My-Game/actions/runs/36235584949): `verify`, headed Chromium `e2e`, and `docker`. `delivery_complete` is recorded. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
-- No remaining non-admin tasks are open. The user asked to complete all work except admin; approved admin tasks T15–T26 remain deferred and unchanged.
+- Active: **P03 E2E startup-diagnostic follow-up**. The scanner-route correction passed all three CI jobs for `98448555` in run [36235584949](https://github.com/hm1061998/My-Game/actions/runs/36235584949). A later documentation-only run [36236199020](https://github.com/hm1061998/My-Game/actions/runs/36236199020) passed verify/Docker but timed out at the session-start UI assertion, without a public failed-request detail. Added direct POST status/revision assertions; local headed E2E passes 4/4 and full verify passes. Hold P03/`delivery_complete` until remote CI passes for this instrumented revision. Repository settings (branch protection) remain the user's action per `docs/runbooks/github.md`.
+- No other non-admin tasks remain. The user asked to complete all work except admin; approved admin tasks T15–T26 remain deferred and unchanged.
 - No other non-admin tasks remain. The user asked to complete all work except admin; leave approved admin tasks T15–T26 deferred and unchanged.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
-- `code_complete` is recorded. `delivery_complete` had been recorded after initial P03 acceptance, but is held open again until the E2E reliability follow-up passes on the pushed revision. No deployment, image publishing, or GitHub settings changes were authorized or performed.
+- `code_complete` is recorded. `delivery_complete` was reached after the package and route-correction checks, but is held open again pending remote verification of the session-start diagnostic. No deployment, image publishing, or GitHub settings changes were authorized or performed.
 - The user's current instruction was to finish all remaining tasks except admin without re-requesting plan approval. All non-admin tasks are now complete; leave T15–T26 admin implementation deferred and unchanged.
 
 ## Standing approvals and boundaries
@@ -37,7 +37,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Headed E2E: `npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe` (launcher `scripts/run-e2e.mjs` uses `pwsh` if present, else Windows PowerShell 5.1). 4 tests: critical journey + 3 visual-state checks.
 - Full: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`; agent docs: `scripts/check-agent-docs.ps1`.
 - Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
-- CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions. Final P03 run 36235584949 for `98448555c85815d0523c5ced457080b5c0b2da6d` passed all three jobs. Failures appear as public annotations (logs need sign-in). Each push uses Actions minutes (~10 min, mostly the Windows e2e job).
+- CI (P02): `.github/workflows/ci.yml` runs on push/PR to `main` (verify + e2e on Windows, docker smoke on Ubuntu); repository is public, runs visible at https://github.com/hm1061998/My-Game/actions. Route-correction run 36235584949 passed all three jobs. Run 36236199020 exposed an intermittent session-start UI timeout; instrumented E2E now checks the create-session response and awaits CI. Failures appear as public annotations (logs need sign-in). Each push uses Actions minutes (~10 min, mostly the Windows e2e job).
 - Docker (P01): `docker compose up -d` → `http://127.0.0.1:8080` (needs Docker Desktop running); progress in volume `office-case-files_ocf-data`; `down -v` deletes it. Runbook §7.
 - P03 (2026-09-26): packaged retest complete and isolated `ocf-smoke` resources cleaned. Docker client/server 29.3.1; default `office-case-files` containers remain stopped; `office-case-files_ocf-data` was preserved. P03 delivery report: `docs/quality/P03-delivery-readiness.md`.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
