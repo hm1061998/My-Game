@@ -209,7 +209,8 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await closeOverlay(page)
 
   // From the minutes (x≈1160) go left first: going up first can clip the meeting table (x≥1190).
-  await moveTo(page, 1090, 585, 'xy')
+  // Tight tolerance: at y≈609 the player would stop at the table (x≈1190), just outside scanner range.
+  await moveTo(page, 1090, 585, 'xy', 8)
   // Walk along the scanner row until detected; a fixed hold time depends on renderer speed.
   const scannerResult = page.getByRole('dialog', { name: 'Kết quả máy quét' })
   await page.keyboard.down('d')
