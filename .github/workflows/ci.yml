@@ -68,7 +68,21 @@ jobs:
           dotnet restore OfficeCaseFiles.slnx --locked-mode
           dotnet build services/api --no-restore
       - name: Headed E2E on isolated temporary database
-        run: npm --prefix apps/web run e2e
+        shell: pwsh
+        run: |
+          # Surface the tail of a failure as a public annotation (job logs need sign-in to read).
+          $output = [System.Collections.Generic.List[string]]::new()
+          try {
+            npm --prefix apps/web run e2e *>&1 | ForEach-Object { $output.Add("$_"); $_ }
+            if ($LASTEXITCODE -ne 0) { throw "e2e exited with $LASTEXITCODE" }
+          } catch {
+            $output.Add("ERROR: $($_.Exception.Message)")
+            $logs = Get-ChildItem .tools/e2e -Recurse -Filter *.err.log -ErrorAction SilentlyContinue |
+              ForEach-Object { Get-Content $_.FullName -Tail 15 | ForEach-Object { "[$($_)]" } }
+            $tail = (@($output | Select-Object -Last 45) + @($logs | Select-Object -Last 20)) -join '%0A'
+            Write-Output "::error title=e2e failed::$tail"
+            exit 1
+          }
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
