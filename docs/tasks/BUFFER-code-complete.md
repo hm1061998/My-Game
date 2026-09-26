@@ -1,12 +1,12 @@
 # BUFFER — Fixes, final persistence pass and code_complete
 
-Status: in_progress
+Status: done
 Owner: Claude
 Depends on: T12
 Plan version: PROJECT_PLAN.md 1.4 (§9 row BUFFER, §9.3), BUFFER plan 1.0
-Approval: user approved plan 1.0 on 2026-09-26 with “duyệt kế hoạch”
-Lifecycle phase: verify
-Workflow step: fixes, fresh-clone rehearsal, persistence pass and final scripts done; awaiting user confirmation to record code_complete
+Approval: user approved plan 1.0 on 2026-09-26 with “duyệt kế hoạch”; on 2026-09-26 the user added “tách nhỏ gói phaser, sau đó completed” (split the Phaser bundle, then complete), which also confirms recording code_complete
+Lifecycle phase: handoff
+Workflow step: complete — code_complete recorded 2026-09-26
 
 ## Outcome and success signal
 
@@ -72,9 +72,21 @@ Open items (non-blocking, accepted): OpenAPI TypeScript codegen; Phaser chunk sp
 
 No blocking defect is open. Next action: on user confirmation, record `code_complete` here and in `docs/memory/current.md`; then Docker/GitHub packaging (P01–P03) needs its own approved plan.
 
+### User-directed addition: Phaser bundle split (2026-09-26)
+
+- `apps/web/vite.config.ts`: `phaser` aliased to `node_modules/phaser/src/phaser-no-physics.js` (the game uses its own collision and `noAudio`), one `phaserFlags` map applied to both `define` and `optimizeDeps.rolldownOptions.transform.define` (`global → globalThis`, WebGL + Canvas renderers on, WebGL debug/experimental/sound/camera/FB-Instant plugins off), and a `phaser` vendor chunk via `advancedChunks`; warning limit 1250 kB.
+- Size: lazy game payload 1,396.6 kB → **1,189.6 kB (−15%)** = `phaser` 1,167.5 kB (gzip 299.7 kB) + `GameCanvas` 22.1 kB (gzip 7.3 kB); gzip ≈ 362 → 307 kB. `index.html` still loads only the app entry. `Phaser.Physics`/`Phaser.Sound` absent; `phaser3spectorjs` absent from the bundle.
+- Defects found and fixed in the browser: (1) production build blank page — `ReferenceError: global is not defined` from `global.Phaser = Phaser`; (2) dev server/E2E 4/4 failed — the dev pre-bundler ignored `define`, so `typeof WEBGL_DEBUG` was the truthy string `"undefined"` and Phaser required the missing `phaser3spectorjs`. Both fixed by the shared flag map.
+- Verification: production build via `vite preview` in the visible browser (scene, textures, sprites, E prompt, one canvas; scripts index → GameCanvas → phaser); dev server with a cleared pre-bundle cache (one canvas, `PHASER_GAME` debug hook absent); final `verify.ps1` pass and E2E 4/4 (~61 fps, p95 17 ms). The final build has the same `phaser-DepFvUma.js` hash that was checked in the browser. Privacy scan clean.
+
+### code_complete
+
+Recorded 2026-09-26 on user confirmation. The MVP passes the complete local process (PROJECT_PLAN §9.3): full case playable, persistence across reload/restart/replay and clean-database restore, fresh-clone rehearsal, README + runbook, all gates green, no blocking defect. Non-blocking open items: OpenAPI → TypeScript codegen; default shell Node 22 until switched (documented). `delivery_complete` is not claimed; Docker/GitHub packaging (P01–P03) needs its own approved plan.
+
 ## Improvement review
 
-- Result: none (new)
+- Result: candidate (L011)
+- Addition observation: the E2E runner exercises the Vite dev server only, so a production-only crash (blank page) passed every script; and dev pre-bundling silently ignored `define`. Recorded as L011.
 - Observation/evidence: the fresh-clone rehearsal found one real doc error (DB location) that no in-repo check caught; L008 preflight (stop dev servers before `verify.ps1`) and L010 were applied without incident.
 - Mechanism changed or no-change reason: fixed the README; no new rule — rehearsing from a clean clone before a milestone is already required by this plan and PROJECT_PLAN §9.3.
 - Validation: rehearsal and final scripts above.

@@ -13,6 +13,10 @@ Status: **proposed — not approved**. Recorded 2026-09-26 at the user's request
 
 Phaser is imported only by `apps/web/src/game/createGame.ts` and `apps/web/src/game/scenes/OfficeScene.ts`. React talks to the world only through `GameRuntime` / `GameFactory` (`src/game/runtime.ts`) and the typed events in `src/game/bridge/events.ts`. Movement, collision and scanner rules are pure modules (`movement.ts`, `encounter.ts`) with unit tests. A new renderer implements the same `GameFactory`; the React shell, API, storage and most tests stay unchanged. The E2E observability hook (`window.__officeCaseFilesE2E.snapshot`) must be re-implemented by the new scene.
 
+## Already done
+
+- BUFFER (2026-09-26): Phaser built without physics/sound and split into its own vendor chunk (1,396.6 → 1,189.6 kB). A graphics upgrade that needs Arcade physics or audio must revisit `apps/web/vite.config.ts`.
+
 ## Options
 
 | # | Option | What it gives | Cost / risk | Fit |

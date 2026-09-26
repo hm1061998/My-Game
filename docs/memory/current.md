@@ -16,10 +16,10 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 
 ## Task state
 
-- Done: T01–T12, T13, T14, T27.
-- Next: **BUFFER** (fixes, final persistence pass, then record `code_complete` with user confirmation). No plan file yet: draft one from `TEMPLATE.md` and get approval first. Readiness table: `docs/tasks/T12-storage-roundtrip-runbook.md`.
+- Done: T01–T12, T13, T14, T27, BUFFER. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
+- Next: **Docker/GitHub packaging P01–P03** (PROJECT_PLAN §9.4) toward `delivery_complete`. No plan exists yet: draft it and get approval; it does not authorize deployment, publishing images or changing repository visibility.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
-- After the BUFFER task: record `code_complete`. Docker/GitHub configuration starts only after that gate.
+- `code_complete` is reached, so Docker/GitHub configuration may now be planned (still needs its own approval).
 
 ## Standing approvals and boundaries
 
@@ -45,7 +45,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 
 ## Known issues
 
-- Vite warns about the ~1.40 MB lazy Phaser chunk (known optimization item).
+- Phaser is built from `phaser-no-physics.js` with shared build flags (`apps/web/vite.config.ts`); vendor chunk 1,167.5 kB. After any bundler change, also check `vite preview` in the browser (L011).
 - `verify.ps1` may report a Node engine warning when the shell resolves an older Node; the approved Node 24/npm 11 path passes.
 - The Codex in-app browser previously failed with a Windows sandbox helper error; the Claude in-app browser and visible Chrome both work.
 
