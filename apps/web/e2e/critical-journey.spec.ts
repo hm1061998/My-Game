@@ -66,8 +66,8 @@ async function moveAxis(page: Page, axis: 'x' | 'y', target: number, tolerance =
   throw new Error(`Movement did not reach ${axis}=${target} (last ${axis}=${last})`)
 }
 
-async function moveTo(page: Page, x: number, y: number, order: 'xy' | 'yx' = 'xy') {
-  for (const axis of order as Iterable<'x' | 'y'>) await moveAxis(page, axis, axis === 'x' ? x : y)
+async function moveTo(page: Page, x: number, y: number, order: 'xy' | 'yx' = 'xy', tolerance = 24) {
+  for (const axis of order as Iterable<'x' | 'y'>) await moveAxis(page, axis, axis === 'x' ? x : y, tolerance)
 }
 
 async function expectNearby(page: Page, interactionId: string) {
@@ -219,14 +219,15 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await page.getByRole('button', { name: 'Thử lại' }).click()
   await expect(page.locator('.game-canvas')).toBeFocused()
 
-  await moveTo(page, 1090, 500, 'yx')
+  // Stay in the lane between the cabinet (y<=480) and the scanner edge (y>=509).
+  await moveTo(page, 1090, 495, 'yx', 8)
   // A dodge lasts ~300 ms, which a slow runner's snapshot polling can miss; count dodges instead.
   const dodgesBefore = (await snapshot(page))?.dodgeCount ?? 0
   await page.keyboard.down('Space')
   await page.keyboard.up('Space')
   await expect.poll(async () => (await snapshot(page))?.dodgeCount ?? 0).toBeGreaterThan(dodgesBefore)
-  await moveTo(page, 1090, 500, 'yx')
-  await moveTo(page, 1400, 500)
+  await moveTo(page, 1090, 495, 'yx', 8)
+  await moveTo(page, 1400, 495, 'xy', 8)
   await expectNearby(page, 'archive-terminal')
   await page.keyboard.press('e')
   await expect(page.getByText('Máy quét: Đã vượt')).toBeVisible()
@@ -237,7 +238,7 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expect(page.getByRole('status')).toContainText('Chính xác!')
   await closeOverlay(page)
 
-  await moveTo(page, 1460, 500)
+  await moveTo(page, 1460, 495, 'xy', 8)
   await moveTo(page, 1460, 760, 'xy') // right of the meeting table (x≤1415) before going down
   await expectNearby(page, 'npc-nora')
   await page.keyboard.press('e')
