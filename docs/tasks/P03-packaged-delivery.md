@@ -1,12 +1,12 @@
 # P03 — Packaged retest and final delivery evidence
 
-Status: in_progress
+Status: done
 Owner: Codex
 Depends on: P01, P02, code_complete
 Plan version: PROJECT_PLAN.md 1.4 (§9.3, §11.4–11.5), P03 plan 1.0
 Approval: user approved plan 1.0 on 2026-09-26 with “duyệt plan”
 Lifecycle phase: handoff
-Workflow step: package/browser acceptance and local script gates passed; scoped evidence ready to commit/push; remote CI pending
+Workflow step: complete — packaged acceptance, local gates, scoped evidence push, and remote CI passed
 
 ## Outcome and success signal
 
@@ -19,7 +19,7 @@ The user can follow the README/runbook, open the packaged game in a visible brow
 - `code_complete` was recorded on 2026-09-26 in `docs/tasks/BUFFER-code-complete.md`.
 - P01 Docker/Compose implementation and visible container playthrough are complete. It also verified private-file 404s, secure session cookie, recreate/down-up persistence, backup/restore, image contents and a clean-clone build.
 - P02 CI configuration is complete. The recorded all-green remote run is GitHub Actions run `36213362487` on commit `6a2f8f7`; verify, headed Chromium E2E and Docker smoke all passed. P03 must verify the CI run for its final pushed implementation revision, not reuse the older run as current evidence.
-- Approved P03 baseline was `5e03c6d` on `main`, synchronized with `origin/main`; P03 currently changes only scoped documentation/evidence files, not runtime code.
+- Approved P03 baseline was `5e03c6d` on `main`, synchronized with `origin/main`; P03 changed only scoped documentation/evidence files, not runtime code. Evidence commit: `a63e3072eb26efe83939ff4353f06c28441165dd`.
 - Planning preflight on 2026-09-26 found Docker client/server 29.3.1, no running container, the developer's persistent `office-case-files_ocf-data` volume, and no listener on ports 8080, 5062 or 5173. The implementation preflight reconfirmed port 8080 is free and found two stopped containers from the default `office-case-files` project; preserve those, the developer volume and all unrecognized resources.
 - `scripts/docker-smoke.sh` uses the isolated Compose project `ocf-smoke`, binds host port 8080, and normally removes that project's volume on exit. Preflight confirmed its project/volume absent and port free before smoke; the final report records cleanup and preservation of `office-case-files_ocf-data`.
 - The user requires each completed work session to commit scoped changes and push the current branch to configured `origin`. The configured remote is `https://github.com/hm1061998/My-Game.git`; do not change GitHub settings as part of this plan.
@@ -33,7 +33,7 @@ The user can follow the README/runbook, open the packaged game in a visible brow
 - Run smoke checks for health, SPA/deep-link routing, expected API 404s and non-disclosure of case JSON, appsettings, database and server binaries. Inspect runtime image contents and logs for the documented production boundaries and session-token leakage.
 - Keep the browser visible. Start a new session, collect E01 with real keyboard input, answer Q01 in the UI, reach the meeting checkpoint, exercise scanner recovery, complete the case, and verify the result. Recreate only the P03 `app` container; reload the same visible browser and confirm the same session/progress/result survive. `docker compose down`/`up` may be used on the P03 project without `-v`; final cleanup may remove only the verified P03 throwaway volume.
 - Run final `scripts/verify.ps1`, the headed E2E suite, `scripts/docker-smoke.sh`, agent-doc/privacy checks and `git diff --check` on the final implementation revision.
-- Observe the GitHub Actions run associated with the final pushed revision and record commit, run URL, job conclusions and any public error annotation. If observation is unavailable, label remote CI unverified and record the reason.
+- GitHub Actions run `36233739417` for final evidence commit `a63e3072eb26efe83939ff4353f06c28441165dd`: `verify`, headed Chromium `e2e`, and `docker` all completed successfully. Run: https://github.com/hm1061998/My-Game/actions/runs/36233739417.
 - Produce `docs/quality/P03-delivery-readiness.md`, update README/runbooks only for reproduced gaps, update P03/index/current memory, and record the final delivery state and follow-up list.
 
 ### Excluded
@@ -76,23 +76,23 @@ The user can follow the README/runbook, open the packaged game in a visible brow
 - `npm --prefix apps/web run e2e`: all current headed tests pass with visible local Chromium; record FPS/frame sample where emitted.
 - `bash scripts/docker-smoke.sh`: pass from a clean smoke-project preflight; expected private routes stay private.
 - `scripts/check-agent-docs.ps1`, production privacy/bundle scan, and `git diff --check`: pass.
-- Latest CI run for the final pushed P03 implementation SHA has `verify`, `e2e`, and `docker` green, or is explicitly marked `remote not verified` with evidence and owner follow-up.
+- CI run `36233739417` for final pushed P03 evidence SHA `a63e3072eb26efe83939ff4353f06c28441165dd`: `verify`, `e2e`, and `docker` green.
 - P03 report records branch/commit, image ID/size, Docker/Compose versions, browser, test cases, persistence/recovery, security probes, script/CI outcomes, limitations and user-owned outstanding items.
 - Mark P03 and `delivery_complete` done only if all required local acceptance and P01/P02 configuration evidence are satisfied and remote CI is green when the configured repository remains observable/in-scope. Otherwise leave the exact gate incomplete and record the blocker.
 
 ### Workflow and delivery boundary
 
-Plan approval authorizes only the P03 checks and minimal in-scope fixes above. Local sequence is complete: preflight → package smoke/build → visible browser test → container-recreate recovery → final visible confirmation → full scripts → improvement review → task/memory/report update. Next: commit and push the scoped files to `main`, observe the CI run for that commit, then record its run URL/job results. Stop before deploy/publish or GitHub settings changes.
+Plan approval authorized only the P03 checks and minimal in-scope fixes above. Sequence complete: preflight → package smoke/build → visible browser test → container-recreate recovery → final visible confirmation → full scripts → improvement review → task/memory/report update → commit/push → remote CI observation. `delivery_complete` is recorded because P01, P02 and P03 evidence are current and all CI jobs passed. Stop before deploy/publish or GitHub settings changes.
 
 ## Handoff
 
-Baseline `5e03c6d` on `main`, synchronized with `origin/main` before these P03 evidence edits. Dirty paths are scoped: `docs/agent/lessons.md`, `docs/memory/current.md`, `docs/runbooks/github.md`, `docs/tasks/P03-packaged-delivery.md`, `docs/tasks/index.md`, and `docs/quality/P03-delivery-readiness.md`; no runtime source changed. Plan 1.0 approval remains the user's 2026-09-26 “duyệt plan”.
+P03 evidence commit `a63e3072eb26efe83939ff4353f06c28441165dd` is pushed to `origin/main`; this final handoff update is scoped documentation only. No runtime source changed. Plan 1.0 approval remains the user's 2026-09-26 “duyệt plan”.
 
 Verified this session: visible production case/result/review; same Chrome session survived app force-recreate and reload at revision 21; Secure/HttpOnly cookie and empty `document.cookie`; Docker health/routes/private-file 404s; non-root runtime with no Node/.NET SDK; client answer-string scan and 24-line log token scan; full `verify.ps1`, 4/4 headed E2E, clean-preflight Docker smoke, agent-doc checks and `git diff --check`. P03-owned containers/network/volume were removed after ownership verification; `office-case-files_ocf-data` remains present. The WSL `bash` shim failure was corrected in the runbook with the tested Git Bash invocation.
 
-Failed/not-run notes: initial bare `bash` invocation did not run the smoke because its WSL shim had no `/bin/bash`; explicit Git Bash passed. The first headed E2E launch was not started because automatic permission review timed out; a single retry ran successfully. Codex in-app browser automation also hit the Windows sandbox helper error; the package journey was completed in visible Chrome instead. Remote GitHub Actions for this evidence commit is not yet observed.
+Failed/not-run notes: initial bare `bash` invocation did not run the smoke because its WSL shim had no `/bin/bash`; explicit Git Bash passed. The first headed E2E launch was not started because automatic permission review timed out; a single retry ran successfully. Codex in-app browser automation also hit the Windows sandbox helper error; the package journey was completed in visible Chrome instead. GitHub Actions run `36233739417` for the pushed evidence commit completed successfully; verify, headed Chromium E2E and Docker smoke all passed.
 
-Next action: commit and push these scoped documentation/evidence changes to `main`, then inspect the associated GitHub Actions run and record its URL and job conclusions. Do not mark P03 or `delivery_complete` done until that run is green. Preserve default stopped containers and `office-case-files_ocf-data`; no deployment, image publication or repository settings changes.
+Next action: commit and push the final handoff documentation update, then confirm the repository is clean and synchronized. P03 and `delivery_complete` are now satisfied by the recorded local evidence and green CI run. Preserve default stopped containers and `office-case-files_ocf-data`; no deployment, image publication or repository settings changes.
 
 ## Improvement review
 

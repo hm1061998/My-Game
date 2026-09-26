@@ -2,9 +2,10 @@
 
 Date: 2026-09-26
 
-Status: local acceptance passed; remote CI pending the scoped push
+Status: complete — local acceptance and all remote CI jobs passed
 
-Branch/baseline: `main` at `5e03c6d` before P03 evidence updates
+Branch/evidence commit: `main` at `a63e3072eb26efe83939ff4353f06c28441165dd` (pushed to `origin`)
+GitHub Actions: [run 36233739417](https://github.com/hm1061998/My-Game/actions/runs/36233739417) — `verify`, headed Chromium `e2e`, and `docker` all succeeded.
 
 Package URL: `http://127.0.0.1:8080/` (production Docker Compose package)
 
@@ -51,7 +52,7 @@ The previous P01 957-line log review also recorded no `ocf_session` cookie name 
 | `scripts/docker-smoke.sh` from a clean `ocf-smoke` preflight | pass: healthy app, expected SPA/API/private-route responses above; automatic cleanup |
 | Production runtime and bundle privacy probes | pass |
 | `git diff --check` | pass after the current documentation edits |
-| Remote GitHub Actions for P03 evidence commit | pending push/observation; do not mark `delivery_complete` until verified |
+| Remote GitHub Actions, run 36233739417 for `a63e3072eb26efe83939ff4353f06c28441165dd` | pass: verify, headed Chromium E2E, Docker smoke |
 
 The Vite build emits the already-known `advancedChunks` deprecation warning; the build succeeds. No product fix was needed.
 
