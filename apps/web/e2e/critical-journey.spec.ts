@@ -67,10 +67,16 @@ async function moveAxis(page: Page, axis: 'x' | 'y', target: number, tolerance =
 }
 
 async function moveTo(page: Page, x: number, y: number, order: 'xy' | 'yx' = 'xy', tolerance = 24) {
-  for (const axis of order as Iterable<'x' | 'y'>) await moveAxis(page, axis, axis === 'x' ? x : y, tolerance)
+  const start = await snapshot(page)
+  console.log(`E2E route ${JSON.stringify(start?.position)} -> (${x}, ${y}) order=${order}`)
+  for (const axis of order as Iterable<'x' | 'y'>) {
+    await moveAxis(page, axis, axis === 'x' ? x : y, tolerance)
+    console.log(`E2E reached ${axis}=${(await snapshot(page))?.position[axis]}`)
+  }
 }
 
 async function expectNearby(page: Page, interactionId: string) {
+  console.log(`E2E waiting for interaction ${interactionId}`)
   await expect.poll(async () => (await snapshot(page))?.nearestId).toBe(interactionId)
 }
 
