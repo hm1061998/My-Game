@@ -28,11 +28,15 @@ async function resumeIfNeeded(page: Page) {
 }
 
 async function moveAxis(page: Page, axis: 'x' | 'y', target: number, tolerance = 24) {
-  await resumeIfNeeded(page)
-  for (let step = 0; step < 24; step += 1) {
+  // Slow CI renderers move less per key press (movement caps each frame at 50 ms), so the
+  // budget is generous; a real obstruction still fails fast through the blocked check below.
+  let last: number | null = null
+  for (let step = 0; step < 120; step += 1) {
+    await resumeIfNeeded(page)
     const before = await snapshot(page)
     if (!before) throw new Error('E2E scene observability is unavailable')
     const current = before.position[axis]
+    last = current
     const difference = target - current
     if (Math.abs(difference) <= tolerance) return
     if (before.overlayPaused) throw new Error(`Cannot move while overlay is open at ${current}`)
@@ -49,7 +53,7 @@ async function moveAxis(page: Page, axis: 'x' | 'y', target: number, tolerance =
       throw new Error(`Movement blocked on ${axis}: ${current} -> ${after.position[axis]}, target ${target}`)
     }
   }
-  throw new Error(`Movement did not reach ${axis}=${target}`)
+  throw new Error(`Movement did not reach ${axis}=${target} (last ${axis}=${last})`)
 }
 
 async function moveTo(page: Page, x: number, y: number, order: 'xy' | 'yx' = 'xy') {
