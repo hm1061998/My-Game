@@ -15,7 +15,7 @@
     "typecheck": "tsc -b --pretty false",
     "test": "vitest",
     "test:run": "vitest run",
-    "e2e": "pwsh -NoProfile -File ../../scripts/e2e.ps1",
+    "e2e": "node ../../scripts/run-e2e.mjs",
     "e2e:list": "playwright test --list",
     "preview": "vite preview"
   },

@@ -72,7 +72,7 @@ Dừng mọi dev server (API giữ `services/api/bin`, Vite giữ `node_modules`
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/e2e.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe
+npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe
 ```
 
 E2E chạy trình duyệt hiển thị với database tạm riêng, không chạm vào database của bạn.

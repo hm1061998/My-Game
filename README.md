@@ -23,13 +23,14 @@ Chạy tại PowerShell:
 
 ```powershell
 git --version
-pwsh --version
 node --version
 npm --version
 dotnet --version
 ```
 
 Kết quả mong đợi là Node `v24.x`, npm `11.12.1`, và `dotnet --version` không báo lỗi khi đứng tại thư mục repository. `global.json` sẽ tự kiểm tra SDK .NET phù hợp.
+
+Nếu `node --version` ra phiên bản khác (ví dụ `v22.x` khi dùng nvm-windows), chuyển sang Node 24 trước khi cài dependencies: `nvm use 24.15.0` (lệnh này đổi Node cho toàn máy), hoặc chỉ cho terminal hiện tại: `$env:PATH = "$env:NVM_HOME24.15.0;$env:PATH"`. Không có `pwsh` cũng được: `npm --prefix apps/web run e2e` tự dùng Windows PowerShell 5.1.
 
 ## Cài đặt trên Windows
 
@@ -68,7 +69,7 @@ Nếu `dotnet --version` vẫn không dùng được với `global.json`, hoặc
 
 ```powershell
 Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile '.dotnet-install.ps1'
-pwsh -NoProfile -ExecutionPolicy Bypass -File ./.dotnet-install.ps1 `
+powershell -NoProfile -ExecutionPolicy Bypass -File ./.dotnet-install.ps1 `
   -Version 10.0.401 `
   -InstallDir ./.tools/dotnet
 
@@ -168,7 +169,7 @@ Runner dùng cổng test 5063/5174, dừng nếu cổng đã bị chiếm, migra
 - API báo pending migrations: chạy lệnh `--migrate` ở trên trước khi mở web. Không chạy migration đồng thời từ nhiều tiến trình.
 - Lượt chơi biến mất: kiểm tra cookie còn tồn tại, thời hạn 30 ngày không hoạt động và `ConnectionStrings__Game` có trỏ về cùng file SQLite. Không có khôi phục đa thiết bị trong MVP.
 - PowerShell chặn script cài .NET: chỉ dùng `-ExecutionPolicy Bypass` cho lệnh cài local được ghi ở trên; không cần đổi policy toàn máy.
-- `'pwsh' is not recognized` khi chạy `npm --prefix apps/web run e2e`: máy chỉ có Windows PowerShell 5.1. Chạy trực tiếp `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/e2e.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`.
+- Máy không có `pwsh`: `npm --prefix apps/web run e2e` tự dùng Windows PowerShell 5.1 qua `scripts/run-e2e.mjs`; truyền SDK local bằng `npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe`.
 - `npm ci` báo `EPERM` hoặc build API báo `MSB3027 ... locked`: một Vite dev server đang giữ `node_modules` hoặc một API đang chạy giữ `services/api/bin`. Dừng các preview/dev server trước khi chạy `verify.ps1` hoặc E2E.
 - API trả 403 khi mở `http://localhost:5173`: API chỉ chấp nhận origin `http://127.0.0.1:5173`; mở đúng địa chỉ này.
 

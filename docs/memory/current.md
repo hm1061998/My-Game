@@ -31,7 +31,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 ## Verification commands (this machine)
 
 - Web: `npm --prefix apps/web run lint`, `typecheck`, `test:run`, `build`, `e2e:list`.
-- Headed E2E: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/e2e.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe` (`npm run e2e` needs `pwsh`, which is not installed). 4 tests: critical journey + 3 visual-state checks.
+- Headed E2E: `npm --prefix apps/web run e2e -- -DotnetCommand ./.tools/dotnet/dotnet.exe` (launcher `scripts/run-e2e.mjs` uses `pwsh` if present, else Windows PowerShell 5.1). 4 tests: critical journey + 3 visual-state checks.
 - Full: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1 -DotnetCommand ./.tools/dotnet/dotnet.exe`; agent docs: `scripts/check-agent-docs.ps1`.
 - Preflight (L008): stop preview Vite/API servers first; a running API locks `services/api/bin`, a running Vite locks `node_modules` for `npm ci`. Ask before stopping a user-owned process.
 - Local preview: `.claude/launch.json` (`api` on 5062 via `.tools/dotnet`, `web` on 5173). Open `http://127.0.0.1:5173`; `localhost` is rejected by the API origin check.
