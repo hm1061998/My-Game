@@ -31,6 +31,11 @@ async function moveAxis(page: Page, axis: 'x' | 'y', target: number, tolerance =
   // Slow CI renderers move less per key press (movement caps each frame at 50 ms), so the
   // budget is generous; a real obstruction still fails fast through the blocked check below.
   let last: number | null = null
+  // Key-up can land a few frames late on slow renderers; halve the hold time after each
+  // overshoot (direction flip) so the approach converges instead of oscillating.
+  let gain = 1
+  let previousSign = 0
+  let stuck = 0
   for (let step = 0; step < 120; step += 1) {
     await resumeIfNeeded(page)
     const before = await snapshot(page)
@@ -41,7 +46,10 @@ async function moveAxis(page: Page, axis: 'x' | 'y', target: number, tolerance =
     if (Math.abs(difference) <= tolerance) return
     if (before.overlayPaused) throw new Error(`Cannot move while overlay is open at ${current}`)
     const key = axis === 'x' ? (difference > 0 ? 'd' : 'a') : (difference > 0 ? 's' : 'w')
-    const duration = Math.max(35, Math.min(420, Math.abs(difference) / 210 * 1000))
+    const sign = Math.sign(difference)
+    if (previousSign !== 0 && sign !== previousSign) gain = Math.max(0.1, gain / 2)
+    previousSign = sign
+    const duration = Math.max(50, Math.min(420, Math.abs(difference) / 210 * 1000 * gain))
     await page.locator('.game-canvas').focus()
     await page.keyboard.down(key)
     await page.waitForTimeout(duration)
@@ -49,7 +57,8 @@ async function moveAxis(page: Page, axis: 'x' | 'y', target: number, tolerance =
     await page.waitForTimeout(45)
     const after = await snapshot(page)
     if (!after) throw new Error('E2E scene disappeared while moving')
-    if (Math.abs(after.position[axis] - current) < 1 && step > 1) {
+    stuck = Math.abs(after.position[axis] - current) < 1 ? stuck + 1 : 0
+    if (stuck >= 3) {
       throw new Error(`Movement blocked on ${axis}: ${current} -> ${after.position[axis]}, target ${target}`)
     }
   }
