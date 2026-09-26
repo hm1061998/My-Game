@@ -14,7 +14,7 @@ declare global {
   interface Window {
     __officeCaseFilesE2E?: { snapshot: () => {
       position: Point; paused: boolean; overlayPaused: boolean; nearestId: string | null
-      checkpointId: string; encounterCleared: boolean; dodgeRemainingMs: number
+      checkpointId: string; encounterCleared: boolean; dodgeRemainingMs: number; dodgeCount: number
     } }
   }
 }
@@ -69,6 +69,7 @@ export class OfficeScene extends Phaser.Scene {
   private dodgeLabel?: Phaser.GameObjects.Text
   private dodgeRemainingMs = 0
   private dodgeCooldownMs = 0
+  private dodgeCount = 0
   private detectionGraceMs = 0
   private lastMoveDirection: Point = { x: 1, y: 0 }
   private dodgeDirection: Point = { x: 1, y: 0 }
@@ -206,6 +207,7 @@ export class OfficeScene extends Phaser.Scene {
         position: { ...this.position }, paused: this.paused, overlayPaused: this.overlayPaused,
         nearestId: this.nearestId, checkpointId: this.checkpointId,
         encounterCleared: this.encounterCleared, dodgeRemainingMs: this.dodgeRemainingMs,
+        dodgeCount: this.dodgeCount,
       }) }
     }
     this.emit({ type: 'play-state', state: 'playing' })
@@ -390,6 +392,7 @@ export class OfficeScene extends Phaser.Scene {
     if (event.repeat || this.paused || this.overlayPaused || this.dodgeCooldownMs > 0) return
     this.dodgeDirection = this.lastMoveDirection
     this.dodgeRemainingMs = DODGE_DURATION_MS
+    this.dodgeCount += 1
     this.dodgeCooldownMs = DODGE_COOLDOWN_MS
     this.input.keyboard?.resetKeys()
   }

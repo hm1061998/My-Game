@@ -8,6 +8,7 @@ type SceneSnapshot = {
   checkpointId: string
   encounterCleared: boolean
   dodgeRemainingMs: number
+  dodgeCount: number
 }
 
 declare global {
@@ -219,10 +220,11 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expect(page.locator('.game-canvas')).toBeFocused()
 
   await moveTo(page, 1090, 500, 'yx')
+  // A dodge lasts ~300 ms, which a slow runner's snapshot polling can miss; count dodges instead.
+  const dodgesBefore = (await snapshot(page))?.dodgeCount ?? 0
   await page.keyboard.down('Space')
-  await expect.poll(async () => (await snapshot(page))?.dodgeRemainingMs ?? 0, { timeout: 2_000, intervals: [10] })
-    .toBeGreaterThan(0)
   await page.keyboard.up('Space')
+  await expect.poll(async () => (await snapshot(page))?.dodgeCount ?? 0).toBeGreaterThan(dodgesBefore)
   await moveTo(page, 1090, 500, 'yx')
   await moveTo(page, 1400, 500)
   await expectNearby(page, 'archive-terminal')
