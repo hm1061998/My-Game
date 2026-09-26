@@ -79,7 +79,8 @@ jobs:
             $output.Add("ERROR: $($_.Exception.Message)")
             $logs = Get-ChildItem .tools/e2e -Recurse -Filter *.err.log -ErrorAction SilentlyContinue |
               ForEach-Object { Get-Content $_.FullName -Tail 15 | ForEach-Object { "[$($_)]" } }
-            $tail = (@($output | Select-Object -Last 45) + @($logs | Select-Object -Last 20)) -join '%0A'
+            $key = $output | Where-Object { $_ -match 'Error|Timeout|intercept|did not change|expect\(' } | Select-Object -First 25
+            $tail = (@('--- key lines ---') + @($key) + @('--- tail ---') + @($output | Select-Object -Last 30) + @($logs | Select-Object -Last 15)) -join '%0A'
             Write-Output "::error title=e2e failed::$tail"
             exit 1
           }
