@@ -241,6 +241,11 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expectNearby(page, 'npc-maya')
   await page.keyboard.press('e')
   await expect(page.getByRole('dialog', { name: 'Hội thoại' })).toContainText('Maya')
+  const mayaPortrait = page.getByRole('dialog', { name: 'Hội thoại' }).locator('.dialogue-portrait')
+  await expect(mayaPortrait).toHaveJSProperty('naturalWidth', 160)
+  await testInfo.attach('maya-character-and-portrait.png', {
+    body: await page.screenshot(), contentType: 'image/png',
+  })
   await closeOverlay(page)
 
   await moveTo(page, 320, 535, 'yx')
@@ -308,6 +313,11 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expectNearby(page, 'npc-nora')
   await page.keyboard.press('e')
   await expect(page.getByRole('dialog', { name: 'Hội thoại' })).toContainText('Nora')
+  const noraPortrait = page.getByRole('dialog', { name: 'Hội thoại' }).locator('.dialogue-portrait')
+  await expect(noraPortrait).toHaveJSProperty('naturalWidth', 160)
+  await testInfo.attach('nora-character-and-portrait.png', {
+    body: await page.screenshot(), contentType: 'image/png',
+  })
   await closeOverlay(page)
 
   await page.getByRole('button', { name: 'Kết luận vụ án' }).click()

@@ -16,6 +16,7 @@
 | [T28](T28-onboarding-audio.md) first-session onboarding and audio | done | Codex | T27 |
 | [T29](T29-office-ambience.md) bundled office ambience | done | Codex | T28 |
 | [T30](T30-visual-polish.md) existing office lighting and atmosphere pass | done | Codex | T27, T29 |
+| [T31](T31-character-art-upgrade.md) existing character sprites and dialogue portraits | done | Codex | T27, T30 |
 | [T11](T11-handoff-verification.md) handoff verification | done | Claude | T01-T10 |
 | [T12](T12-storage-roundtrip-runbook.md) storage round-trip/local runbook | done | Claude | T10, T11 |
 | [BUFFER](BUFFER-code-complete.md) fixes, persistence verification, `code_complete` record | done | Claude | T12 |

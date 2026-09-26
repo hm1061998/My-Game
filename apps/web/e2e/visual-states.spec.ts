@@ -48,6 +48,14 @@ test('game-first shell fits desktop viewports with every texture ready', async (
     url: '/assets/office/window-light.svg', status: 200,
   }))
   await expect(page.getByText('Một số hình ảnh văn phòng không tải được')).toHaveCount(0)
+  const portraits = await page.evaluate(async () => Promise.all(['player', 'maya', 'leo', 'nora'].map(id =>
+    new Promise<{ id: string; width: number; height: number }>((resolve, reject) => {
+      const portrait = new Image()
+      portrait.onload = () => resolve({ id, width: portrait.naturalWidth, height: portrait.naturalHeight })
+      portrait.onerror = () => reject(new Error(`Portrait did not decode: ${id}`))
+      portrait.src = `/assets/characters/${id}-portrait.svg`
+    }))))
+  expect(portraits).toEqual(['player', 'maya', 'leo', 'nora'].map(id => ({ id, width: 160, height: 160 })))
 
   for (const size of [{ width: 1280, height: 800 }, { width: 1100, height: 720 }]) {
     await page.setViewportSize(size)

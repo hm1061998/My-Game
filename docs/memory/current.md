@@ -1,7 +1,7 @@
 # Current context
 
 Updated: 2026-09-26
-Baseline: `06a4993` on `main`, pushed to `origin/main`; T28 and T29 implementation/verification are complete. Active task T30 is the user-authorized visual polish of the existing office before any new level; keep T27's approved bright editorial Phaser 2.5D direction and do not change map/gameplay contracts.
+T31 starting baseline: `845ea01` on `main`/`origin/main`. T31 character art upgrade is complete; consult Git for its final scoped commit/push. Keep T27's approved bright editorial Phaser 2.5D direction and do not change map/gameplay contracts. The next level is a separate future task.
 Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.
@@ -19,11 +19,12 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Done: T01–T12, T13, T14, T27, T28, BUFFER, P01, P02. **Milestone `code_complete` recorded 2026-09-26** (evidence: `docs/tasks/BUFFER-code-complete.md`).
 - Done: T29 approved office ambience. User supplied the official MP3 at `apps/web/src/audio/office-quiet-traffic.mp3`; manifest/task include source, license and SHA-256. Gesture-gated local fetch/decode, procedural fallback/retry and Web Audio integration are covered in `docs/tasks/T29-office-ambience.md`.
 - Done: T30 visual polish on the existing office only. Added a local SVG daylight pool, window mullions/reflections/sills and eight reduced-motion-aware motes; no new level or gameplay/coordinate change. Final visible headed E2E 7/7, grayscale screenshots reviewed, 60 fps/p95 17 ms, +~1.9 KB visual transfer; full local verify and docs check passed. Codex browser-panel preview queued; standalone 5173 lacked its API, so integrated 5174 headed runner is the product-browser evidence. Details/evidence and local preview limitation are in `docs/tasks/T30-visual-polish.md`. The next level remains a separate future task.
+- Done: T31 existing character art upgrade, approved by the user's 2026-09-26 “ok tiến hành đi”. Refined all four original SVG sheets, replaced enlarged-frame portraits with dedicated expressive busts, preserved runtime contracts and added SVG/browser checks. Final visible headed E2E 7/7 (twice), 1280×800/1100×720/grayscale/reduced-motion, missing-art fallback, 60 fps/p95 17 ms; full verify passed 47 web + 12 API tests. `docs/tasks/T31-character-art-upgrade.md` holds detailed evidence. No new level, raster/Spine runtime or animated expressions were added.
 - Done: P03 local package/browser/scripts evidence; user explicitly waived waiting for GitHub E2E on 2026-09-26. Run [36239427269](https://github.com/hm1061998/My-Game/actions/runs/36239427269) was last observed with verify/Docker green and E2E in progress. Remote E2E is unverified and is not claimed green. No workflow change was made.
 - No other approved non-admin product feature tasks remain; approved admin tasks T15–T26 remain deferred and unchanged. P04 is optional infrastructure work pending a provider decision, not a player-facing feature.
 - Approved but deferred: T15 admin epic and T16–T26. Documentation only; no admin code, dependency, migration, account, secret or external service until the user starts them.
 - `code_complete` and `delivery_complete` are recorded. P03 delivery is closed under the user's explicit waiver of remote E2E waiting; report the remote E2E as unverified. No deployment, image publishing, or GitHub settings changes were authorized or performed.
-- The user's current instruction was to finish all remaining tasks except admin without re-requesting plan approval. All non-admin tasks are now complete; leave T15–T26 admin implementation deferred and unchanged.
+- The earlier non-admin backlog and newly approved T31 are complete; leave T15–T26 admin implementation deferred and unchanged.
 
 ## Standing approvals and boundaries
 
@@ -50,7 +51,7 @@ Still open: public hosting, GitHub visibility, image publishing, PostgreSQL adap
 - Full case playable end to end: movement/collision/depth, six clues, three NPCs, Q01–Q03 with unlocks, meeting checkpoint, scanner dodge/retry/assist, immutable conclusion with separate reading/investigation scores, five review items, reload persistence, replay. Private answers stay server-side.
 - T27: game-first shell (canvas 958×651 at 1280×800, no page scroll), shared tokens (`apps/web/src/theme/tokens.ts`), status badges not relying on color, 17 office + 8 character SVGs via `scripts/art/*.py`, validated asset loading with code-drawn fallback, four-direction character sprites, investigative UI surfaces. QA: `docs/quality/T27-visual-qa.md`.
 - Storage round-trip (T12): `--export`/`--import` on the API host, private checksummed JSON (`*.export.json` ignored), import only into an empty migrated DB; runbook `docs/runbooks/local.md`.
-- Last full gates (T12): `verify.ps1` pass (30 web tests, 11 API tests), headed E2E 4/4, ~60 fps, p95 17 ms.
+- Last full gates (T31): `verify.ps1` pass (47 web tests, 12 API tests), visible headed E2E 7/7, ~60 fps, p95 17 ms.
 
 ## Known issues
 

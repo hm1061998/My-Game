@@ -9,11 +9,22 @@ const root = process.cwd()
 
 describe('character art', () => {
   it('ships a valid local sheet and portrait for every character', () => {
+    const parser = new DOMParser()
     for (const id of CHARACTER_IDS) {
       const sheet = readFileSync(resolve(root, 'public', sheetUrl(id).slice(1)), 'utf8')
       expect(isSvgDocument(sheet), id).toBe(true)
       expect(sheet).toContain(`width="${SHEET.width}" height="${SHEET.height}"`)
-      expect(isSvgDocument(readFileSync(resolve(root, 'public', portraitUrl(id).slice(1)), 'utf8'))).toBe(true)
+      const portrait = readFileSync(resolve(root, 'public', portraitUrl(id).slice(1)), 'utf8')
+      expect(isSvgDocument(portrait), id).toBe(true)
+      expect(portrait).toContain('width="160" height="160"')
+      for (const asset of [sheet, portrait]) {
+        const document = parser.parseFromString(asset, 'image/svg+xml')
+        expect(document.querySelector('parsererror'), id).toBeNull()
+        expect(document.querySelectorAll('image, foreignObject')).toHaveLength(0)
+        expect(asset).not.toMatch(/(?:href|src)="https?:\/\//)
+      }
+      const sheetDocument = parser.parseFromString(sheet, 'image/svg+xml')
+      expect(Array.from(sheetDocument.documentElement.children).filter(node => node.tagName === 'g')).toHaveLength(48)
     }
   })
 
