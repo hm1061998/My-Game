@@ -2,7 +2,7 @@
 
 Date: 2026-09-26
 
-Status: follow-up in progress — packaged acceptance and route correction passed; subsequent CI reruns exposed slow-runner journey assumptions and a long timeout
+Status: complete for local/package acceptance; remote GitHub E2E explicitly waived by user and unverified
 
 Branch/evidence commit: `main` at `a63e3072eb26efe83939ff4353f06c28441165dd` (pushed to `origin`)
 GitHub Actions: [run 36233739417](https://github.com/hm1061998/My-Game/actions/runs/36233739417) — `verify`, headed Chromium `e2e`, and `docker` all succeeded.
@@ -12,6 +12,8 @@ Later docs-only commit `a7c540c11a35f6cfb25729b6167a90287f9c8c58`: [run 36236199
 Movement-stabilization commit `5046ce0a7826b098c0fc24b28402d1956ced4b57`: [run 36238034877](https://github.com/hm1061998/My-Game/actions/runs/36238034877) passed `verify`/`docker`, but the critical journey exceeded its 480-second timeout; all three visual tests passed. The public annotation did not identify the last route. Added concise route/axis/interaction logs to the E2E output. Visible local headed E2E and full verify pass; remote rerun is pending.
 
 Package URL: `http://127.0.0.1:8080/` (production Docker Compose package)
+
+Final CI note: run [36239427269](https://github.com/hm1061998/My-Game/actions/runs/36239427269) for `d25ce7f` was last observed with `verify`/Docker green and E2E still in progress. Per the user's explicit instruction, no further GitHub E2E wait was performed; remote E2E is waived/unverified, not green-claimed. The workflow remains enabled.
 
 ## Scope and outcome
 
@@ -61,7 +63,8 @@ The previous P01 957-line log review also recorded no `ocf_session` cookie name 
 | Final route-correction CI run 36235584949 for `98448555c85815d0523c5ced457080b5c0b2da6d` | pass: verify, headed Chromium E2E, Docker smoke |
 | Follow-up CI run 36236199020 for `a7c540c11a35f6cfb25729b6167a90287f9c8c58` | verify/docker pass; E2E startup UI timeout; direct API status/revision assertions added; local 4/4 and full verify pass; remote diagnostic rerun pending |
 | Diagnostic CI run 36236947169 for `3bd397873ebf6b56517ebd463a3fdf649c69646a` | session creation confirmed; slow-runner dodge direction/collider edge and fixed-hold movement assertion failed; local fixes pass headed 4/4/full verify; remote rerun pending |
-| CI run 36238034877 for `5046ce0a7826b098c0fc24b28402d1956ced4b57` | verify/docker pass; critical journey exceeded 480-second timeout without a public route location; visual tests pass; added movement progress logs; local headed 4/4/full verify pass; remote rerun pending |
+| CI run 36238034877 for `5046ce0a7826b098c0fc24b28402d1956ced4b57` | verify/docker pass; critical journey exceeded 480-second timeout without a public route location; visual tests pass; added movement progress logs; local headed 4/4/full verify pass |
+| CI run 36239427269 for `d25ce7f` | verify/docker green at last observation; E2E still in progress then. User waived further waiting; E2E unverified, not green-claimed |
 
 The Vite build emits the already-known `advancedChunks` deprecation warning; the build succeeds. No product fix was needed.
 

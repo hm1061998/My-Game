@@ -18,7 +18,7 @@
 | [BUFFER](BUFFER-code-complete.md) fixes, persistence verification, `code_complete` record | done | Claude | T12 |
 | [P01](P01-docker-compose.md) Docker image, Compose, container smoke test | done | Claude | code_complete |
 | [P02](P02-github-ci.md) GitHub workflow, PR template, branch-check guidance | done | Claude | P01 |
-| [P03](P03-packaged-delivery.md) packaged retest and delivery evidence | in_progress | Codex | P01, P02, code_complete |
+| [P03](P03-packaged-delivery.md) packaged retest and delivery evidence | done | Codex | P01, P02, code_complete |
 | [T13](T13-environment-readme.md) environment setup guide | done | Codex | T02 |
 | [T14](T14-agent-lifecycle-improvement.md) agent lifecycle and improvement | done | Codex | T01 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
@@ -34,4 +34,4 @@
 | [T25](T25-admin-integrated-verification.md) integrated admin verification | approved | unassigned | T18-T24, T10 |
 | [T26](T26-admin-handoff.md) admin handoff and release readiness | approved | unassigned | T25, T11/T12 |
 
-Status `approved` on T15–T26 means the plan/documentation is approved; implementation stays deferred until the user explicitly starts that task.
+Status `approved` on T15–T26 means the plan/documentation is approved; implementation stays deferred until the user explicitly starts that task. There are no remaining approved non-admin feature tasks; P04 is optional and needs a provider decision.
