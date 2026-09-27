@@ -31,7 +31,7 @@
 | [T35](T35-accelerated-m0.md) accelerated AI-assisted M0 audit | done; M1 gate conditional | Codex | T34 |
 | [T36](T36-m1-segment-design.md) M1 segment design | done; design approved | Codex | T35 |
 | [T37](T37-m1-segment-implementation.md) M1 playable segment | implementation passed; product acceptance open | Codex | T36 |
-| [T38](T38-m1-2.5d-visual-quality.md) M1 Phaser 2.5D visual-quality pass | done; M1 human/device gates open, M2 validation pilot recommended | Codex | T37 |
+| [T38](T38-m1-2.5d-visual-quality.md) M1 Phaser 2.5D visual-quality pass | done; M2 free validation only after gates; paid work deferred until owner resumes | Codex | T37 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
 | [T16](T16-admin-decisions.md) admin decisions/privacy/architecture | approved | unassigned | T05 contract baseline |
 | [T17](T17-admin-shell-auth.md) admin shell and authorization | approved | unassigned | T16 |
