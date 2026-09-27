@@ -32,7 +32,7 @@
 | [T36](T36-m1-segment-design.md) M1 segment design | done; design approved | Codex | T35 |
 | [T37](T37-m1-segment-implementation.md) M1 playable segment | implementation passed; product acceptance open | Codex | T36 |
 | [T38](T38-m1-2.5d-visual-quality.md) M1 Phaser 2.5D visual-quality pass | done; M2 free validation only after gates; paid work deferred until owner resumes | Codex | T37 |
-| [T39](T39-m2-full-case-expansion.md) M2: mở rộng trọn vụ án The Swapped Report | bản thiết kế chờ chủ dự án duyệt | Codex | T36, T37, T38 |
+| [T39](T39-m2-full-case-expansion.md) M2: hai vụ án, lựa chọn nhân vật/học tập và HUD mới | đặc tả v1.1 chờ chủ dự án rà soát; còn chọn tình huống vụ hai | Codex | T36, T37, T38 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
 | [T16](T16-admin-decisions.md) admin decisions/privacy/architecture | approved | unassigned | T05 contract baseline |
 | [T17](T17-admin-shell-auth.md) admin shell and authorization | approved | unassigned | T16 |
