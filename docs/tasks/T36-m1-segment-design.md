@@ -28,5 +28,5 @@ Excluded: product code, new dependency, migration, external asset/vendor contact
 - Result: none.
 - Observation/evidence: M0 left four production inputs open, so the next useful step was to make the segment concrete while distinguishing product decisions from assumptions. No recurring workflow failure surfaced.
 - Mechanism changed or no-change reason: added the segment design and explicit open-decision list; no broader rule, skill or script is warranted.
-- Validation: pending document checks at handoff. T35 and current memory record the successful push and the limit on independent remote verification.
+- Validation: agent docs check passed for 37 task files, relative links in changed design/gate documents resolve, and `git diff --check` passed. No product tests were run because this task only records a design proposal. T35 and current memory record the successful push and the limit on independent remote verification.
 - Follow-up: owner review is the trigger for writing the file-level implementation plan.
