@@ -1,87 +1,87 @@
-# M2 full-case expansion design — The Swapped Report
+# Thiết kế M2: Mở rộng trọn vụ án The Swapped Report
 
-Status: **design draft for owner review**  
-Date: 2026-09-27  
-Lifecycle phase: design; implementation plan not started  
-Product: Office Case Files, browser-based English-learning detective game
+- **Trạng thái:** bản thiết kế tiếng Việt, chờ chủ dự án duyệt
+- **Ngày:** 2026-09-27
+- **Giai đoạn:** thiết kế; chưa lập kế hoạch triển khai
+- **Sản phẩm:** Office Case Files, game điều tra trên trình duyệt để học tiếng Anh
 
-## User intent and current evidence
+## Mục tiêu và bằng chứng hiện có
 
-The owner wants to continue M2 but considers the current 3–5 minute M1 passage too small for real learner sessions. The game must provide a broader investigation and enough contextual English before real users are invited. AI agents should do most content drafting, review and implementation work to simplify the owner's process. The paid/monetization work remains paused until the owner explicitly requests resumption.
+Chủ dự án muốn tiếp tục M2 nhưng cho rằng lát cắt M1 dài 3–5 phút chưa đủ để mời người học thật. Trước khi thử với người thật, game cần có cuộc điều tra rộng hơn và đủ nội dung tiếng Anh trong ngữ cảnh. Các tác tử AI sẽ đảm nhận phần lớn việc soạn nội dung, phản biện và triển khai để quy trình của chủ dự án gọn hơn. Phần thu phí/kiếm tiền vẫn tạm dừng đến khi chủ dự án chủ động yêu cầu mở lại.
 
-Current evidence: case `swapped-report` has v1 and v2 JSON with six evidence records, three questions, three NPCs, a glossary, conclusion and five review items. The approved M1 path uses E01 → E02 → scanner → E03 → Nora E06 and is intentionally short. The Phaser `OfficeScene` already uses a following camera in a 1600×1000 world, but its bounds, floor, room art and obstacles are hard-coded. Case interactions currently have flat world coordinates; the server keeps the solution and correct answers private.
+Bằng chứng hiện có: vụ án `swapped-report` có JSON v1 và v2, mỗi phiên bản gồm sáu hồ sơ, ba câu hỏi, ba NPC, bảng từ vựng, kết luận và năm câu ôn tập. Luồng M1 được duyệt là E01 → E02 → né máy quét → E03 → lời khai Nora E06 và được cố ý giữ ngắn. `OfficeScene` của Phaser đã có camera bám theo nhân vật trong thế giới 1600×1000, nhưng ranh giới bản đồ, sàn, hình ảnh phòng và vật cản đang được hard-code. Tọa độ tương tác trong vụ án hiện là tọa độ phẳng; server giữ đáp án và lời giải riêng.
 
-## Approved design sections
+## Các phần thiết kế đã được duyệt
 
-The owner approved these sections through individual choices on 2026-09-27:
+Chủ dự án đã duyệt từng phần bằng lựa chọn ngày 2026-09-27:
 
-1. Expand **The Swapped Report** before creating a second case; keep the existing React/Phaser/API architecture.
-2. Target a 25–35 minute, three-act case in three connected areas, with 8–10 evidence records, two short dodge beats, about 16 useful workplace-English chunks, a conclusion and end-of-case review. Vietnamese translations remain optional, adjacent to English, and hidden by default.
-3. Use a single scrolling Phaser map with connected areas, rather than a separate Phaser scene for each area. Keep React responsible for accessible learning/UI, Phaser for frame-level play, API/domain for trusted progression/scoring, and server JSON for case content.
-4. Use a short AI workflow: a writing agent drafts the case; independent agents review deduction logic and A2–B1/translation quality; implementation agents work in scoped slices; AI role simulations and a visible browser test find and fix issues. AI simulations are hypotheses, not human validation.
-5. The M2 completion gate is three traversable areas, 8–10 evidence records, at least 16 contextualized language chunks, two fair dodge beats, a conclusion grounded in cited evidence, hidden-by-default translations, no blocking AI review findings, and a complete visible headed browser journey on the final revision.
+1. Mở rộng **The Swapped Report** trước khi tạo vụ án thứ hai; giữ kiến trúc React/Phaser/API hiện tại.
+2. Mục tiêu là vụ án ba hồi, chơi khoảng 25–35 phút trong ba khu vực nối tiếp; có 8–10 hồ sơ, hai đoạn né ngắn, khoảng 16 cụm tiếng Anh công sở hữu ích, phần kết luận và ôn tập. Bản dịch tiếng Việt tùy chọn, đặt cạnh tiếng Anh và ẩn mặc định.
+3. Dùng một bản đồ Phaser cuộn với các khu vực nối liền, không tạo Phaser scene riêng cho từng khu. React quản lý giao diện/nội dung dễ đọc; Phaser quản lý gameplay theo frame; API/domain quản lý tiến độ/điểm số đáng tin cậy; JSON phía server chứa nội dung vụ án.
+4. Dùng quy trình AI gọn: tác tử biên kịch soạn vụ án; các tác tử độc lập phản biện logic suy luận và chất lượng A2–B1/bản dịch; tác tử triển khai làm theo lát cắt có phạm vi; AI mô phỏng vai người chơi và kiểm tra trên trình duyệt có hiển thị giúp tìm, sửa lỗi. Mô phỏng AI là giả thuyết, không phải kiểm chứng với người thật.
+5. Cổng hoàn thành M2 gồm: ba khu vực đi lại được; 8–10 hồ sơ; ít nhất 16 cụm ngôn ngữ trong ngữ cảnh; hai đoạn né công bằng; kết luận dựa trên chứng cứ được viện dẫn; bản dịch ẩn mặc định; không còn lỗi nghiêm trọng từ vòng phản biện AI; hành trình kiểm thử trên trình duyệt có hiển thị hoàn tất trên bản cuối.
 
-## Player experience
+## Trải nghiệm người chơi
 
-The player follows one coherent workplace mystery from first instruction to evidence-backed resolution:
+Người chơi theo một vụ việc công sở xuyên suốt từ chỉ dẫn đầu tiên đến kết luận có chứng cứ:
 
-1. **Act I — The instruction:** learn the goal and inspect the approved report request, email/chat, and early reactions. The player notices ambiguity in “previous version” and can ask for clarification.
-2. **Act II — The timeline:** move through a visually distinct meeting/work area, gather records and compare interviews. A short dodge beat protects the archive route; failure returns to a fair checkpoint without removing evidence or reducing English scores.
-3. **Act III — The archive and explanation:** inspect version history and additional context, face a second short dodge beat, hear the relevant statement, choose a conclusion, cite supporting evidence, and review useful language from the case.
+1. **Hồi I — Chỉ dẫn:** nắm mục tiêu, xem yêu cầu dùng báo cáo, email/chat và phản ứng ban đầu. Người chơi nhận ra điểm mơ hồ trong “previous version” và có thể hỏi để xác nhận.
+2. **Hồi II — Dòng thời gian:** đi qua khu vực họp/làm việc có nhận diện riêng, thu thập hồ sơ và so sánh lời khai. Một đoạn né ngắn bảo vệ lối vào kho lưu trữ; nếu thất bại, người chơi quay về checkpoint công bằng mà không mất hồ sơ hoặc điểm tiếng Anh.
+3. **Hồi III — Kho lưu trữ và lời giải:** kiểm tra lịch sử phiên bản cùng ngữ cảnh bổ sung, vượt qua đoạn né thứ hai, nghe lời khai liên quan, chọn kết luận, trích chứng cứ hỗ trợ và ôn lại ngôn ngữ hữu ích trong vụ án.
 
-The exact dialogue, evidence IDs/unlock graph, areas, vocabulary selection, questions and solutions belong in the implementation plan/content brief after this spec is approved. Keep the established case facts: Nora replaced v3 with v2 after misunderstanding Maya's “previous version” instruction; the account/time log alone does not prove intent. Do not introduce an unsupported malicious motive.
+Lời thoại, ID hồ sơ/đồ thị mở khóa, khu vực, từ vựng, câu hỏi và đáp án sẽ được chốt trong kế hoạch triển khai/tài liệu nội dung sau khi bản thiết kế này được duyệt. Giữ nguyên dữ kiện đã xác lập: Nora thay v3 bằng v2 do hiểu nhầm chỉ dẫn “previous version” của Maya; log tài khoản/thời điểm không tự chứng minh ý định. Không thêm động cơ phá hoại nếu chứng cứ không hỗ trợ.
 
-## Learning design
+## Thiết kế học tiếng Anh
 
-- Retain A2–B1 as an editorial target, not a certification claim. Teach at least 16 practical workplace chunks in context across instructions, clarifying questions, versions/files, chronology and cautious evidence language.
-- Reuse high-value language at least twice across evidence, NPC dialogue, objective text or review so the player can infer meaning rather than memorize a list.
-- Keep English primary; show optional Vietnamese beside the exact English passage. Translation starts hidden and never changes score, hint count, progression, question access or evidence access.
-- Avoid dense reading during danger. Dialogue, clue reading and questions pause/gate movement; audio-off and missing-audio paths retain readable transcripts and visual cues.
-- The five-item review remains a concise recall/application wrap-up; the implementation plan may propose a content-compatible count change only if the current contract prevents meaningful coverage and documents the migration/test impact.
+- Giữ A2–B1 là mục tiêu biên tập, không tuyên bố chứng nhận trình độ. Dạy ít nhất 16 cụm từ/cách nói công sở thực tế trong ngữ cảnh: chỉ dẫn, hỏi xác nhận, phiên bản/tệp, trình tự thời gian và cách nói thận trọng về chứng cứ.
+- Dùng lại các cụm quan trọng ít nhất hai lần trong hồ sơ, thoại NPC, mục tiêu hoặc phần ôn tập để người chơi suy nghĩa qua ngữ cảnh thay vì học thuộc danh sách.
+- Tiếng Anh là nội dung chính; bản dịch Việt tùy chọn hiển thị sát đoạn tiếng Anh tương ứng. Bản dịch ban đầu ẩn và không ảnh hưởng điểm, số lần gợi ý, tiến độ, quyền trả lời hoặc quyền mở hồ sơ.
+- Tránh buộc người chơi đọc nhiều khi đang gặp nguy hiểm. Khi mở thoại, manh mối hoặc câu hỏi thì gameplay tạm dừng; khi tắt/không có âm thanh vẫn có transcript và dấu hiệu hình ảnh tương đương.
+- Giữ phần ôn tập gọn với năm câu ghi nhớ/vận dụng; kế hoạch triển khai chỉ đề xuất đổi số lượng nếu hợp đồng hiện tại cản trở nội dung và ghi rõ ảnh hưởng đến migration/kiểm thử.
 
-## World and system boundaries
+## Bản đồ và ranh giới hệ thống
 
-- Keep one Phaser scene and a single camera-scroll map with three visually distinct, connected areas. Prefer reusing the existing 1600×1000 canvas world unless layout tests prove it cannot fit the approved journey. Do not add scene-transition machinery by default.
-- Preserve the approved layer ownership: React owns DOM text, overlays, translation, focus and UI state; Phaser owns movement, collision, camera, animation and dodge timing; API/application/domain own trusted progress and scoring; Infrastructure loads server-side JSON case data.
-- Keep the existing case ID and publish expanded content as an immutable new version. Do not rewrite pinned v1 or v2 sessions. No private solution, correct choices or scoring keys move to the frontend.
-- Extend server case schema only when the design demonstrably needs authored area/checkpoint/action metadata that current JSON and map coordinates cannot represent. Any extension must be validated and version-safe; avoid a general level editor or authoring framework.
-- Reuse the existing licensed ambience, procedural/local sound cues and in-repo SVG pipeline. No external contact, paid assets, commissioned work, commercial quotes, checkout/subscriptions, paid acquisition, or monetization work is included.
+- Giữ một Phaser scene và bản đồ camera cuộn với ba khu vực nối liền, có hình ảnh nhận diện khác nhau. Ưu tiên dùng bản đồ 1600×1000 hiện tại, trừ khi kiểm thử bố cục cho thấy không đủ chỗ. Mặc định không tạo hệ thống chuyển scene/phòng.
+- Giữ đúng phân chia trách nhiệm: React quản lý DOM, overlay, dịch, focus và trạng thái UI; Phaser quản lý di chuyển, va chạm, camera, hoạt ảnh và nhịp né; API/application/domain quản lý tiến độ/điểm số; Infrastructure tải JSON vụ án phía server.
+- Giữ ID vụ án hiện tại và thêm nội dung dưới dạng phiên bản bất biến mới. Không sửa nội dung đã gắn với phiên chơi v1/v2. Không chuyển đáp án, lựa chọn đúng hoặc khóa chấm điểm sang frontend.
+- Chỉ mở rộng cấu trúc dữ liệu vụ án phía server nếu thiết kế chứng minh tọa độ JSON hiện tại không thể biểu đạt khu vực/checkpoint/hành động cần thiết. Mọi mở rộng phải được kiểm tra và tương thích phiên bản; không xây công cụ biên tập màn chơi hoặc framework tạo nội dung tổng quát.
+- Tái sử dụng ambience đã có license, âm thanh cục bộ/procedural và quy trình SVG trong repo. Không liên hệ bên ngoài, mua asset, thuê sản xuất, xin báo giá, làm checkout/thuê bao, quảng cáo trả phí hoặc thực hiện công việc kiếm tiền.
 
-## AI production and review workflow
+## Quy trình sản xuất và phản biện bằng AI
 
-Keep owner input to milestone approvals and the final review, not per-dialogue approval:
+Giữ phần chủ dự án cần tham gia ở mức duyệt mốc và duyệt kết quả, không phải duyệt từng câu thoại:
 
-1. A content-author agent proposes the act outline, evidence graph, short dialogue, English/Vietnamese pairs, vocabulary reuse and review items from this spec.
-2. Independent agents review (a) timeline, clue sufficiency, alternate theories and answer leakage; (b) A2–B1 readability, translation fidelity, ambiguity and useful language repetition. The integration owner resolves findings and records any ruling that changes the approved facts.
-3. Implementation agents work from a written file-scoped plan in independent slices. Each slice gets a focused review before integration; do not let agents concurrently edit shared files without explicit file ownership.
-4. Five independent AI player-role simulations critique the final build. Report them only as hypotheses. The integration owner then runs the final headed browser journey visibly, inspects gameplay and scripts, fixes failures and retests.
+1. Tác tử AI biên kịch đề xuất dàn ý các hồi, đồ thị chứng cứ, thoại ngắn, cặp Anh–Việt, cách dùng lại từ vựng và câu ôn tập theo bản thiết kế.
+2. Các tác tử độc lập rà (a) dòng thời gian, độ đủ của manh mối, giả thuyết thay thế và rò đáp án; (b) độ dễ đọc A2–B1, độ sát nghĩa của bản dịch, điểm mơ hồ và việc lặp lại ngôn ngữ hữu ích. Người điều phối giải quyết nhận xét và ghi rõ mọi quyết định làm thay đổi dữ kiện đã duyệt.
+3. Các tác tử triển khai theo kế hoạch ghi rõ phạm vi tệp, từng lát cắt độc lập. Mỗi lát cắt được phản biện tập trung trước khi tích hợp; không giao nhiều tác tử sửa đồng thời cùng tệp nếu chưa phân quyền sở hữu cụ thể.
+4. Năm tác tử AI độc lập mô phỏng vai người chơi để phản biện bản dựng cuối. Chỉ báo cáo kết quả như giả thuyết. Người điều phối chạy hành trình trong trình duyệt có hiển thị, quan sát gameplay và bộ script kiểm tra, sửa lỗi rồi chạy lại.
 
-No agent output is human-player evidence. Completion only makes M2 eligible for a separate owner decision about real learner testing; it does not authorize contacting participants. Paid work stays deferred.
+Kết quả của tác tử AI không phải bằng chứng người chơi thật. Hoàn thành M2 chỉ đưa dự án đến trạng thái đủ điều kiện để chủ dự án quyết định riêng việc thử với người học; không tự cho phép liên hệ người tham gia. Phần thu phí vẫn tạm dừng.
 
-## M2 scope and non-goals
+## Phạm vi M2 và phần loại trừ
 
-**In scope:** expand one existing case into a complete 25–35 minute three-act experience; three connected areas on one scrolling map; more evidence/dialogue and English learning; two short fair dodge beats; conclusion/evidence citation and review; only the minimum UI, schema, storage or art changes required; AI drafting/reviews/simulations; visible browser and script verification.
+**Trong phạm vi:** mở rộng một vụ án hiện có thành trải nghiệm ba hồi dài 25–35 phút; ba khu vực nối trên bản đồ cuộn; thêm hồ sơ/thoại và nội dung tiếng Anh; hai đoạn né ngắn công bằng; kết luận có dẫn chứng và ôn tập; chỉ sửa tối thiểu giao diện, cấu trúc dữ liệu, lưu trữ hoặc hình ảnh khi cần; AI soạn/phản biện/mô phỏng; kiểm tra trình duyệt có hiển thị và chạy bộ script.
 
-**Out of scope:** second case, payment/checkout/subscription, paid acquisition, commercial pricing/quotes, new paid or commissioned assets, external participants, broad admin portal, account system, external analytics, engine/renderer change, publishing/deployment, and claims of validated learning or market demand.
+**Ngoài phạm vi:** vụ án thứ hai, thanh toán/checkout/thuê bao, quảng cáo trả phí, định giá/báo giá thương mại, hình ảnh mới trả phí hoặc thuê sản xuất, người tham gia bên ngoài, cổng quản trị đầy đủ, hệ thống tài khoản, analytics bên ngoài, đổi engine/renderer, phát hành/deploy và tuyên bố đã chứng minh hiệu quả học tập/thị trường.
 
-## Risks and responses
+## Rủi ro và cách xử lý
 
-- **Content volume becomes padding:** require a clue/reason purpose and a learning purpose for each new record; reuse language in context; use AI reviewers to identify redundant content.
-- **Mystery becomes unfair or over-explained:** retain uncertainty in early records, distinguish actions from intent, test at least one plausible alternate theory, and disclose the conclusion only at the authored payoff.
-- **AI-generated factual or translation errors:** independent reviews compare every statement to the case fact ledger; owner/integration lead adjudicates, and all private answer rules remain server-side.
-- **Map growth increases collision/visual complexity:** keep one scene and connected map, give each region clear landmarks, keep interactions reachable, verify camera bounds/depth/colliders in visible browser play.
-- **Long reading interrupts the game:** readings pause action; keep each evidence record within existing content validation limits unless an approved schema change is justified.
-- **Performance or asset size regresses:** retain reduced-motion and fallback behavior, measure the final visible journey and asset transfer, compare to the recorded M1 baseline, and report actual limitations rather than inventing a first-load ceiling.
+- **Nội dung nhiều nhưng loãng:** mỗi hồ sơ mới phải phục vụ mục đích điều tra và mục tiêu học tập; dùng lại ngôn ngữ trong ngữ cảnh; nhờ tác tử AI phản biện phát hiện phần lặp thừa.
+- **Vụ án thiếu công bằng hoặc giải thích quá sớm:** giữ độ bất định trong hồ sơ đầu, phân biệt hành động với ý định, kiểm tra ít nhất một giả thuyết thay thế hợp lý và chỉ mở lời giải ở payoff đã định.
+- **AI sinh sai dữ kiện hoặc bản dịch:** tác tử độc lập đối chiếu từng câu với bảng dữ kiện gốc; người điều phối quyết định cuối; đáp án vẫn phía server.
+- **Bản đồ lớn làm rối va chạm/hình ảnh:** giữ một scene, dùng mốc nhận diện rõ cho từng khu, bảo đảm điểm tương tác có thể tiếp cận; kiểm tra camera/depth/collider bằng trình duyệt hiển thị.
+- **Đọc nhiều làm đứt nhịp chơi:** mở hồ sơ thì tạm dừng hành động; giữ mỗi hồ sơ trong giới hạn kiểm tra nội dung hiện tại trừ khi có lý do rõ để đổi cấu trúc dữ liệu.
+- **Giảm hiệu năng hoặc tăng kích thước tải:** giữ hỗ trợ giảm chuyển động và hình ảnh dự phòng; đo hành trình trên trình duyệt và dung lượng asset bản cuối, so với baseline M1; báo cáo giới hạn thực tế, không tự đặt trần tải ban đầu.
 
-## Acceptance and next gate
+## Tiêu chí nghiệm thu và mốc kế tiếp
 
-M2 implementation is eligible for handoff when the approved numeric/experience gate in section “Approved design sections” passes and:
+M2 đủ điều kiện bàn giao khi qua cổng số lượng/trải nghiệm đã duyệt ở phần “Các phần thiết kế đã được duyệt” và:
 
-- existing v1 and v2 sessions still use their pinned content;
-- every new English passage has a reviewed optional Vietnamese translation or an explicit decision that translation is not appropriate;
-- conclusions cite the required server-validated evidence, with no answer leakage;
-- movement, camera scrolling, collision/depth, both dodge beats, pause/focus, translations, checkpoints/retry, conclusion and review pass in a visible headed browser journey;
-- web/API checks, content/private-answer checks, build and agent-doc checks pass for changed scope; full repository verification runs when needed by the implementation plan;
-- final changes and limitations are recorded in the M2 task and current memory, and the scoped branch is committed/pushed under the repository's standing instruction.
+- phiên chơi v1/v2 hiện tại vẫn dùng đúng nội dung đã ghim;
+- mỗi đoạn tiếng Anh mới có bản dịch Việt tùy chọn đã được phản biện, hoặc có quyết định rõ rằng không cần dịch;
+- kết luận viện dẫn chứng cứ được server kiểm tra, không rò đáp án;
+- di chuyển, camera cuộn, va chạm/depth, hai đoạn né, pause/focus, dịch, checkpoint/retry, kết luận và ôn tập đều chạy qua hành trình trình duyệt có hiển thị;
+- kiểm tra web/API, nội dung/đáp án riêng tư, bản dựng và tài liệu agent đạt theo phạm vi thay đổi; chạy kiểm tra toàn bộ nếu kế hoạch triển khai yêu cầu;
+- task M2 và memory ghi nhận kết quả/giới hạn cuối; thay đổi có phạm vi được commit/push theo chỉ dẫn thường trực của repo.
 
-**Next lifecycle phase after owner approval of this written spec:** write a file-level M2 implementation plan with bounded agent ownership, content facts/IDs, tests, browser scenarios and rollback/failure paths. Implementation begins only after the owner reviews and approves that written plan and selects execution method.
+**Giai đoạn kế tiếp sau khi chủ dự án duyệt bản thiết kế này:** lập kế hoạch triển khai M2 bằng tiếng Việt, chia phạm vi theo tệp/tác tử, chốt dữ kiện/ID nội dung, kiểm thử, kịch bản trình duyệt và đường phục hồi khi lỗi. Chỉ bắt đầu triển khai sau khi chủ dự án duyệt riêng kế hoạch triển khai bằng văn bản và chọn cách thực hiện.
