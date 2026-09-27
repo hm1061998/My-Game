@@ -1,6 +1,8 @@
 # Kế hoạch triển khai M2 — Hai vụ án và thiết kế game mới
 
-> **Dành cho tác tử thực thi:** BẮT BUỘC dùng `superpowers:subagent-driven-development`. Mỗi agent nhận một lát cắt và danh sách tệp riêng; người điều phối tích hợp và rà soát. Không bắt đầu code trước khi chủ dự án duyệt kế hoạch này.
+**Phiên bản:** 1.1 · 2026-09-27. Bản 1.1 ghi chính xác các neo wireframe đã được chủ dự án duyệt làm điều kiện nghiệm thu.
+
+> **Dành cho tác tử thực thi:** BẮT BUỘC dùng `superpowers:subagent-driven-development`. Mỗi agent nhận một lát cắt và danh sách tệp riêng; người điều phối tích hợp và rà soát. Chủ dự án đã duyệt kế hoạch; Task 0 bắt đầu trước các lát cắt code.
 
 **Mục tiêu:** Biến Office Case Files thành game trình duyệt có hai vụ án hoàn chỉnh để chọn, lựa chọn nhân vật và thiết lập học tập, phong cách giấy ngà–mực/than, HUD có minimap, cùng hành trình điều tra và học tiếng Anh đủ dài cho phản biện AI.
 
@@ -8,7 +10,7 @@
 
 **Công nghệ:** React + TypeScript + Phaser hiện có; ASP.NET Core/C#; SQLite qua storage port; nội dung JSON; Playwright headed cho kiểm thử trình duyệt.
 
-**Đặc tả:** [Thiết kế M2 v1.1](../specs/2026-09-27-m2-full-case-expansion-design.md). Thiết kế nội dung vụ án thứ hai vẫn cần chủ dự án chọn trước khi viết nội dung đó.
+**Đặc tả:** [Thiết kế M2 v1.1](../specs/2026-09-27-m2-full-case-expansion-design.md) và [hợp đồng bố cục HUD theo wireframe](../../design/M2-hud-layout-contract.md). Thiết kế nội dung vụ án thứ hai vẫn cần chủ dự án chọn trước khi viết nội dung đó.
 
 ## Ràng buộc chung
 
@@ -17,7 +19,7 @@
 - Đồ họa dùng giấy ngà, nét mực/than chì và màu nhấn có chọn lọc. Hai mẫu ngoại hình chỉ khác diện mạo, dùng chung hoạt ảnh và chỉ số, đổi được.
 - Bốn mức độ khó và trình độ Anh ngữ A2/B1 độc lập. Độ khó chỉ đổi áp lực/trợ giúp; mức Anh ngữ có khảo sát gợi ý và luôn cho phép người chơi tự đổi. Không thay dữ kiện, câu trả lời, quyền xem chứng cứ hoặc điểm học.
 - Tiếng Việt đặt cạnh tiếng Anh, ẩn mặc định, dùng được bằng bàn phím và không ảnh hưởng điểm/số gợi ý.
-- HUD bỏ thanh bên phải; mục tiêu trên trái; tiến độ và minimap trên phải; prompt tương tác theo ngữ cảnh; action bar dưới cùng. Minimap không làm lộ chứng cứ bị khóa. Mở sổ tay/bản đồ/tạm dừng thì Phaser dừng và focus được quản lý.
+- HUD phải tuân theo các neo và thứ bậc trong wireframe đã duyệt: header mảnh phía trên; thế giới Phaser chiếm phần lớn vùng chơi; thẻ mục tiêu nổi ở trên trái; tiến độ ở trên phải với minimap ngay dưới; prompt tương tác gần giữa phía dưới; action bar chạy ngang đáy. Không có thanh bên phải hoặc chuyển các nhóm này sang vị trí khác. Tỷ lệ/pixel trong sketch chỉ tham khảo; responsive được phép co giãn nhưng phải giữ nguyên thứ bậc và neo. Minimap không làm lộ chứng cứ bị khóa. Mở sổ tay/bản đồ/tạm dừng thì Phaser dừng và focus được quản lý.
 - Giữ v1/v2 hiện có bất biến; không gửi đáp án/lời giải tới client. Không thanh toán, liên hệ người học, chi tiền, phát hành hoặc deploy.
 - Không thêm dependency nếu chưa chứng minh là cần. Dùng asset hiện có hoặc tạo SVG cục bộ; không tự mua/thuê asset.
 
@@ -145,7 +147,8 @@
 
 - [ ] Thêm `MiniMap projects player and allowed objectives`: marker đúng scale/region; clue khóa/private không xuất hiện; snapshot mới cập nhật vị trí.
 - [ ] Thêm `HUD overlays pause and restore focus`: Esc/J/M, pause/resume, focus/keyboard isolation; right drawer không còn trong DOM.
-- [ ] Chụp/soát visible screenshots ở 1280×800, 1100×720, 800×600, grayscale và reduced motion.
+- [ ] Chụp/soát visible screenshots ở 1280×800, 1100×720, 800×600, 390×800 và 360×800; kiểm tra zoom 200%, grayscale và reduced motion. Xác nhận đúng thứ tự/neo của wireframe và không chồng quest/progress/minimap/prompt/actionbar; không sao nguyên các số pixel desktop vào màn hẹp.
+- [ ] Thêm assertion bố cục dùng bounding boxes ở desktop và màn hẹp: mục tiêu ở vùng trên trái; progress/minimap thành một cụm trên phải; prompt ở giữa phía dưới nhưng nằm trên actionbar; actionbar nằm ngang sát đáy; không có rail phải hoặc tràn/cuộn ngang. Xác nhận prompt chỉ hiện khi có tương tác hợp lệ.
 
 ### Task 5: Hoàn chỉnh The Swapped Report — phiên bản nội dung mới
 
@@ -157,7 +160,7 @@
 
 - [ ] Agent biên kịch tạo đồ thị chứng cứ 8–10 hồ sơ, 3 hồi, 3 vùng, hai đoạn né, 16+ cụm công sở và kết luận có các bộ chứng cứ hỗ trợ.
 - [ ] Hai agent độc lập rà logic/suy luận/giả thuyết thay thế và A2/B1/bản dịch; đối chiếu từng sự thật với case gốc; không tiết lộ động cơ ngoài chứng cứ.
-- [ ] Tạo cách diễn đạt A2/B1 cho evidence/dialogue/questions/review; giữ nguyên facts, graph và đáp án. Dịch Việt cạnh từng câu, ban đầu ẩn; API chọn bản theo `SessionProgress.learningLevel`.
+- [ ] Tạo cách diễn đạt A2/B1 cho evidence/dialogue/questions/review; giữ nguyên facts, graph và đáp án. Dịch Việt cạnh từng câu, ban đầu ẩn; Application chọn bản theo trình độ đã ghim trong `PlaySession.LearningLevel`.
 - [ ] Nhập vào `swapped-report.v3.json`, giữ v1/v2 không đổi; chạy validator và kiểm thử luồng API từ evidence đến conclusion/review.
 - [ ] So sánh asset transfer, p95 frame time và FPS với baseline Task 0; giữ p95 ≤33 ms trên thiết bị test đã ghi.
 
@@ -190,7 +193,7 @@
 
 ## Trình tự thực hiện và cổng
 
-1. **Chờ duyệt kế hoạch này.** Mọi thay đổi tiếp theo trong game phụ thuộc vào duyệt đó.
+1. **Kế hoạch đã được chủ dự án duyệt ngày 2026-09-27**, kèm ràng buộc mới: HUD phải bám các neo/thứ bậc của wireframe đã duyệt. Các chỉnh sửa v1.1 chỉ ghi lại ràng buộc này, không đổi bố cục đã chọn.
 2. Task 0 chốt tình huống case hai, survey, độ khó, mức nội dung A2/B1, target viewport/profile; cập nhật T39/spec và xin duyệt thay đổi sản phẩm nếu khác định hướng đã chốt.
 3. Tasks 1–4 xây nền tảng case/session/world/setup/HUD với fixture; giữ một đường chơi v1/v2 hoạt động.
 4. Task 5 tích hợp The Swapped Report v3; chạy một vertical slice hoàn chỉnh trước khi làm vụ hai.

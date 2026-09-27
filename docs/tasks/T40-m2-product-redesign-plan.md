@@ -1,12 +1,12 @@
 # T40 — Lập kế hoạch triển khai M2 theo thiết kế mới
 
-- **Trạng thái:** kế hoạch v1.0 sẵn sàng để chủ dự án rà soát; chưa code
+- **Trạng thái:** kế hoạch v1.1 được chủ dự án duyệt ngày 2026-09-27; T41 đang thực hiện Task 0, chưa code
 - **Chủ trì:** Codex/điều phối tích hợp
 - **Phụ thuộc:** T39
 - **Kế hoạch:** [Kế hoạch triển khai M2](../superpowers/plans/2026-09-27-m2-product-redesign-implementation.md)
-- **Phiên bản:** 1.0 · 2026-09-27
-- **Giai đoạn sản phẩm:** xác định → thiết kế → lập kế hoạch; chờ duyệt kế hoạch
-- **Bằng chứng đầu vào:** chủ dự án yêu cầu “triển khai kế hoạch theo thiết kế mới” ngày 2026-09-27. Đây là ủy quyền chuẩn bị kế hoạch, không phải chấp thuận bắt đầu code. Định hướng M2 đã duyệt ở T39; ý tưởng vụ hai và một số chi tiết sản xuất được đặt thành cổng trước nhánh nội dung.
+- **Phiên bản:** 1.1 · 2026-09-27
+- **Giai đoạn sản phẩm:** lập kế hoạch đã duyệt; thực thi Task 0 đang tiến hành ở T41
+- **Bằng chứng đầu vào:** chủ dự án nói “tôi sẽ duyệt kế hoạch này” và yêu cầu bảo đảm thiết kế game đúng wireframe đã duyệt ngày 2026-09-27. Phê duyệt bao trùm triển khai M2 theo kế hoạch, với neo/thứ bậc HUD wireframe là điều kiện nghiệm thu. T41 ghi phần thực thi; nội dung vụ hai và đề xuất survey/độ khó vẫn là các cổng lựa chọn trước nhánh nội dung.
 
 ## Kết quả cần đạt
 
@@ -20,7 +20,7 @@ Tạo một kế hoạch tiếng Việt đủ cụ thể để đội AI chia l�
 - Còn mở: premise/thời lượng cụ thể của case hai; độ chi tiết của biến thể ngôn ngữ A2/B1; câu hỏi/quy tắc survey; giá trị từng mức difficulty; thiết bị mục tiêu cho performance acceptance. Kế hoạch có Task 0 đề xuất cụ thể và cổng lựa chọn trước khi tạo nội dung case hai.
 - Kỹ thuật: catalog endpoint và case catalog đã hỗ trợ nhiều case/version; API `POST /sessions` nhận `caseId` và pin `(caseId, caseVersion)`. Web vẫn khởi tạo `swapped-report`; world/checkpoint/encounter state còn theo một bản đồ/đoạn né. Case JSON validator giữ giới hạn 25–60 từ/hồ sơ và đúng 5 review items. Chi tiết kiểm tra nằm trong spec và kế hoạch.
 
-## Handoff và kiểm chứng
+## Handoff và kiểm chứng kế hoạch
 
 - Baseline: `codex/m1-version-two` tại commit `4593069`; branch tracking `origin/codex/m1-version-two` sạch trước khi soạn kế hoạch.
 - Ba agent rà React, API và Phaser ở chế độ chỉ đọc; đều không sửa file hoặc chạy app. Các phát hiện được tích hợp vào kế hoạch, trong đó sửa mô tả API nhiều case cho đúng hiện trạng.
@@ -28,9 +28,9 @@ Tạo một kế hoạch tiếng Việt đủ cụ thể để đội AI chia l�
 - Browser/app scripts: không chạy vì đây là kế hoạch/tài liệu, không đổi hành vi game. Không có thay đổi code sản phẩm.
 - Push: repo yêu cầu commit/push scoped work khi bàn giao; quyền push đã được chủ dự án cho phép trước đó. Chỉ đẩy kế hoạch/task/memory sau khi kiểm tra cuối.
 
-## Cổng tiếp theo
+## Handoff thực thi
 
-Chờ chủ dự án duyệt kế hoạch. Sau khi duyệt, bắt đầu Task 0; mở các agent implement theo đường `subagent-driven-development`, không cho nhiều agent sửa cùng tệp. Chỉ code sau khi kế hoạch được duyệt; nhánh nội dung case hai phải chờ chủ dự án chọn premise.
+Chủ dự án đã duyệt kế hoạch. Task 0 đang được ghi nhận ở T41; sau khi chốt quyết định còn mở, dùng `subagent-driven-development` với quyền sở hữu tệp rõ và không để nhiều agent sửa cùng tệp. Nhánh nội dung case hai chờ chủ dự án chọn premise.
 
 ## Improvement review
 
@@ -38,4 +38,4 @@ Chờ chủ dự án duyệt kế hoạch. Sau khi duyệt, bắt đầu Task 0;
 - **Quan sát/bằng chứng:** ba audit độc lập xác nhận các ranh giới React, API và Phaser; không có lỗi lặp lại mới ngoài candidate L015 đã ghi tại T39.
 - **Cơ chế:** không đổi rule/skill/script; kế hoạch phân quyền theo lát cắt/tệp và yêu cầu agent chỉ đọc khi khảo sát.
 - **Kiểm chứng:** kế hoạch tự rà theo đặc tả, checklist của `writing-plans`, agent docs check và `git diff --check`; N/A browser vì tài liệu-only.
-- **Kích hoạt tiếp:** Codex sau khi chủ dự án duyệt T40.
+- **Kích hoạt tiếp:** T41 đang thực thi Task 0 theo phê duyệt của chủ dự án ngày 2026-09-27.

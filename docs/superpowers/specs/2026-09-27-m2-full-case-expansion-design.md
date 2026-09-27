@@ -1,8 +1,8 @@
 # Thiết kế M2: Hai vụ án và hành trình game mới
 
-- **Trạng thái:** định hướng v1.1 được duyệt; đang lập kế hoạch triển khai theo yêu cầu chủ dự án
+- **Trạng thái:** định hướng v1.1 và kế hoạch triển khai được duyệt ngày 2026-09-27; đang thực hiện Task 0
 - **Ngày:** 2026-09-27
-- **Giai đoạn:** định hướng thiết kế đã duyệt; kế hoạch triển khai T40 đang chờ duyệt
+- **Giai đoạn:** định hướng và kế hoạch đã duyệt; Task 0 đang chốt baseline và các quyết định nội dung còn mở
 - **Sản phẩm:** Office Case Files, game điều tra trên trình duyệt để học tiếng Anh
 
 ## Mục tiêu và bằng chứng hiện có
@@ -24,7 +24,7 @@ Chủ dự án đã duyệt từng phần bằng lựa chọn ngày 2026-09-27:
 7. Tạo nhân vật bằng hai mẫu ngoại hình nam/nữ có sẵn; lựa chọn chỉ đổi diện mạo, cùng hoạt ảnh và chỉ số, và người chơi có thể đổi lại.
 8. Độ khó chơi có bốn mức Dễ/Trung bình/Khó/Chuyên gia. Độ khó chỉ điều chỉnh áp lực thử thách và mức trợ giúp; không thay nội dung học, dữ kiện, đáp án hay quyền tiếp cận chứng cứ.
 9. Người chơi chọn trình độ học A2 hoặc B1. Khảo sát ngắn gợi ý mức phù hợp; người chơi tự chọn khác hoặc đổi về sau. Trình độ học tách biệt độ khó chơi.
-10. HUD trong lúc chơi bỏ thanh bên phải: mục tiêu gọn ở góc trên trái; tiến độ vụ án và minimap ở góc trên phải; minimap chỉ rõ vị trí người chơi và dấu hiệu manh mối; lời nhắc tương tác theo ngữ cảnh gần mục tiêu; thanh thao tác phím gọn ở cạnh dưới. Sổ tay, bản đồ đầy đủ và tạm dừng mở thành lớp phủ trên màn chơi; lớp phủ dừng mô phỏng gameplay. Wireframe minimap được chủ dự án duyệt trong hội thoại ngày 2026-09-27.
+10. HUD trong lúc chơi bỏ thanh bên phải và bám bố cục wireframe đã duyệt: header mảnh trên cùng; thế giới game chiếm phần lớn vùng chơi; mục tiêu nổi ở góc trên trái; tiến độ ở góc trên phải, minimap ngay dưới; prompt tương tác gần giữa phía dưới; action bar ngang sát đáy. Sổ tay, bản đồ đầy đủ và tạm dừng mở thành lớp phủ trên màn chơi; lớp phủ dừng mô phỏng gameplay. Các kích thước pixel trong sketch là tỷ lệ gợi ý, không phải kích thước cứng: khi responsive được co giãn nhưng không đổi neo/vị trí tương đối, thứ bậc hoặc bỏ minimap khỏi HUD đang chơi. Chi tiết ghi tại [hợp đồng bố cục HUD](../../design/M2-hud-layout-contract.md). Wireframe được chủ dự án duyệt trong hội thoại ngày 2026-09-27.
 
 ## Trải nghiệm người chơi
 
@@ -114,4 +114,4 @@ Các tiêu chí trên trước đây chỉ áp dụng cho The Swapped Report. Sa
 2. Chốt thiết kế cụ thể của khảo sát A2/B1 và cấu hình hành vi cho từng mức độ khó trong kế hoạch triển khai; đây là chi tiết sản xuất, không đổi các ranh giới đã duyệt ở trên.
 3. Chọn thiết bị/trình duyệt mục tiêu và cỡ màn hình để đặt cổng hiệu năng/tải trước khi triển khai.
 
-**Giai đoạn kế tiếp:** hoàn tất kế hoạch M2 bằng tiếng Việt theo chỉ đạo ngày 2026-09-27. Kế hoạch đặt việc chọn premise vụ hai và chốt khảo sát/độ khó/biến thể A2–B1 làm cổng trước nhánh nội dung. Chỉ bắt đầu code sau khi chủ dự án duyệt kế hoạch triển khai bằng văn bản.
+**Giai đoạn kế tiếp:** thực hiện Task 0 theo kế hoạch M2 đã duyệt ngày 2026-09-27; hoàn tất baseline trình duyệt có hiển thị, trình ba premise vụ hai và đề xuất survey/độ khó/biến thể A2–B1 để chủ dự án lựa chọn trước nhánh nội dung. Không liên hệ người học thật, thu phí, mua asset hoặc phát hành.

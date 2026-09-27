@@ -33,7 +33,8 @@
 | [T37](T37-m1-segment-implementation.md) M1 playable segment | implementation passed; product acceptance open | Codex | T36 |
 | [T38](T38-m1-2.5d-visual-quality.md) M1 Phaser 2.5D visual-quality pass | done; M2 free validation only after gates; paid work deferred until owner resumes | Codex | T37 |
 | [T39](T39-m2-full-case-expansion.md) M2: hai vụ án, lựa chọn nhân vật/học tập và HUD mới | định hướng thiết kế được duyệt; chuyển sang kế hoạch | Codex | T36, T37, T38 |
-| [T40](T40-m2-product-redesign-plan.md) Kế hoạch triển khai M2 theo thiết kế mới | chờ chủ dự án duyệt kế hoạch; chưa sửa code | Codex | T39 |
+| [T40](T40-m2-product-redesign-plan.md) Kế hoạch triển khai M2 theo thiết kế mới | done; kế hoạch v1.1 được duyệt | Codex | T39 |
+| [T41](T41-m2-product-redesign-execution.md) Thực thi M2 theo wireframe mới | Task 0 đang chạy; chưa bắt đầu code | Codex | T40 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
 | [T16](T16-admin-decisions.md) admin decisions/privacy/architecture | approved | unassigned | T05 contract baseline |
 | [T17](T17-admin-shell-auth.md) admin shell and authorization | approved | unassigned | T16 |
