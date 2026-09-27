@@ -1,5 +1,7 @@
 # Office Case Files agent guide
 
+The project-local Superpowers and ui-ux-pro-max skills are available as process and design references. Apply only the skills relevant to the task. For overlapping instructions, this file and the user's current request govern project scope, approval, verification, and Git operations. The three project-specific skills add domain and handoff detail; they do not add independent permissions. An automatic approval rejection is a hard stop for that action.
+
 ## Project
 
 Build a browser-based 2.5D action detective RPG that teaches A2-B1 English. React owns the application UI, Phaser owns frame-level gameplay, and ASP.NET Core owns trusted progression and scoring. Read `PROJECT_PLAN.md` for the full product plan.

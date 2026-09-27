@@ -1,5 +1,7 @@
 # Kế hoạch web game nhập vai hành động trinh thám 2.5D kết hợp học tiếng Anh
 
+> **Mốc lịch sử:** bản 1.4 bên dưới mô tả phạm vi prototype một tuần đã triển khai. Định hướng thương mại mới, người học tự mua trên web, tiêu chuẩn hình/âm và phụ đề tiếng Việt tùy chọn đang được đề xuất tại [commercial-rebaseline-proposal.md](docs/product/commercial-rebaseline-proposal.md). Chỉ các quyết định được chủ dự án duyệt mới thay thế mặc định đã chấp thuận.
+
 > Ngày lập: 23/09/2026 · Cập nhật: 25/09/2026 · Phiên bản: 1.4 · Trạng thái: kế hoạch để triển khai bằng AI.
 > Tên làm việc: **Office Case Files**. Tên này và các mặc định đề xuất chưa phải lựa chọn được người dùng xác nhận.
 > Tài liệu này là đặc tả triển khai; các thư mục, scripts, rules và skills bên dưới **chưa được tạo hoặc chạy** chỉ bằng việc có bản kế hoạch này.

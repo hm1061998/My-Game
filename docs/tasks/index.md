@@ -26,6 +26,7 @@
 | [T13](T13-environment-readme.md) environment setup guide | done | Codex | T02 |
 | [T14](T14-agent-lifecycle-improvement.md) agent lifecycle and improvement | done | Codex | T01 |
 | [T32](T32-project-local-skills.md) project-local UI/UX and Superpowers skills | done | Codex | T14 |
+| [T33](T33-commercial-rebaseline.md) skill reconciliation and commercial plan proposal | done | Codex | T32 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
 | [T16](T16-admin-decisions.md) admin decisions/privacy/architecture | approved | unassigned | T05 contract baseline |
 | [T17](T17-admin-shell-auth.md) admin shell and authorization | approved | unassigned | T16 |

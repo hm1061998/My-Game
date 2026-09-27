@@ -21,6 +21,6 @@ For verification, test the outcome in its real product surface. Include the high
 
 For release readiness, prepare only what the approved gate permits: local artifacts, migrations, version notes, Docker/CI configuration, runbooks, observability, rollback, and known limitations. Mark remote CI, hosting, credentials, and production checks unverified unless actually authorized and observed.
 
-Stop before deployment. Never infer permission to push, publish, create external infrastructure, mutate production, or use secrets. Record the missing authority or future deployment phase instead.
+Stop before deployment. Push only when an applicable explicit or standing user instruction covers the current branch and verified destination; stop on ambiguity or an automatic approval rejection. Never infer permission to publish, create external infrastructure, mutate production, or use secrets. Record missing authority or a future deployment phase instead.
 
 At handoff, run `docs/agent/improvement.md`. Update the task before current memory, validate any changed skill/rule/script, and leave one concrete next action.
