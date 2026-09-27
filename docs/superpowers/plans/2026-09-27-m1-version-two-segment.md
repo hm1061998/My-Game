@@ -174,7 +174,7 @@ Run the Task 1 investigation-flow filter and the `WorkingTheory.test.tsx` filter
 - Modify: `docs/assets/manifest.md`
 
 **Interfaces:**
-- Extend `AnimState` to `idle | walk | run | talk | react | dodge` with explicit frame counts, names and rates in `characterArt.ts`.
+- Extend `AnimState` to `idle | walk | run | talk | react | dodge` with explicit frame counts, names and rates in `characterArt.ts`. Keep 3 direction rows and 80×120 frames; append talk 4, react 4 and dodge 6 frames after the current 16, for a 30-column, 2400×360 sheet. Dodge frames represent anticipation/action/recovery (2 each).
 - Add `setCharacterEmote(characterId: CharacterId, emote: 'talk' | 'react' | null): void` to `GameRuntime`; `createGame` forwards it to `OfficeScene`; `GameHost` forwards a current emote request to the mounted scene.
 - Gameplay animation remains presentation-only; it cannot change movement, collision, scanner rules or scoring.
 
@@ -184,7 +184,7 @@ Update character-art tests for all direction/state frames staying inside generat
 
 - [ ] **Step 2: Generate new character states and expressions**
 
-Extend the local SVG generator with talk, reaction and dodge anticipation/action/recovery poses. Retain original editable sources, current file names, validated loading and fallback behavior. Create one distinct animated dialogue portrait state for Maya and Nora if full-size actor gestures are not readable at the approved zoom.
+Extend the local SVG generator with talk, reaction and dodge anticipation/action/recovery poses. Retain original editable sources, current file names, validated loading and fallback behavior. At normal gameplay zoom, confirm Maya and Nora's body gestures read during dialogue; refine the in-sheet pose if needed without adding a portrait animation system.
 
 - [ ] **Step 3: Add emote control across the React–Phaser boundary**
 
@@ -231,6 +231,7 @@ Expected: PASS for gesture gating, mute, fallback, transcript visibility and pla
 - Create: `apps/web/e2e/m1-segment.spec.ts`
 - Modify: `apps/web/e2e/critical-journey.spec.ts` only if the versioned v2 changes shared setup
 - Modify: `docs/quality/M1-segment-qa.md`
+- Create: `docs/research/M1-session-consent-and-notes.md` (draft template for owner review; not approved consent language)
 - Modify: `docs/assets/manifest.md`
 - Modify: `docs/tasks/T37-m1-segment-implementation.md`
 - Modify: `docs/memory/current.md`
@@ -253,7 +254,7 @@ Record actual model/browser/viewport/network profile, first interactive load, tr
 
 - [ ] **Step 5: Run the 5–8 user scorecard and record results**
 
-The owner personally invites participants. Use the approved consent/deidentified note sheet, no recording by default, fresh browser profiles and the [M1 scorecard](../../research/M1-scorecard.md). Codex does not contact participants. Report raw counts and quotes only in deidentified form; do not treat this small directional sample as statistical or payment validation.
+The owner personally invites participants. Prepare a consent and deidentified note sheet for the owner's review; do not run sessions until its wording is approved. No recording by default; use fresh browser profiles and the [M1 scorecard](../../research/M1-scorecard.md). Codex does not contact participants. Report raw counts and quotes only in deidentified form; do not treat this small directional sample as statistical or payment validation.
 
 - [ ] **Step 6: Complete the M1 gate and handoff**
 
