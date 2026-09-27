@@ -12,7 +12,7 @@ Status: **M1 implementation and automated browser gate passed; learner/product a
 ## What the evidence does not establish
 
 - No human learner session has run. M0 simulated learner roles and automated browser checks are not evidence of enjoyment, comprehension with real learners, retention, purchase intent or revenue.
-- Target device/browser/network profile is unknown. The visual-state test measured 932,830 bytes for `/assets/` resources, excluding the separately gesture-loaded 3.84 MB ambience MP3. Repeated automated frames varied from 30–60 fps with p95 17–67 ms; the final full run measured 30 fps/p95 66 ms. The 33 ms performance target is not accepted on this evidence.
+- The earlier 30 fps/p95 66 ms full-suite sample was taken while the owner reports the device was running many other tasks. On a follow-up test, two separate serial headed runs on Windows/Playwright Chromium at 1280×800 both measured 60 fps/p95 17 ms; total CPU during one run ranged 17.4–49.2%. This meets the frame-time intent in the sampled state. Exact computer model, normal browser and network profile remain unrecorded, so target-device/load acceptance is still open. The visual-state test measured 932,830 bytes for `/assets/` resources, excluding the separately gesture-loaded 3.84 MB ambience MP3.
 - The first sample used no new paid media. Local browser speech is device-dependent and is not a commercial voice recording. Production cost per finished case and paid-pack demand are unknown.
 
 ## Gate decision
