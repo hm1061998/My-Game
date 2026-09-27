@@ -4,10 +4,11 @@ export type CaseMap = { caseId: string; caseVersion: string; interactions: World
 export type GlossaryItem = { id: string; term: string; meaningVi: string; exampleEn: string }
 export type EvidenceSummary = { id: string; kind: string; title: string }
 export type Notebook = { caseId: string; caseVersion: string; evidence: EvidenceSummary[]; glossary: GlossaryItem[] }
-export type Evidence = EvidenceSummary & { body: string; glossary: GlossaryItem[] }
+export type Evidence = EvidenceSummary & { body: string; bodyVi?: string | null; glossary: GlossaryItem[] }
 export type InteractionResult = {
   interactionId: string; kind: 'evidence' | 'npc'; revision: number; title: string | null
-  dialogue: string[] | null; collectedEvidenceId: string | null; statementLocked: boolean
+  dialogue: string[] | null; dialogueVi?: string[] | null
+  collectedEvidenceId: string | null; statementLocked: boolean
 }
 export type Question = { id: string; prompt: string; choices: { id: string; text: string }[];
   attempts: number; isPassed: boolean; explanation: string | null }
@@ -48,6 +49,10 @@ function string(value: unknown): string {
   return value
 }
 
+function optionalString(value: unknown): string | null {
+  return value === undefined || value === null ? null : string(value)
+}
+
 function glossary(value: unknown): GlossaryItem[] {
   return list(value).map(item => ({ id: string(item.id), term: string(item.term),
     meaningVi: string(item.meaningVi), exampleEn: string(item.exampleEn) }))
@@ -75,7 +80,7 @@ export async function getNotebook(): Promise<Notebook> {
 export async function getEvidence(id: string): Promise<Evidence> {
   const value = record(await readJson(await fetch(`/api/v1/session/evidence/${encodeURIComponent(id)}`)))
   return { id: string(value.id), kind: string(value.kind), title: string(value.title),
-    body: string(value.body), glossary: glossary(value.glossary) }
+    body: string(value.body), bodyVi: optionalString(value.bodyVi), glossary: glossary(value.glossary) }
 }
 
 export async function interact(id: string, submissionId: string, revision: number): Promise<InteractionResult> {
@@ -89,8 +94,15 @@ export async function interact(id: string, submissionId: string, revision: numbe
       typeof value.statementLocked !== 'boolean' ||
       (value.dialogue !== null && (!Array.isArray(value.dialogue) || !value.dialogue.every(item => typeof item === 'string'))))
     throw new Error('Invalid interaction response')
+  const dialogue = value.dialogue as string[] | null
+  const dialogueVi = value.dialogueVi
+  if (dialogueVi !== undefined && dialogueVi !== null &&
+      (!Array.isArray(dialogueVi) || dialogue === null || dialogueVi.length !== dialogue.length ||
+        !dialogueVi.every(item => typeof item === 'string')))
+    throw new Error('Invalid interaction response')
   return { interactionId: string(value.interactionId), kind: value.kind, revision: value.revision,
-    title: value.title, dialogue: value.dialogue, collectedEvidenceId: value.collectedEvidenceId,
+    title: value.title, dialogue, dialogueVi: dialogueVi as string[] | null | undefined,
+    collectedEvidenceId: value.collectedEvidenceId,
     statementLocked: value.statementLocked } as InteractionResult
 }
 

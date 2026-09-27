@@ -1,7 +1,8 @@
 param(
     [string]$DotnetCommand = "dotnet",
     [int]$ApiPort = 5063,
-    [int]$WebPort = 5174
+    [int]$WebPort = 5174,
+    [string]$TestFilter = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -108,7 +109,9 @@ try {
 
     Push-Location (Join-Path $repositoryRoot "apps/web")
     try {
-        & $node $playwrightCli test --config playwright.config.ts
+        $playwrightArgs = @("test", "--config", "playwright.config.ts")
+        if ($TestFilter) { $playwrightArgs += $TestFilter }
+        & $node $playwrightCli @playwrightArgs
         $testExitCode = $LASTEXITCODE
     } finally { Pop-Location }
     if ($testExitCode -ne 0) { throw "Playwright E2E failed with exit code $testExitCode. Logs remain in $runRoot." }

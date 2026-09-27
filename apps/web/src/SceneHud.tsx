@@ -1,5 +1,6 @@
 import type { SessionProgress } from './api/session'
 import type { WorldInteraction } from './game/bridge/events'
+import { EnglishAudioPlayer } from './audio/EnglishAudioPlayer'
 
 type Props = {
   objective: string
@@ -19,6 +20,10 @@ export function SceneHud({ objective, session, nearby, notice, mapError, tutoria
       <span>{session.encounterCleared ? '✓ Máy quét đã vượt' :
         `◆ Máy quét · ${session.encounterFailures} lần phát hiện`}</span>
       {session.assistanceUsed && <span>Hỗ trợ chậm đang bật</span>}
+    </div>}
+    {session?.checkpointId === 'meeting-zone' && !session.encounterCleared && <div className="scanner-briefing">
+      <p lang="en">The scanner sweeps from left to right. Wait for the light to pass, then dodge through the gap.</p>
+      <EnglishAudioPlayer text="The scanner sweeps from left to right. Wait for the light to pass, then dodge through the gap." />
     </div>}
     <div className="hud-messages" aria-live="polite">
       {mapError && <p role="alert">Không tải được bản đồ vụ án. Kiểm tra API rồi tải lại trang.</p>}

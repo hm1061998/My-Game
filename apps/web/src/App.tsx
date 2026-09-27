@@ -15,11 +15,14 @@ import { AudioSettings } from "./audio/AudioSettings";
 import { EnglishAudioPlayer } from "./audio/EnglishAudioPlayer";
 import { gameAudio } from "./audio/gameAudio";
 import { loadAudioPreferences, saveAudioPreferences, type AudioPreferences } from "./audio/preferences";
+import { BilingualText } from "./language/BilingualText";
+import { loadTranslationPreference, saveTranslationPreference } from "./language/preferences";
 import { stopSpeech } from "./audio/speech";
 import { isOnboardingDismissed, setOnboardingDismissed } from "./onboarding";
 import { ResolutionPanel } from "./ResolutionPanel";
 import { SceneHud } from "./SceneHud";
 import { StatusBadge } from "./StatusBadge";
+import { WorkingTheory } from "./WorkingTheory";
 import { portraitFor, portraitUrl } from "./game/characterArt";
 import "./App.css";
 
@@ -56,6 +59,8 @@ export default function App() {
   const [encounterOutcome, setEncounterOutcome] = useState<"detected" | "cleared" | null>(null);
   const [gameGeneration, setGameGeneration] = useState(0);
   const [audioPreferences, setAudioPreferences] = useState<AudioPreferences>(loadAudioPreferences);
+  const [translationVisible, setTranslationVisible] = useState(loadTranslationPreference);
+  const [workingTheory, setWorkingTheory] = useState({ open: false, known: "", uncertain: "" });
   const [audioActive, setAudioActive] = useState(false);
   const [tutorialDismissed, setTutorialDismissedState] = useState(isOnboardingDismissed);
   const [tutorialStep, setTutorialStep] = useState<TutorialStep>(null);
@@ -96,6 +101,11 @@ export default function App() {
     saveAudioPreferences(next)
     gameAudio.setPreferences(next)
   }, [])
+  const toggleTranslation = useCallback(() => {
+    const next = !translationVisible
+    setTranslationVisible(next)
+    saveTranslationPreference(next)
+  }, [translationVisible])
   const dismissTutorial = useCallback(() => {
     setOnboardingDismissed(true)
     setTutorialDismissedState(true)
@@ -147,6 +157,7 @@ export default function App() {
       void queryClient.removeQueries({ queryKey: ["review"] });
       void queryClient.removeQueries({ queryKey: ["conclusion"] });
       setGameGeneration(value => value + 1);
+      setWorkingTheory({ open: false, known: "", uncertain: "" });
       if (!tutorialDismissed) setTutorialStep("move");
       setOverlay(null); setSelectedEvidenceId(null); setSelectedQuestionId(null);
     },
@@ -189,7 +200,7 @@ export default function App() {
       interact(id, submissionId, revision),
     onSuccess: (result) => {
       retryRef.current = null;
-      gameAudio.play(result.kind === "evidence" ? "clue" : "dialogue");
+      gameAudio.play(result.collectedEvidenceId === "E06" ? "reveal" : result.kind === "evidence" ? "clue" : "dialogue");
       if (!tutorialDismissed && result.interactionId === "desk-email" && result.collectedEvidenceId)
         setTutorialStep("listen");
       queryClient.setQueryData<SessionProgress>(["session"], previous =>
@@ -243,6 +254,8 @@ export default function App() {
     },
   });
   const handleLifecycle = useCallback((event: GameLifecycleEvent) => {
+    if (event.type === "scanner-warning") gameAudio.play("scanner-warning");
+    if (event.type === "dodge-started") gameAudio.play("dodge");
     if (event.type === "ready") setGameStatus("Hiện trường đã sẵn sàng");
     if (event.type === "destroyed") setGameStatus("Hiện trường đã đóng");
     if (event.type === "play-state")
@@ -314,6 +327,10 @@ export default function App() {
     if (request) encounter.mutate(request);
   };
   const activeQuestion = questions.data?.find(item => item.id === selectedQuestionId);
+  const characterEmote = useMemo(() => {
+    const characterId = dialogue ? portraitFor(dialogue.interactionId) : null;
+    return characterId ? { characterId, emote: characterId === "nora" ? "react" as const : "talk" as const } : null;
+  }, [dialogue]);
   const worldState = useMemo(() => session.data ? {
     checkpointId: session.data.checkpointId,
     encounterCleared: session.data.encounterCleared,
@@ -357,7 +374,7 @@ export default function App() {
               notice={notice} mapError={caseMap.isError} tutorialHint={tutorialHint} onDismissTutorial={dismissTutorial} />
             <Suspense fallback={<div className="game-loading"><StatusBadge tone="loading">Đang dựng hiện trường…</StatusBadge></div>}>
               <GameCanvas key={gameGeneration} onLifecycle={handleLifecycle} interactions={caseMap.data?.interactions ?? []}
-                overlayOpen={!!overlay} worldState={worldState} />
+                overlayOpen={!!overlay} worldState={worldState} characterEmote={characterEmote} />
             </Suspense>
           </div>
           <div className="control-strip" aria-label="Điều khiển">
@@ -459,9 +476,12 @@ export default function App() {
               <div><p className="speaker-role">Lời khai · Đồng nghiệp</p>
                 <h2>{dialogue.title ?? "Đồng nghiệp"}</h2></div>
             </div>
-            <ol className="transcript" lang="en">
-              {dialogue.dialogue?.map((line, index) => <li key={index}>{line}</li>)}
-            </ol>
+            <div className="transcript" role="list" aria-label="Lời thoại tiếng Anh">
+              {dialogue.dialogue?.map((line, index) => <div key={index} role="listitem">
+                <BilingualText english={line} vietnamese={dialogue.dialogueVi?.[index]}
+                  showTranslation={translationVisible} onToggle={toggleTranslation} />
+              </div>)}
+            </div>
             {dialogue.statementLocked && <StatusBadge tone="locked">Lời khai chi tiết sẽ mở khi có đủ bằng chứng.</StatusBadge>}
           </>}
           {overlay === "notebook" && <>
@@ -485,7 +505,14 @@ export default function App() {
                     <p>Đọc hoặc nghe manh mối tiếng Anh. Có thể tra nghĩa từ bên dưới, rồi tiếp tục điều tra.</p>
                     <button type="button" onClick={finishTutorial}>Đã hiểu · tiếp tục</button>
                   </div>}
-                  <EvidenceDetail evidence={evidence.data} onPlaybackStarted={finishTutorial} />
+                  <EvidenceDetail evidence={evidence.data} showTranslation={translationVisible}
+                    onToggleTranslation={toggleTranslation} onPlaybackStarted={finishTutorial} />
+                  {(selectedEvidenceId === "E02" || selectedEvidenceId === "E03") && <WorkingTheory
+                    open={workingTheory.open} known={workingTheory.known} uncertain={workingTheory.uncertain}
+                    onKnownChange={known => setWorkingTheory(previous => ({ ...previous, known }))}
+                    onUncertainChange={uncertain => setWorkingTheory(previous => ({ ...previous, uncertain }))}
+                    onOpen={() => setWorkingTheory(previous => ({ ...previous, open: true }))}
+                    onSkip={() => setWorkingTheory(previous => ({ ...previous, open: false }))} />}
                 </>}
                 {!selectedEvidenceId && <p className="muted">Chọn một manh mối để đọc.</p>}
                 </div>
@@ -552,8 +579,12 @@ export default function App() {
   );
 }
 
-function EvidenceDetail({ evidence, onPlaybackStarted }: { evidence: Evidence; onPlaybackStarted?: () => void }) {
-  return <><h3>{evidence.id} · {evidence.title}</h3><p lang="en">{evidence.body}</p>
+function EvidenceDetail({ evidence, showTranslation, onToggleTranslation, onPlaybackStarted }: {
+  evidence: Evidence; showTranslation: boolean; onToggleTranslation: () => void; onPlaybackStarted?: () => void
+}) {
+  return <><h3>{evidence.id} · {evidence.title}</h3>
+    <BilingualText english={evidence.body} vietnamese={evidence.bodyVi} showTranslation={showTranslation}
+      onToggle={onToggleTranslation} />
     <EnglishAudioPlayer text={evidence.body} onPlaybackStarted={onPlaybackStarted} />
   </>;
 }

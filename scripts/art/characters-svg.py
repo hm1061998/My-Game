@@ -2,7 +2,8 @@
 
 Original SVG art authored in-repo for Office Case Files, refined in T31.
 Sheet layout: rows down/up/side (side faces right; runtime mirrors for left),
-columns idle 0-3, walk 4-9, run 10-15. Frame 80x120, foot at (40, 112).
+columns idle 0-3, walk 4-9, run 10-15, talk 16-19, react 20-23, dodge 24-29.
+Frame 80x120, foot at (40, 112).
 Outputs are committed; the runtime never depends on this script.
 """
 from math import pi, sin
@@ -12,7 +13,7 @@ OUT = Path(__file__).resolve().parents[2] / 'apps/web/public/assets/characters'
 INK = '#1d3b3a'
 FW, FH, FOOT = 80, 120, 112
 ROWS = ['down', 'up', 'side']
-STATES = [('idle', 4), ('walk', 6), ('run', 6)]
+STATES = [('idle', 4), ('walk', 6), ('run', 6), ('talk', 4), ('react', 4), ('dodge', 6)]
 
 CHARACTERS = {
     'player': dict(jacket='#d65b45', shade='#a9453c', accent='#f3bd72', hair='#433536', skin='#f0bd91', pants='#2f4858', hair_style='short', coat=True),
@@ -29,6 +30,13 @@ def st(w=2.5):
 def pose(state, i, n):
     if state == 'idle':
         return dict(bob=[0, -1, -2, -1][i], stride=0.0, arm=0.0, lean=0)
+    if state == 'talk':
+        return dict(bob=[0, -1, 0, -1][i], stride=0.0, arm=[-4, 4, 5, -3][i], lean=[0, 1, 0, -1][i])
+    if state == 'react':
+        return dict(bob=[0, -2, -1, 0][i], stride=0.0, arm=[0, 8, 10, 3][i], lean=[0, -2, -1, 0][i])
+    if state == 'dodge':
+        return dict(bob=-[0, 2, 5, 4, 2, 0][i], stride=[0, 1, 3, -3, -1, 0][i] * 1.5,
+                    arm=[0, 5, 8, 8, 4, 0][i], lean=[0, 2, 7, 7, 3, 0][i])
     ph = i / n * 2 * pi
     k = 1 if state == 'walk' else 1.7
     return dict(bob=-abs(sin(ph)) * 2 * k, stride=6 * k * sin(ph), arm=5 * k * sin(ph), lean=0 if state == 'walk' else 3)
@@ -94,7 +102,7 @@ def frame(c, row, state, i, n):
                          f'<path d="M{x-3} {86+b} v16" stroke="#77919a" stroke-width="1.4" opacity=".55"/>'
                          f'<ellipse cx="{x}" cy="{FOOT - 2 - lift * .7}" rx="6.5" ry="3.5" fill="{INK}"/>')
     # back arm (side view)
-    if row == 'side':
+    if row == 'side' and state != 'react':
         parts.append(f'<path d="M40 {52 + b} L{40 - a + lean} {76 + b}" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
                      f'<path d="M40 {52 + b} L{40 - a + lean} {76 + b}" stroke="{c["jacket"]}" stroke-width="5.5" stroke-linecap="round" opacity=".8"/>')
     parts.append(hair_back(c, row, b))
@@ -127,7 +135,12 @@ def frame(c, row, state, i, n):
     if row == 'up' and c.get('coat'):
         parts.append(f'<path d="M40 {50+b} V{body_bottom-2+b} M30 {58+b} h20" {st(1.8)}/>')
     # front arms
-    if row == 'side':
+    if state == 'react':
+        parts.append(f'<path d="M{tx+4} {54+b} Q{tx-7} {40+b} {tx-5+a*.35} {34+b}" fill="none" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+                     f'<path d="M{tx+4} {54+b} Q{tx-7} {40+b} {tx-5+a*.35} {34+b}" fill="none" stroke="{c["jacket"]}" stroke-width="5.5" stroke-linecap="round"/>'
+                     f'<path d="M{tx+tw-4} {54+b} Q{tx+tw+7} {40+b} {tx+tw+5-a*.35} {34+b}" fill="none" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
+                     f'<path d="M{tx+tw-4} {54+b} Q{tx+tw+7} {40+b} {tx+tw+5-a*.35} {34+b}" fill="none" stroke="{c["jacket"]}" stroke-width="5.5" stroke-linecap="round"/>')
+    elif row == 'side':
         parts.append(f'<path d="M42 {52 + b} L{42 + a + lean} {76 + b}" stroke="{INK}" stroke-width="10" stroke-linecap="round"/>'
                      f'<path d="M42 {52 + b} L{42 + a + lean} {76 + b}" stroke="{c["jacket"]}" stroke-width="5.5" stroke-linecap="round"/>'
                      f'<circle cx="{42 + a + lean}" cy="{78 + b}" r="4" fill="{c["skin"]}" {st(1.8)}/>')
@@ -158,7 +171,7 @@ def sheet(c):
             for i in range(n):
                 body.append(f'<g transform="translate({col * FW} {r * FH})">{frame(c, row, state, i, n)}</g>')
                 col += 1
-    w, h = FW * 16, FH * len(ROWS)
+    w, h = FW * sum(count for _, count in STATES), FH * len(ROWS)
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">{"".join(body)}</svg>\n'
 
 

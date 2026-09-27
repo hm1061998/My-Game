@@ -49,7 +49,7 @@ export function EnglishAudioPlayer({ text, onPlaybackStarted }: Props) {
     }
   }
 
-  return <div className="english-audio" aria-label="Nghe nội dung tiếng Anh">
+  return <div className="english-audio" role="group" aria-label="Nghe nội dung tiếng Anh">
     <div className="english-audio-actions">
       <button type="button" disabled={!voiceAvailable} onClick={() => play(false)}>▶ Nghe</button>
       <button type="button" disabled={!voiceAvailable} onClick={() => play(true)}>🐢 Nghe chậm</button>

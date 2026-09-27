@@ -20,5 +20,6 @@ export const createGame: GameFactory = (parent, emit) => {
     setOverlayPaused: (paused) => scene.setOverlayPaused(paused),
     setWorldState: (state) => scene.setWorldState(state.checkpointId,
       state.encounterCleared, state.assistEnabled),
+    setCharacterEmote: (characterId, emote) => scene.setCharacterEmote(characterId, emote),
   }
 }

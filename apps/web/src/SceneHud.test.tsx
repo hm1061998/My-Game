@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { SceneHud } from './SceneHud'
 
 const session = {
@@ -7,6 +7,8 @@ const session = {
   mapId: 'office-floor-08', checkpointId: 'meeting-zone', encounterCleared: false,
   encounterFailures: 2, assistanceUsed: true, expiresAtUtc: '2026-10-25T00:00:00Z',
 }
+
+afterEach(cleanup)
 
 describe('SceneHud', () => {
   it('exposes progress and nearby action as readable DOM text', () => {
@@ -29,8 +31,19 @@ describe('SceneHud', () => {
     render(<SceneHud objective="Tìm email" session={session} nearby={null}
       notice={null} mapError={false} tutorialHint="Đi tới email trên bàn bằng WASD."
       onDismissTutorial={onDismiss} />)
-    expect(screen.getByRole('status')).toHaveTextContent('Đi tới email trên bàn bằng WASD.')
+    expect(screen.getByText('Đi tới email trên bàn bằng WASD.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Bỏ qua hướng dẫn' }))
     expect(onDismiss).toHaveBeenCalledOnce()
+  })
+
+  it('shows an English scanner direction with optional local speech at the meeting checkpoint', () => {
+    const view = render(<SceneHud objective="Vượt máy quét" session={session}
+      nearby={null} notice={null} mapError={false} />)
+    expect(within(view.container).getByText('The scanner sweeps from left to right. Wait for the light to pass, then dodge through the gap.', { selector: 'p[lang="en"]' })).toBeInTheDocument()
+    expect(within(view.container).getByRole('group', { name: 'Nghe nội dung tiếng Anh' })).toBeInTheDocument()
+
+    view.rerender(<SceneHud objective="Điều tra" session={{ ...session, checkpointId: 'office-entry' }}
+      nearby={null} notice={null} mapError={false} />)
+    expect(screen.queryByText(/The scanner sweeps from left to right/)).not.toBeInTheDocument()
   })
 })

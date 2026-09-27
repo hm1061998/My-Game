@@ -7,11 +7,12 @@ public sealed record InteractionRequest(Guid SubmissionId, int Revision);
 
 public sealed record InteractionResponse(
     string InteractionId, string Kind, int Revision, string? Title,
-    IReadOnlyList<string>? Dialogue, string? CollectedEvidenceId, bool StatementLocked)
+    IReadOnlyList<string>? Dialogue, IReadOnlyList<string>? DialogueVi,
+    string? CollectedEvidenceId, bool StatementLocked)
 {
     public static InteractionResponse From(string interactionId, InteractionResult result) => new(
         interactionId, result.Dialogue is null ? "evidence" : "npc", result.Revision,
-        result.Title, result.Dialogue, result.EvidenceId, result.StatementLocked);
+        result.Title, result.Dialogue, result.DialogueVi, result.EvidenceId, result.StatementLocked);
 }
 
 public sealed record EvidenceSummaryResponse(string Id, string Kind, string Title)
@@ -41,10 +42,11 @@ public sealed record NotebookResponse(
 }
 
 public sealed record EvidenceResponse(
-    string Id, string Kind, string Title, string Body, IReadOnlyList<GlossaryItemResponse> Glossary)
+    string Id, string Kind, string Title, string Body, string? BodyVi,
+    IReadOnlyList<GlossaryItemResponse> Glossary)
 {
     public static EvidenceResponse From(CaseDefinition caseFile, EvidenceDefinition evidence) => new(
-        evidence.Id, evidence.Kind, evidence.Title, evidence.Body,
+        evidence.Id, evidence.Kind, evidence.Title, evidence.Body, evidence.BodyVi,
         caseFile.Glossary.Where(item => evidence.GlossaryIds.Contains(item.Id))
             .Select(GlossaryItemResponse.From).ToArray());
 }

@@ -9,7 +9,8 @@ public enum InteractionStatus
 
 public sealed record InteractionResult(
     InteractionStatus Status, int Revision, string? Title = null,
-    IReadOnlyList<string>? Dialogue = null, string? EvidenceId = null, bool StatementLocked = false);
+    IReadOnlyList<string>? Dialogue = null, IReadOnlyList<string>? DialogueVi = null,
+    string? EvidenceId = null, bool StatementLocked = false);
 
 public sealed record NotebookData(CaseDefinition Case, IReadOnlyList<EvidenceDefinition> Collected);
 
@@ -44,15 +45,16 @@ public sealed class InteractionService(
         var evidenceId = interaction.Kind == "evidence" ? interaction.TargetId : interaction.EvidenceId;
         var npc = interaction.Kind == "npc" ? definition.Npcs.Single(item => item.Id == interaction.TargetId) : null;
         if (evidenceId is null)
-            return new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc?.Name, npc?.Dialogue);
+            return new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc?.Name,
+                npc?.Dialogue, npc?.DialogueVi);
 
         var evidence = definition.Evidence.Single(item => item.Id == evidenceId);
         var unlocked = QuestionRules.IsEvidenceAvailable(evidence, collected, passed,
             session.World.EncounterCleared);
         if (!unlocked)
             return npc is not null
-                ? new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc.Name, npc.Dialogue,
-                    StatementLocked: true)
+                ? new InteractionResult(InteractionStatus.Dialogue, session.Revision, npc.Name,
+                    npc.Dialogue, npc.DialogueVi, StatementLocked: true)
                 : new InteractionResult(InteractionStatus.Locked, session.Revision);
 
         var saved = await store.CollectEvidenceAsync(SessionToken.Hash(token), expectedRevision,
@@ -64,7 +66,8 @@ public sealed class InteractionService(
             EvidenceCollectStatus.NotFound => InteractionStatus.SessionMissing,
             _ => InteractionStatus.Conflict,
         };
-        return new InteractionResult(status, saved.Revision, npc?.Name ?? evidence.Title, npc?.Dialogue,
+        return new InteractionResult(status, saved.Revision, npc?.Name ?? evidence.Title,
+            npc?.Dialogue, npc?.DialogueVi,
             status is InteractionStatus.Collected or InteractionStatus.AlreadyCollected ? evidence.Id : null);
     }
 

@@ -8,6 +8,8 @@ export type GameLifecycleEvent =
   | { type: 'checkpoint-reached' }
   | { type: 'encounter-detected' }
   | { type: 'encounter-cleared' }
+  | { type: 'scanner-warning' }
+  | { type: 'dodge-started' }
   | { type: 'encounter-checkpoint-required' }
   | { type: 'art-missing'; keys: string[] }
 

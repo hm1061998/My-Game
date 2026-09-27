@@ -11,6 +11,7 @@ type SceneSnapshot = {
   dodgeCount: number
   ambientMoteCount: number
   ambientMoteMotionEnabled: boolean
+  npcAnimations: Record<string, string | null>
 }
 
 declare global {
@@ -236,7 +237,10 @@ test('complete case survives retry, reload and replay', async ({ page }, testInf
   await expect(page.locator('.answer-feedback')).toContainText('Chính xác!')
   await closeOverlay(page)
 
-  await moveTo(page, 455, 250, 'yx')
+  // The email route can stop at the desk's west collision edge (x≈476). Step farther into
+  // the lobby before moving up so a slow headed renderer does not press into the desk.
+  await moveTo(page, 430, 535)
+  await moveTo(page, 430, 250, 'yx')
   await moveTo(page, 320, 250)
   await expectNearby(page, 'npc-maya')
   await page.keyboard.press('e')

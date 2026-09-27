@@ -24,9 +24,12 @@ public sealed record EvidenceDefinition(
     IReadOnlyList<string> GlossaryIds,
     IReadOnlyList<string> SourceEvidenceIds,
     IReadOnlyList<string> RequiredCorrectQuestionIds,
-    bool RequiresEncounter);
+    bool RequiresEncounter,
+    string? BodyVi = null);
 
-public sealed record NpcDefinition(string Id, string Name, IReadOnlyList<string> Dialogue);
+public sealed record NpcDefinition(
+    string Id, string Name, IReadOnlyList<string> Dialogue,
+    IReadOnlyList<string>? DialogueVi = null);
 
 public sealed record GlossaryDefinition(string Id, string Term, string MeaningVi, string ExampleEn);
 

@@ -1,14 +1,14 @@
 # T37 — M1 “Version Two at 8:50” segment
 
-Status: plan ready for owner review; implementation not authorized yet
+Status: implementation and automated gates passed; target-device and learner acceptance remain open
 Owner: Codex
 Depends on: T36
 Plan version: [M1 Version Two at 8:50 v1.0](../superpowers/plans/2026-09-27-m1-version-two-segment.md), 2026-09-27
-Approval: Owner approved the segment design in T36, including E01→E02→scanner→E03→E06, optional Vietnamese hidden by default, no quiz gate for E06 in v2, no cash spend for the first sample, and owner-led invitations to 5–8 learners. This is not approval of this implementation plan.
-Lifecycle phase: define/plan
+Approval: Owner approved the T37 file-level plan in the reply received 2026-09-27. The owner previously approved the segment design, no-spend sample, and owner-led invitations to 5–8 learners. Execution method: inline Codex.
+Lifecycle phase: verify and handoff
 Entry evidence: approved T36 design; inspected current React, Phaser, API and case-version boundaries
-Exit gate: owner approves or revises the file-level plan; then implementation can start within the approved scope
-Next phase: build after plan approval; record target browser/device before performance acceptance; settle consent/compensation before learner sessions
+Exit gate: implementation, browser and local script gates passed; target-device performance and owner-led learner validation remain product acceptance gates
+Next phase: owner selects target device and reviews consent/data/compensation draft, then runs the scorecard; no deployment
 
 ## Outcome and scope
 
@@ -28,21 +28,24 @@ The exact file-level tasks, API/data contracts, focused checks, visible browser 
 ## Approval record
 
 - Design approval: owner reply received 2026-09-27, recorded in T36 and `docs/design/M1-segment-spec.md`.
-- Implementation-plan approval: pending.
-- No implementation, asset generation, cash spend or learner contact has occurred for T37.
+- Implementation-plan approval: owner reply “duyệt kế hoạch” received 2026-09-27; inline execution authorized.
+- Target hardware and session consent/compensation remain open gates; no learner contact or cash spend is authorized.
 
 ## Improvement review
 
-- Result: none.
-- Observation/evidence: this is the first file-level plan after design approval; the earlier gate still asked for resolved inputs that the approved design had already answered. Separating implementation approval from target-device and research-session gates prevents unrelated planning inputs from blocking code work.
-- Mechanism changed or no-change reason: corrected the M1 spec/gate and added explicit plan gates in T37; no broad rule or skill change is warranted from one occurrence.
-- Validation: `scripts/check-agent-docs.ps1` passed for 38 task files; `git diff --check` passed. Product tests/browser checks are N/A because this task changes planning documents only.
-- Follow-up: reassess if the same gate confusion recurs in another lifecycle plan.
+- Result: candidate, task-local.
+- Observation/evidence: a full headed rerun repeatedly exposed the legacy E2E route stopping at the email desk's west collision edge, then attempting to move north into the desk. Screenshot and live scene position showed x≈476 against the desk collider beginning at x=490; the gameplay collision itself was correct.
+- Mechanism changed or no-change reason: the browser test now steps into the clear lobby lane before moving north. No general movement rule, collision, script, or project-wide lesson was changed from this one route.
+- Validation: the focused critical-journey suite passed 2/2 and the final visible headed suite passed 8/8. Existing player movement and collision tests remain unchanged.
+- Follow-up: promote a route-planning lesson only if the same boundary-routing failure recurs in another browser journey.
 
 ## Handoff
 
-- Baseline: `main` was clean at `origin/main` before starting the planning updates; the implementation plan was the only untracked file.
-- Current step: detailed file-level plan written; task/spec/gate/memory records updated; docs checks and `git diff --check` pending.
-- Browser/product tests: N/A, planning-only; no gameplay code changed.
-- Improvement review: pending the docs-only checks. Current observation: split the design approval from implementation approval and keep target-hardware and participant-session inputs at their actual acceptance gates. Promote no durable rule unless this reveals a repeated failure.
-- Next action: owner reviews the linked plan and supplies plan approval, plus an ordinary target laptop/browser profile before performance acceptance.
+- Baseline: clean `main` at `8e8ec66`; managed worktree created from that revision on `codex/m1-version-two`.
+- Current step: Tasks 1–5 and automated portion of Task 6 implemented. V2 translations/session pinning/E06 evidence unlock and the optional session-only E02/E03 theory note are in place. Character sheets have talk/react/dodge states; Maya/Nora emotes travel React→GameHost→Phaser. Scanner warning, dodge and E06 reveal have distinct layered cues; the meeting HUD includes an English transcript with opt-in local speech.
+- Checks on final revision: web lint/typecheck/build passed; sequential web suite 19 files/61 passed; API suite 16/16; `scripts/check-agent-docs.ps1` passed for 38 task files; `git diff --check` and production private-answer scan passed. The build retains the existing Vite `advancedChunks` deprecation and 1,167.5 kB Phaser vendor chunk warning. Vitest emits a jsdom environment-time advisory.
+- Browser/product tests: final visible headed Chromium suite passed 8/8, including M1 bilingual/note/scanner/retry/E03/E06 without Q02/Q03, with sound muted and reduced motion; full existing case retry/reload/replay; v1 session coverage; missing-art fallback; offline and reduced-motion states. One pre-fix run exposed the older test route pressing into the email desk collision edge; its test now steps into the lobby lane and the critical journey passed 2/2 before the final 8/8. The visual-state test measured `/assets/` transfer of 932,830 bytes (ambience MP3 is separate at 3.84 MB).
+- Performance: automated samples ranged 30–60 fps and p95 17–67 ms during this verification; final full run was 30 fps/p95 66 ms. The ≤33 ms target is not accepted. Target hardware/browser/network profile is not supplied.
+- Human/product validation: no learner sessions run and no participants contacted. Added an owner-review-only consent/notes draft; retention and compensation remain undecided. Do not treat AI or automated evidence as enjoyment or willingness-to-pay validation.
+- Improvement review: candidate. Repeated headed runs showed the shared full-case E2E route could stop at the email desk's west collision boundary and then fail its northward route. Updated the route to step into a clear lobby lane without changing collision/gameplay. The focused critical journey passed 2/2 and final full browser suite passed 8/8; keep the correction task-local unless the same routing pattern recurs elsewhere.
+- Handoff: [M1 QA](../quality/M1-segment-qa.md), [M1 gate report](../product/M1-gate-report.md), and [session consent/notes draft](../research/M1-session-consent-and-notes.md). Next action: owner selects target laptop/browser/network profile and reviews consent, retention and compensation before personally inviting learners. No deployment or publishing.

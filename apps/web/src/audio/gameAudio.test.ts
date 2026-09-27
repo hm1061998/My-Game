@@ -7,6 +7,7 @@ class FakeAudioParam {
   setValueAtTime(value: number) { this.value = value }
   setTargetAtTime(value: number) { this.value = value }
   linearRampToValueAtTime(value: number) { this.value = value }
+  exponentialRampToValueAtTime(value: number) { this.value = value }
   cancelScheduledValues() {}
 }
 
@@ -27,7 +28,20 @@ class FakeAudioBufferSource extends FakeAudioNode {
 
 const decodedBuffer = { duration: 120 } as AudioBuffer
 const sources: FakeAudioBufferSource[] = []
+const oscillators: FakeAudioOscillator[] = []
 const contexts: FakeAudioContext[] = []
+
+class FakeAudioOscillator extends FakeAudioNode {
+  frequency = new FakeAudioParam()
+  type: OscillatorType = "sine"
+  onended: (() => void) | null = null
+  started = false
+  stopped = false
+  disconnected = false
+  start() { this.started = true }
+  stop() { this.stopped = true }
+  disconnect() { this.disconnected = true }
+}
 
 class FakeAudioContext {
   state: AudioContextState = "suspended"
@@ -49,6 +63,11 @@ class FakeAudioContext {
     sources.push(source)
     return source as unknown as AudioBufferSourceNode
   }
+  createOscillator() {
+    const oscillator = new FakeAudioOscillator()
+    oscillators.push(oscillator)
+    return oscillator as unknown as OscillatorNode
+  }
   createBiquadFilter() {
     return Object.assign(new FakeAudioNode(), {
       type: "lowpass",
@@ -64,6 +83,7 @@ describe("GameAudio office ambience", () => {
     vi.unstubAllGlobals()
     Object.defineProperty(window, "AudioContext", { configurable: true, value: previousAudioContext })
     sources.length = 0
+    oscillators.length = 0
     contexts.length = 0
     vi.restoreAllMocks()
   })
@@ -151,6 +171,43 @@ describe("GameAudio office ambience", () => {
     audio.setPreferences(DEFAULT_AUDIO_PREFERENCES)
     await vi.waitFor(() => expect(sources.filter(source => source.buffer === decodedBuffer && source.started)).toHaveLength(2))
     expect(fetchMock).toHaveBeenCalledOnce()
+    audio.close()
+  })
+
+  it("plays distinct scanner-warning, dodge and case-reveal cues through effects only", async () => {
+    Object.defineProperty(window, "AudioContext", { configurable: true, value: FakeAudioContext })
+    const audio = new GameAudio()
+    audio.setPreferences({ ...DEFAULT_AUDIO_PREFERENCES, ambience: false })
+    await audio.activate()
+
+    audio.play("scanner-warning" as Parameters<GameAudio["play"]>[0])
+    expect(oscillators).toHaveLength(2)
+    const warning = oscillators.map(node => node.frequency.value)
+    audio.play("dodge" as Parameters<GameAudio["play"]>[0])
+    expect(oscillators).toHaveLength(5)
+    const dodge = oscillators.slice(2).map(node => node.frequency.value)
+    audio.play("reveal" as Parameters<GameAudio["play"]>[0])
+    expect(oscillators).toHaveLength(8)
+    const reveal = oscillators.slice(5).map(node => node.frequency.value)
+    expect(new Set([warning.join(","), dodge.join(","), reveal.join(",")]).size).toBe(3)
+    expect(oscillators.every(node => node.started && node.stopped)).toBe(true)
+
+    audio.close()
+    oscillators.forEach(node => node.onended?.())
+    expect(oscillators.every(node => node.disconnected)).toBe(true)
+  })
+
+  it("does not create gameplay cues when muted or effects are turned off", async () => {
+    Object.defineProperty(window, "AudioContext", { configurable: true, value: FakeAudioContext })
+    const audio = new GameAudio()
+    audio.setPreferences({ ...DEFAULT_AUDIO_PREFERENCES, ambience: false, effects: false })
+    await audio.activate()
+    audio.play("dodge" as Parameters<GameAudio["play"]>[0])
+    expect(oscillators).toHaveLength(0)
+
+    audio.setPreferences({ ...DEFAULT_AUDIO_PREFERENCES, ambience: false, muted: true })
+    audio.play("reveal" as Parameters<GameAudio["play"]>[0])
+    expect(oscillators).toHaveLength(0)
     audio.close()
   })
 })

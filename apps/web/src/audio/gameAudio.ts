@@ -1,7 +1,8 @@
 import type { AudioPreferences } from "./preferences"
 import officeAmbienceUrl from "./office-quiet-traffic.mp3?url"
 
-export type GameSound = "clue" | "dialogue" | "correct" | "incorrect" | "checkpoint" | "scanner"
+export type GameSound = "clue" | "dialogue" | "correct" | "incorrect" | "checkpoint" | "scanner" |
+  "scanner-warning" | "dodge" | "reveal"
 
 const NOTES: Record<GameSound, readonly number[]> = {
   clue: [587.33, 783.99, 987.77],
@@ -10,9 +11,29 @@ const NOTES: Record<GameSound, readonly number[]> = {
   incorrect: [246.94, 196],
   checkpoint: [392, 523.25, 659.25],
   scanner: [174.61, 146.83],
+  "scanner-warning": [220, 440],
+  dodge: [660, 990, 330],
+  reveal: [523.25, 659.25, 783.99],
 }
 
 const AMBIENCE_CROSSFADE_SECONDS = 0.45
+type CueTone = { frequency: number; endFrequency: number; offset: number; duration: number; peak: number; type: OscillatorType }
+const CUE_LAYERS: Partial<Record<GameSound, readonly CueTone[]>> = {
+  "scanner-warning": [
+    { frequency: 220, endFrequency: 165, offset: 0, duration: 0.36, peak: 0.27, type: "triangle" },
+    { frequency: 440, endFrequency: 330, offset: 0.1, duration: 0.24, peak: 0.12, type: "sine" },
+  ],
+  dodge: [
+    { frequency: 660, endFrequency: 220, offset: 0, duration: 0.22, peak: 0.24, type: "triangle" },
+    { frequency: 990, endFrequency: 330, offset: 0, duration: 0.18, peak: 0.12, type: "sine" },
+    { frequency: 330, endFrequency: 165, offset: 0.04, duration: 0.2, peak: 0.1, type: "sine" },
+  ],
+  reveal: [
+    { frequency: 523.25, endFrequency: 523.25, offset: 0, duration: 0.52, peak: 0.2, type: "sine" },
+    { frequency: 659.25, endFrequency: 659.25, offset: 0.04, duration: 0.48, peak: 0.16, type: "sine" },
+    { frequency: 783.99, endFrequency: 783.99, offset: 0.08, duration: 0.44, peak: 0.13, type: "sine" },
+  ],
+}
 
 export class GameAudio {
   private context: AudioContext | null = null
@@ -49,18 +70,22 @@ export class GameAudio {
     const context = this.context
     if (!context || context.state !== "running" || this.preferences.muted || !this.preferences.effects || !this.effectsGain)
       return
-    const notes = NOTES[sound]
     const start = context.currentTime
     const interval = sound === "scanner" ? 0.095 : 0.11
-    notes.forEach((frequency, index) => {
+    const layers = CUE_LAYERS[sound]
+    const tones: readonly CueTone[] = layers ?? NOTES[sound].map((frequency, index) => ({
+      frequency, endFrequency: frequency, offset: index * interval, duration: sound === "dialogue" ? 0.12 : 0.18,
+      peak: 0.42, type: sound === "scanner" || sound === "incorrect" ? "triangle" : "sine",
+    }))
+    tones.forEach(({ frequency, endFrequency, offset, duration, peak, type }) => {
       const oscillator = context.createOscillator()
       const envelope = context.createGain()
-      const onset = start + index * interval
-      const duration = sound === "dialogue" ? 0.12 : 0.18
-      oscillator.type = sound === "scanner" || sound === "incorrect" ? "triangle" : "sine"
+      const onset = start + offset
+      oscillator.type = type
       oscillator.frequency.setValueAtTime(frequency, onset)
+      if (endFrequency !== frequency) oscillator.frequency.linearRampToValueAtTime(endFrequency, onset + duration)
       envelope.gain.setValueAtTime(0.0001, onset)
-      envelope.gain.linearRampToValueAtTime(0.42, onset + 0.018)
+      envelope.gain.linearRampToValueAtTime(peak, onset + 0.018)
       envelope.gain.exponentialRampToValueAtTime(0.0001, onset + duration)
       oscillator.connect(envelope)
       envelope.connect(this.effectsGain!)

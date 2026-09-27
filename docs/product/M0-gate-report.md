@@ -1,6 +1,6 @@
 # M0 accelerated gate report
 
-Status: **M0 evidence assembled; M1 design approved, implementation plan pending**, 2026-09-27. M0 took an AI-assisted route authorized by the owner, with two independent simulated learner roles and a visible opening-screen audit. See [findings](../research/M0-findings.md), [art/audio brief](../design/M0-art-direction-brief.md) and [M1 scorecard](../research/M1-scorecard.md).
+Status: **M0 evidence assembled; M1 implementation approved and built, product acceptance open**, 2026-09-27. M0 took an AI-assisted route authorized by the owner, with two independent simulated learner roles and a visible opening-screen audit. See [findings](../research/M0-findings.md), [art/audio brief](../design/M0-art-direction-brief.md) and [M1 scorecard](../research/M1-scorecard.md).
 
 ## Decision recommendation
 
@@ -18,6 +18,6 @@ Status: **M0 evidence assembled; M1 design approved, implementation plan pending
 1. The owner approved the [M1 segment design](../design/M1-segment-spec.md): E01→E02→scanner→E03→E06, optional hidden-by-default Vietnamese, no quiz gate for E06 in v2.
 2. The owner chose no cash spend for the initial sample and will personally invite 5–8 learners. Do not contact participants or acquire paid assets. Settle consent/compensation before sessions.
 3. Record the ordinary target laptop/browser, viewport and network profile before performance/load acceptance; retain p95 frame time ≤33 ms.
-4. Approve the separate [file-level implementation plan](../superpowers/plans/2026-09-27-m1-version-two-segment.md). This report does not authorize product code, participant contact, spending or deployment.
+4. The owner approved the separate [file-level implementation plan](../superpowers/plans/2026-09-27-m1-version-two-segment.md), and the implementation/browser gate is recorded in the [M1 gate report](M1-gate-report.md). Target-device acceptance and owner-led learner sessions remain open. This report does not authorize participant contact by Codex, spending or deployment.
 
 Fallback if cost or recruitment is unavailable: keep the one-room sample as an internal visual/audio prototype, test it technically in a visible browser, and label enjoyment/commercial questions unanswered. Pause paid-pack planning until real player evidence exists.

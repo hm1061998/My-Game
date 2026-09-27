@@ -16,6 +16,7 @@ declare global {
       position: Point; paused: boolean; overlayPaused: boolean; nearestId: string | null
       checkpointId: string; encounterCleared: boolean; dodgeRemainingMs: number; dodgeCount: number
       ambientMoteCount: number; ambientMoteMotionEnabled: boolean
+      npcAnimations: Partial<Record<CharacterId, string | null>>
     } }
   }
 }
@@ -60,6 +61,8 @@ export class OfficeScene extends Phaser.Scene {
   private overlayPaused = false
   private interactions: WorldInteraction[] = []
   private markers: Phaser.GameObjects.Container[] = []
+  private readonly npcSprites = new Map<CharacterId, Phaser.GameObjects.Sprite>()
+  private currentCharacterEmote: { characterId: CharacterId; emote: 'talk' | 'react' } | null = null
   private nearestId: string | null = null
   private movementTutorialSignalSent = false
   private checkpointId = 'office-entry'
@@ -75,6 +78,7 @@ export class OfficeScene extends Phaser.Scene {
   private dodgeLabel?: Phaser.GameObjects.Text
   private dodgeRemainingMs = 0
   private dodgeCooldownMs = 0
+  private scannerWarningCooldownMs = 0
   private dodgeCount = 0
   private detectionGraceMs = 0
   private lastMoveDirection: Point = { x: 1, y: 0 }
@@ -215,6 +219,8 @@ export class OfficeScene extends Phaser.Scene {
         encounterCleared: this.encounterCleared, dodgeRemainingMs: this.dodgeRemainingMs,
         dodgeCount: this.dodgeCount, ambientMoteCount: AMBIENT_MOTES.length,
         ambientMoteMotionEnabled: !this.reducedMotion,
+        npcAnimations: Object.fromEntries([...this.npcSprites].map(([id, sprite]) =>
+          [id, sprite.anims?.currentAnim?.key ?? null])),
       }) }
     }
     this.emit({ type: 'play-state', state: 'playing' })
@@ -230,6 +236,8 @@ export class OfficeScene extends Phaser.Scene {
       keyboard.off('keydown-SPACE', this.tryDodge)
       this.scale.off(Phaser.Scale.Events.RESIZE, this.positionCanvasLabels)
       keyboard.resetKeys()
+      this.currentCharacterEmote = null
+      this.npcSprites.clear()
       this.artObjectUrls.splice(0).forEach(url => URL.revokeObjectURL(url))
       if (import.meta.env.VITE_E2E_OBSERVABILITY === '1') {
         delete window.__officeCaseFilesE2E
@@ -245,6 +253,7 @@ export class OfficeScene extends Phaser.Scene {
 
     this.dodgeRemainingMs = Math.max(0, this.dodgeRemainingMs - delta)
     this.dodgeCooldownMs = Math.max(0, this.dodgeCooldownMs - delta)
+    this.scannerWarningCooldownMs = Math.max(0, this.scannerWarningCooldownMs - delta)
     this.detectionGraceMs = Math.max(0, this.detectionGraceMs - delta)
     this.checkpointSignalCooldown = Math.max(0, this.checkpointSignalCooldown - delta)
     this.dodgeLabel?.setText(this.dodgeRemainingMs > 0 ? 'SPACE · Đang né' :
@@ -302,6 +311,12 @@ export class OfficeScene extends Phaser.Scene {
       this.scannerDirection = patrol.direction
       this.scanner?.setPosition(this.scannerX, SCANNER_Y)
       this.scannerRange?.setPosition(this.scannerX, SCANNER_Y)
+      const nearScanner = Math.abs(this.position.x - this.scannerX) <= SCANNER_RADIUS + 110 &&
+        Math.abs(this.position.y - SCANNER_Y) <= SCANNER_RADIUS + 95
+      if (nearScanner && this.scannerWarningCooldownMs === 0) {
+        this.scannerWarningCooldownMs = 1800
+        this.emit({ type: 'scanner-warning' })
+      }
       if (this.detectionGraceMs === 0 && scannerDetects(this.position,
           this.scannerX, this.dodgeRemainingMs > 0)) {
         this.detectionGraceMs = 1800
@@ -339,6 +354,19 @@ export class OfficeScene extends Phaser.Scene {
     if (this.sys.isActive()) this.renderInteractions()
   }
 
+  setCharacterEmote(characterId: CharacterId, emote: 'talk' | 'react' | null) {
+    if (!emote && this.currentCharacterEmote?.characterId === characterId) this.currentCharacterEmote = null
+    else if (emote) this.currentCharacterEmote = { characterId, emote }
+    this.applyCharacterEmote()
+  }
+
+  private applyCharacterEmote() {
+    for (const [id, sprite] of this.npcSprites) {
+      const state = id === this.currentCharacterEmote?.characterId ? this.currentCharacterEmote.emote : 'idle'
+      sprite.play(animKey(id, 'down', state), true)
+    }
+  }
+
   setOverlayPaused(paused: boolean) {
     this.overlayPaused = paused
     this.input?.keyboard?.resetKeys()
@@ -346,15 +374,18 @@ export class OfficeScene extends Phaser.Scene {
 
   private renderInteractions() {
     this.markers.forEach(marker => marker.destroy())
+    this.npcSprites.clear()
     this.markers = this.interactions.map(interaction => {
       const marker = this.add.container(interaction.x, interaction.y).setDepth(interaction.y - 2)
       marker.add(this.add.ellipse(0, 2, interaction.kind === 'npc' ? 62 : 54, 19,
         OFFICE_PALETTE.ink, 0.2))
       if (interaction.kind === 'npc') {
         const npcId = interaction.id.replace('npc-', '')
-        marker.add(isCharacterId(npcId) && this.hasSheet(npcId)
-          ? this.characterSprite(npcId).setScale(0.92)
-          : this.createCharacterFigure(characterStyle(npcId), 0.82))
+        if (isCharacterId(npcId) && this.hasSheet(npcId)) {
+          const sprite = this.characterSprite(npcId).setScale(0.92)
+          this.npcSprites.set(npcId, sprite)
+          marker.add(sprite)
+        } else marker.add(this.createCharacterFigure(characterStyle(npcId), 0.82))
       } else {
         const style = evidenceStyle(interaction.id)
         const ring = this.add.ellipse(0, 2, 70, 26).setStrokeStyle(3, OFFICE_PALETTE.coral, 0.9)
@@ -376,6 +407,7 @@ export class OfficeScene extends Phaser.Scene {
         }).setOrigin(0.5).setStroke('#fff8e9', 1))
       return marker
     })
+    this.applyCharacterEmote()
     this.updateNearby()
   }
 
@@ -406,6 +438,7 @@ export class OfficeScene extends Phaser.Scene {
     this.dodgeDirection = this.lastMoveDirection
     this.dodgeRemainingMs = DODGE_DURATION_MS
     this.dodgeCount += 1
+    this.emit({ type: 'dodge-started' })
     this.dodgeCooldownMs = DODGE_COOLDOWN_MS
     this.input.keyboard?.resetKeys()
   }
@@ -462,6 +495,7 @@ export class OfficeScene extends Phaser.Scene {
   private setPaused(paused: boolean) {
     if (this.paused === paused) return
     this.paused = paused
+    if (paused && this.currentCharacterEmote) this.setCharacterEmote(this.currentCharacterEmote.characterId, null)
     this.pauseLabel?.setVisible(paused)
     this.emit({ type: 'play-state', state: paused ? 'paused' : 'playing' })
   }

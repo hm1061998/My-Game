@@ -22,13 +22,20 @@ public static partial class CaseValidator
         {
             var wordCount = WordPattern().Matches(item.Body).Count;
             Require(wordCount is >= 25 and <= 60, $"Evidence {item.Id} must contain 25–60 words; found {wordCount}.");
+            Require(item.BodyVi is null || !string.IsNullOrWhiteSpace(item.BodyVi),
+                $"Evidence {item.Id} has empty Vietnamese translation.");
             Require(item.GlossaryIds.All(glossary.Contains), $"Evidence {item.Id} references missing glossary.");
             Require(item.SourceEvidenceIds.All(evidence.Contains), $"Evidence {item.Id} references missing evidence.");
             Require(item.RequiredCorrectQuestionIds.All(questions.Contains), $"Evidence {item.Id} references missing question.");
         }
 
         foreach (var npc in caseFile.Npcs)
+        {
             Require(npc.Dialogue.Count > 0 && npc.Dialogue.All(line => !string.IsNullOrWhiteSpace(line)), $"NPC {npc.Id} has empty dialogue.");
+            Require(npc.DialogueVi is null || (npc.DialogueVi.Count == npc.Dialogue.Count &&
+                npc.DialogueVi.All(line => !string.IsNullOrWhiteSpace(line))),
+                $"NPC {npc.Id} has missing or empty Vietnamese dialogue translations.");
+        }
 
         foreach (var question in caseFile.Questions)
         {
