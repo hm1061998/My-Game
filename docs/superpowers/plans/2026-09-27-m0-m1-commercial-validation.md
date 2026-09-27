@@ -4,7 +4,7 @@
 
 **Goal:** Learn why target players do or do not enjoy the current case, then build and test one polished 3–5 minute Phaser 2.5D detective segment where English understanding helps solve the case.
 
-**Architecture:** M0 uses real learner observations and a costed creative brief; it changes no product behavior. M1 improves one passage of the existing case while React owns accessible UI, Phaser owns frame gameplay, and the .NET server retains scoring, progression and private answers. A 3D probe is conditional on evidence of a renderer limit, with a separate decision.
+**Architecture:** Accelerated M0 uses explicit AI learner-role simulations and a costed creative brief to find likely comprehension/UX issues; it does not claim human enjoyment or demand. M1 improves one passage of the existing case while React owns accessible UI, Phaser owns frame gameplay, and the .NET server retains scoring, progression and private answers. Real target-learner testing moves to the M1 gate, before M2 or a paid content commitment. A 3D probe is conditional on evidence of a renderer limit, with a separate decision.
 
 **Tech Stack:** React 19, Phaser 4.2.1, ASP.NET Core 10, SQLite, server JSON cases, versioned local assets and visible browser QA.
 
@@ -18,39 +18,39 @@
 - One lead developer may commission art, animation and audio by milestone. No vendor contact, spend, contract, external upload or new service is authorized by this plan.
 - Opening case is free and complete; later cases are a one-time purchase pack. Price and pack size wait for content-cost and player-value evidence. No initial subscription.
 - Phaser 2.5D is the primary pilot. Keep T15–T26 admin implementation deferred. Preserve existing React/Phaser/API/domain/storage boundaries, licensed asset provenance and server-only solutions.
-- Every product browser preview/test is visible. Automated walkthroughs are never described as human playtests.
+- Every product browser preview/test is visible. AI roleplay and automated walkthroughs are explicitly labeled simulated evidence and never described as human playtests. No commercial appeal or willingness-to-pay claim is based solely on AI roleplay.
 
 ## Review focus
 
-1. New players cannot identify the first goal or clue → observe unprompted first-minute behavior in M0 Task 2 and M1 Task 8.
+1. New players cannot identify the first goal or clue → use AI personas to find likely friction in M0 Task 2, then observe actual unprompted behavior in M1 Task 8.
 2. English feels like a quiz barrier or Vietnamese is hard to find → probe comprehension in M0 Task 2; test translation, replay and score neutrality in M1 Tasks 6 and 8.
 3. More effects mask stiff acting → review poses/transitions in M1 Task 7 and players' reading of emotion/action in Task 8.
 4. Audio is blocked, too loud or unavailable → check gesture activation, mix, mute, captions and fallback in M1 Tasks 7 and 9.
 5. Art increases load/frame cost on ordinary laptops → set hardware/load budget in M0 Task 4 and measure it in M1 Task 9.
 
-## M0 · Evidence and approved creative brief (planning envelope: 2–3 weeks)
+## M0 · Accelerated AI-assisted audit and creative brief (planning envelope: 3–5 working days)
 
-### Task 1: Research protocol and privacy
+### Task 1: Simulation protocol and later human-test boundary
 
-**Files:** Create `docs/research/M0-playtest-protocol.md` and `docs/research/M0-session-notes-template.md`.
+**Files:** Create `docs/research/M0-ai-audit-protocol.md` and `docs/research/M0-ai-notes-template.md`.
 
-- [ ] Write a neutral 30–45 minute script: watch the first case without hints, then ask for the player's theory, English learning moments, desire to continue and reasons. Record every moderator prompt.
-- [ ] Define 5–8 eligible target learners unfamiliar with the game. The owner arranges recruitment or separately authorizes outreach and any compensation.
-- [ ] Use participant codes and broad age/English-level bands. Obtain consent for notes; do not record audio/video or put contact details in Git by default. Set retention/deletion rules.
-- [ ] Check the template separates observed action, participant wording, moderator help and researcher inference.
+- [ ] Define distinct AI role cards: an A2 learner focused on comprehension, a B1 learner focused on deduction and an entertainment-first skeptic. Give each the same public game information; do not provide hidden solutions.
+- [ ] Ask each agent for likely first-goal/clue friction, English comprehension, story interest and missing feedback. Require exact screen/text evidence and an uncertainty label; forbid invented player emotions, payment intent or completion claims.
+- [ ] Keep agent notes separate from root synthesis. The root compares them with visible browser/code evidence and records contradictions. No personal data or human recruitment occurs in M0.
+- [ ] Draft a later 30–45 minute human M1 test script and consent/notes boundary, but do not recruit, contact or compensate anyone without separate authority.
 
-**Gate:** Owner reviews the script, participant source and any compensation before live sessions.
+**Gate:** Simulation roles and evidence limits are documented; any later live-session source or compensation is approved before outreach.
 
-### Task 2: Baseline playtest of the current case
+### Task 2: Baseline AI roleplay and visible product audit
 
-**Files:** `docs/research/M0-findings.md`; de-identified session notes only if the protocol allows them in the repository.
+**Files:** `docs/research/M0-ai-a2-notes.md`, `docs/research/M0-ai-b1-notes.md`, `docs/research/M0-findings.md`; keep the skeptic's report separately if used.
 
-- [ ] Record baseline revision, browser/OS and the current case flow. Use a visible browser and fresh profile for each session.
-- [ ] Observe first objective/clue discovery, English comprehension, NPC interaction, deduction, dodge fairness, visual impression and audio comprehension with 5–8 real target learners.
-- [ ] Ask after play what they remember, whether they want another case and why, and what felt like learning versus play. Treat hypothetical purchase intent as weak evidence.
-- [ ] Aggregate recurring friction and positive moments with numerator/denominator and limitations. Keep observation separate from interpretation.
+- [ ] Record baseline revision, browser/OS and current flow; inspect it in a visible browser. Mark any path only read from code/content as unplayed.
+- [ ] Run the independent AI learner roles over the same public first-session material. Record likely confusion around first objective/clue, English, NPCs, deduction, dodge, visual impression and audio availability with exact evidence.
+- [ ] Compare agent notes and the actual product. Treat agreement as a heuristic to prioritize M1, not independent human validation; discard claims that lack a screen/text anchor.
+- [ ] Synthesize likely friction, positive design opportunities and uncertainty without percentages, retention or willingness-to-pay claims.
 
-**Gate:** At least five usable human sessions, or report the shortfall and leave this gate open. T28's automated contexts cannot count.
+**Gate:** AI audit and visible baseline report are complete and clearly labeled simulated. Human appeal/commercial validation remains open until M1 Task 8.
 
 ### Task 3: Art/audio directions and production brief
 
@@ -59,7 +59,7 @@
 - [ ] Present two or three distinct moodboards within the approved bright mystery tone, covering silhouette, acting, room depth, lighting, UI and sound. Link sources/rights; do not bundle unlicensed references.
 - [ ] Brief a small asset pilot: one room, protagonist, one or two NPCs, clue interaction, dodge tell, key animation states, ambience/SFX and one spoken English exchange with subtitles.
 - [ ] Count required assets, revision rounds, delivery formats and integration effort. Public price research may inform a range; vendor contact and orders require separate authorization.
-- [ ] Review the directions with the owner and, if possible, target learners. Record what they can read and remember, not only aesthetic preference.
+- [ ] Review the directions with the owner. AI roles may critique readability, but this is not target-learner preference evidence.
 
 **Gate:** One selected direction and reviewed asset brief; contractor and budget decisions remain open.
 
@@ -69,11 +69,11 @@
 
 - [ ] Choose the ordinary desktop hardware/browser floor from target-player access. Set first-load and frame-time limits; preserve 60 fps / p95 ≤ 33 ms unless a new decision changes the existing budget.
 - [ ] Define severe blockers before M1: unable to start/finish, unable to identify needed English clue, unreliable dodge, inaccessible translation, audio fallback failure or unacceptable performance.
-- [ ] Predefine a 5–8 person M1 test with new learners where possible: unprompted goal and clue comprehension, voluntary desire to continue, how English informed a theory, translation use, acting/audio impression and measured performance. Compare with M0; do not claim statistical proof.
+- [ ] Predefine a 5–8 person M1 human test: unprompted goal and clue comprehension, voluntary desire to continue, how English informed a theory, translation use, acting/audio impression and measured performance. M0 AI notes are hypotheses, not a human baseline; do not claim statistical proof.
 - [ ] Present expected art/audio spend, developer integration time, license/vendor risks and a smaller fallback. Obtain an explicit M1 ceiling and creative brief approval before paid asset work.
 - [ ] Report a proceed/revise/pause recommendation grounded in M0 findings. Update the spec and request owner review if evidence contradicts the approved direction.
 
-**Gate:** The owner approves M1 brief, scorecard, target hardware, spending ceiling and decision to start M1. Missing inputs keep M1 in planning.
+**Gate:** The owner approves M1 brief, human-test scorecard/source, target hardware, spending ceiling and decision to start M1. Missing inputs keep M1 in planning. No large content pack or commerce work proceeds on AI-only evidence.
 
 ## M1 · Polished Phaser segment (planning envelope: 4–6 weeks after its gate)
 
@@ -131,4 +131,4 @@ The deliverables below define M1's scope. Exact files, interfaces and tests belo
 
 ## Execution handoff
 
-The product direction is approved; **this M0/M1 plan awaits owner review**. Approval may start M0 only. M1 also needs M0 evidence, spending approval, a segment/art brief and its file-level code plan. Release date, pack size, price and checkout vendor remain later evidence-gated decisions.
+The owner approved this plan on 2026-09-27 with the amendment to shorten M0 and use AI learner-role agents. Accelerated M0 is documented in [T35](../../tasks/T35-accelerated-m0.md), with [simulated findings](../../research/M0-findings.md) and a [conditional gate](../../product/M0-gate-report.md). M1 still needs the owner's scene/art, hardware, human-test source and spending decisions, followed by a separate file-level code plan. Release date, pack size, price and checkout vendor remain later evidence-gated decisions.

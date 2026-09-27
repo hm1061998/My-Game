@@ -1,12 +1,12 @@
 # T34 — Approve commercial direction and plan M0/M1
 
-Status: planning complete; M0/M1 execution approval pending
+Status: done; accelerated M0 approved and executed under T35
 Owner: Codex
 Depends on: T33
 Plan version: 1.0
-Approval: user's 2026-09-27 approval of the updated product direction and instruction to prepare a detailed M0/M1 plan. This covers planning only; no recruitment, spending, product code or deployment was approved.
+Approval: user's 2026-09-27 approval of the updated product direction and instruction to prepare a detailed M0/M1 plan. The later 2026-09-27 instruction approved that plan with a shorter AI-assisted M0; see T35. Recruitment, spending, M1 product code and deployment remain outside this approval.
 Lifecycle phase: define → design → handoff
-Workflow step: plan prepared for owner review; browser N/A for documentation-only work
+Workflow step: planning handed off; accelerated M0 began in T35; browser N/A for T34 documentation-only work
 
 ## Outcome and success signal
 
@@ -28,14 +28,14 @@ Convert the confirmed player, gameplay, art, language, team, monetization and se
 ## Acceptance and verification
 
 - Every accepted user choice appears in the product direction and does not turn an unknown price/budget/timeline into a claim.
-- M0 specifies real learner sessions, privacy/recruitment boundary, creative brief, cost estimate and gate. M1 specifies player/learning, visual, audio and browser quality gates, including conditional 3D criteria.
+- The approved amendment moves real learner sessions to M1; M0 uses labelled AI-role hypotheses. M1 retains privacy/recruitment boundary, creative brief, cost structure, player/learning, visual, audio and browser quality gates, including conditional 3D criteria.
 - `scripts/check-agent-docs.ps1`, `git diff --check`, link inspection and staged diff check pass. Browser and full app checks are N/A because only documents changed.
 
 ## Handoff
 
 - Baseline: clean `main` at `3097ae3`, two commits ahead of `origin/main`; the earlier push rejection is unresolved.
 - Final checks: `scripts/check-agent-docs.ps1` passed for 35 task files; `git diff --check` passed; the two relative links in the M0/M1 plan resolve. No browser or full app checks were run because this work changes only documentation. The scoped local commit is created at handoff; the remote push restriction remains.
-- Next action: owner reviews the M0/M1 plan and decides whether to approve M0. M1 product-code planning follows the M0 gate and a spending decision.
+- Next action: follow T35's accelerated M0 gate; M1 product-code planning follows owner decisions about scene, art, target hardware, real learner source and spending ceiling.
 
 ## Improvement review
 

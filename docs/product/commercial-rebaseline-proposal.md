@@ -1,6 +1,6 @@
 # Office Case Files: đề xuất định hướng thương mại
 
-Trạng thái: **định hướng sản phẩm đã được chủ dự án duyệt ngày 27-09-2026**. Các lựa chọn ở mục 1 và thứ tự M0/M1 được xác nhận; kế hoạch thực thi M0/M1 được soạn riêng để duyệt trước khi làm. Tài liệu này thay thế giả định lập kế hoạch prototype một người làm trong một tuần; chưa cho phép triển khai hay bán hàng.
+Trạng thái: **định hướng sản phẩm và kế hoạch M0/M1 đã được chủ dự án duyệt ngày 27-09-2026**, với sửa đổi rút ngắn M0 và dùng agent AI đóng vai người học. M0 đã có [báo cáo cổng có điều kiện](M0-gate-report.md); M1 vẫn cần chốt mẫu, ngân sách, thiết bị và cách thử với người thật trước khi lập kế hoạch code riêng. Tài liệu này thay thế giả định prototype một người làm trong một tuần; chưa cho phép triển khai hay bán hàng.
 
 Kế hoạch thực thi để duyệt: [M0/M1 commercial validation](../superpowers/plans/2026-09-27-m0-m1-commercial-validation.md).
 
@@ -57,12 +57,12 @@ Kênh thanh toán cần khảo sát theo pháp nhân và nơi bán thực tế. 
 
 ## 5. Lộ trình theo cổng quyết định
 
-Với một người phát triển chính và cộng tác viên hình/âm theo mốc, **M0–M1 dự kiến 6–9 tuần**. Đây là khoảng lập kế hoạch, không phải cam kết. Chưa ấn định ngày phát hành hoặc tổng thời gian thương mại: thời gian M2–M4 phải được tính lại sau khi biết chi phí, lịch cộng tác viên, chất lượng mẫu và tốc độ sản xuất vụ án thứ hai. Mỗi mốc kết thúc bằng bằng chứng và quyết định tiếp tục/đổi hướng.
+Theo yêu cầu rút ngắn của chủ dự án, **M0 còn 3–5 ngày làm việc**, dùng AI đóng vai người học để rà soát nhanh các điểm khó hiểu; kết quả chỉ là giả thuyết thiết kế. **M0–M1 khoảng 5–7 tuần** nếu M1 được duyệt và cộng tác viên sẵn có, chưa phải cam kết. M1 phải thử với người học thật trước khi chốt M2 hoặc nội dung trả phí. Chưa ấn định ngày phát hành: thời gian M2–M4 phải tính lại sau khi biết chi phí, lịch cộng tác viên, chất lượng mẫu và tốc độ làm vụ án thứ hai.
 
 | Mốc | Việc làm | Cổng ra |
 |---|---|---|
-| M0 · 2–3 tuần: định nghĩa | Phỏng vấn người học mục tiêu, kiểm thử bản hiện tại với 5–8 người thật, moodboard, đối thủ và giả thuyết trả tiền, kiểm kê license/chi phí | Xác nhận người chơi hiểu lời hứa sản phẩm và chỉ ra 3 vấn đề làm họ bỏ cuộc; chọn art direction để thử |
-| M1 · 4–6 tuần: mẫu “wow + fun” | Làm lại một đoạn 3–5 phút bằng Phaser 2.5D với nhân vật diễn xuất, bối cảnh, ánh sáng, camera, âm thanh, suy luận và phụ đề Việt bật/ẩn cho đoạn mẫu. Chỉ làm mẫu 3D đối chứng nếu Phaser không đạt cổng và nguyên nhân thuộc giới hạn công nghệ thay vì chất lượng asset/diễn xuất | Playtest mù với người mới: họ tự hiểu mục tiêu, muốn chơi tiếp, nhận diện manh mối, tìm được bản dịch khi cần, thấy hành động công bằng; đạt mục tiêu tải và khung hình đã định trên thiết bị mục tiêu |
+| M0 · 3–5 ngày làm việc: rà soát nhanh | Agent AI đóng vai A2/B1 để rà soát nội dung và trải nghiệm, kiểm tra bản hiện tại trong trình duyệt hiển thị, lập 2–3 hướng moodboard, kiểm kê license/chi phí | Có danh sách giả thuyết có bằng chứng màn hình/nội dung, brief mẫu và scorecard M1; chưa kết luận người thật thích chơi hay sẽ trả tiền |
+| M1 · 4–6 tuần: mẫu “wow + fun” | Làm lại một đoạn 3–5 phút bằng Phaser 2.5D với nhân vật diễn xuất, bối cảnh, ánh sáng, camera, âm thanh, suy luận và phụ đề Việt bật/ẩn cho đoạn mẫu. Chỉ làm mẫu 3D đối chứng nếu Phaser không đạt cổng và nguyên nhân thuộc giới hạn công nghệ thay vì chất lượng asset/diễn xuất | 5–8 người học thật thử mẫu trong trình duyệt: họ tự hiểu mục tiêu, muốn chơi tiếp, nhận diện manh mối, tìm được bản dịch khi cần, thấy hành động công bằng; đạt mục tiêu tải và khung hình đã định trên thiết bị mục tiêu |
 | M2 · 4–6 tuần: vertical slice bán được | Hoàn thiện vụ mở đầu 10–15 phút; công cụ/pipeline làm nội dung, asset provenance, lồng tiếng Anh, transcript tiếng Anh và bản dịch tiếng Việt bật/ẩn được cho hội thoại/manh mối, lưu tiến trình, QA đa trình duyệt | Người chơi thật hoàn thành và muốn bắt đầu vụ tiếp; phụ đề không cản trở chơi/học; nhóm chứng minh có thể sản xuất một vụ mới với chi phí dự đoán được |
 | M3 · thời lượng chốt sau M2: gói nội dung trả tiền | Sản xuất đủ vụ mới để gói mua một lần có giá trị rõ, kiểm tra chất lượng tiếng Anh A2–B1, hậu kỳ hình/âm, phân tích retention theo đồng ý riêng tư | Có bằng chứng chơi tiếp và tín hiệu sẵn sàng mua; đo được chi phí mỗi vụ; nội dung đạt QA và quyền thương mại rõ |
 | M4 · 2–5 tuần: beta thương mại | Chọn cổng thanh toán hợp pháp theo nơi kinh doanh, entitlement, khôi phục mua hàng, hỗ trợ/hoàn tiền, bảo mật, quyền riêng tư, load và recovery | Beta kín mua/khôi phục/quyền truy cập thành công; kiểm tra pháp lý và vận hành được duyệt |
