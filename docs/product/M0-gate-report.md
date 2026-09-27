@@ -15,7 +15,7 @@ Status: **M0 evidence assembled; M1 start conditional on owner choices**, 2026-0
 
 ## Choices needed to open M1 production
 
-1. Select or amend the [art/audio sample direction](../design/M0-art-direction-brief.md) and confirm the exact 3–5 minute passage.
+1. Review or amend the [M1 segment design](../design/M1-segment-spec.md), including its art/audio sample direction and exact 3–5 minute passage.
 2. Set a maximum **cash** ceiling for sample art/animation/audio and identify whether the lead developer or an outside creator makes the first sample. Obtain rights/provenance before use.
 3. Choose the ordinary target laptop/browser floor and network profile so first-load limits can be fixed; retain p95 frame time ≤33 ms.
 4. Choose a lawful, consent-based source for 5–8 target learners and any compensation ceiling. No outreach has happened.

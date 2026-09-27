@@ -29,6 +29,7 @@
 | [T33](T33-commercial-rebaseline.md) skill reconciliation and commercial plan proposal | done | Codex | T32 |
 | [T34](T34-m0-m1-planning.md) commercial direction review and M0/M1 plan | done; accelerated M0 approved | Codex | T33 |
 | [T35](T35-accelerated-m0.md) accelerated AI-assisted M0 audit | done; M1 gate conditional | Codex | T34 |
+| [T36](T36-m1-segment-design.md) M1 segment design | design draft awaiting owner review | Codex | T35 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
 | [T16](T16-admin-decisions.md) admin decisions/privacy/architecture | approved | unassigned | T05 contract baseline |
 | [T17](T17-admin-shell-auth.md) admin shell and authorization | approved | unassigned | T16 |

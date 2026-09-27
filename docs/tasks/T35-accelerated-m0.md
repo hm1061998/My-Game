@@ -29,7 +29,7 @@ Baseline: `main` at `40d649a`, ahead of `origin/main` by three commits when this
 
 Agent documentation check passed for 36 task files. `git diff --check` passed. The listed M0 research/design/gate files exist; relative document links were inspected. Browser observation used a visible Codex in-app tab at `http://127.0.0.1:5173/` on the `40d649a` game baseline, with API connected and tutorial started. Browser/full app scripts are N/A for documentation-only changes; this observation is research evidence, not M1 acceptance testing.
 
-The previously rejected push to `origin` remains blocked by auto-review trust/ownership uncertainty. Do not retry by another path.
+The owner later explicitly authorized push to Git. Commit `9049c6f` was pushed successfully from `main` to `origin/main` (`f390ba4..9049c6f`); local status and the remote-tracking ref both resolved to `9049c6f`. A subsequent direct `ls-remote` read was blocked by network access, so no independent live remote read is claimed.
 
 ## Improvement review
 
