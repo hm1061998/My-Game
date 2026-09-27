@@ -31,12 +31,12 @@ def pose(state, i, n):
     if state == 'idle':
         return dict(bob=[0, -1, -2, -1][i], stride=0.0, arm=0.0, lean=0)
     if state == 'talk':
-        return dict(bob=[0, -1, 0, -1][i], stride=0.0, arm=[-4, 4, 5, -3][i], lean=[0, 1, 0, -1][i])
+        return dict(bob=[0, -1, 0, -1][i], stride=0.0, arm=[-3, 7, 12, 2][i], lean=[0, 1, 0, -1][i])
     if state == 'react':
         return dict(bob=[0, -2, -1, 0][i], stride=0.0, arm=[0, 8, 10, 3][i], lean=[0, -2, -1, 0][i])
     if state == 'dodge':
-        return dict(bob=-[0, 2, 5, 4, 2, 0][i], stride=[0, 1, 3, -3, -1, 0][i] * 1.5,
-                    arm=[0, 5, 8, 8, 4, 0][i], lean=[0, 2, 7, 7, 3, 0][i])
+        return dict(bob=-[0, 3, 7, 6, 3, 0][i], stride=[0, 2, 4, -4, -2, 0][i] * 1.5,
+                    arm=[0, 7, 11, 10, 5, 0][i], lean=[0, 4, 10, 9, 4, 0][i])
     ph = i / n * 2 * pi
     k = 1 if state == 'walk' else 1.7
     return dict(bob=-abs(sin(ph)) * 2 * k, stride=6 * k * sin(ph), arm=5 * k * sin(ph), lean=0 if state == 'walk' else 3)
@@ -90,6 +90,10 @@ def frame(c, row, state, i, n):
     b, s, a, lean = p['bob'], p['stride'], p['arm'], p['lean']
     body_bottom = 90 if c.get('coat') else 82
     parts = []
+    if state == 'dodge' and i in (1, 2, 3, 4):
+        parts.append(f'<path d="M8 {57+b} H25 M4 {68+b} H22 M11 {79+b} H27" fill="none" stroke="#8fd3c1" stroke-width="3" stroke-linecap="round" opacity=".72"/>')
+    if state == 'react' and i in (1, 2):
+        parts.append(f'<path d="M61 {12+b} l3 -6 M69 {15+b} l6 -3 M22 {13+b} l-4 -5" fill="none" stroke="#f4a261" stroke-width="3" stroke-linecap="round"/>')
     # legs
     if row == 'side':
         for dx, col in ((s, c['pants']), (-s, c['pants'])):
@@ -98,7 +102,7 @@ def frame(c, row, state, i, n):
                          f'<ellipse cx="{43 + dx}" cy="{FOOT - 2}" rx="7" ry="3.5" fill="{INK}"/>')
     else:
         for x, lift in ((33, max(0, s)), (47, max(0, -s))):
-            parts.append(f'<rect x="{x - 5}" y="{78 + b}" width="10" height="{FOOT - 80 - b - lift * .7}" rx="4" fill="{c["pants"]}" {st(2)}/>'
+            parts.append(f'<rect x="{x - 5}" y="{78 + b}" width="10" height="{FOOT - 80 - b - lift * .7}" rx="4" fill="url(#pants)" {st(2)}/>'
                          f'<path d="M{x-3} {86+b} v16" stroke="#77919a" stroke-width="1.4" opacity=".55"/>'
                          f'<ellipse cx="{x}" cy="{FOOT - 2 - lift * .7}" rx="6.5" ry="3.5" fill="{INK}"/>')
     # back arm (side view)
@@ -114,7 +118,8 @@ def frame(c, row, state, i, n):
     tw = 34 if row != 'side' else 28
     if row == 'side':
         tx = 26 + lean
-    parts.append(f'<rect x="{tx}" y="{46 + b}" width="{tw}" height="{body_bottom - 46}" rx="9" fill="{c["jacket"]}" {st()}/>')
+    parts.append(f'<rect x="{tx}" y="{46 + b}" width="{tw}" height="{body_bottom - 46}" rx="9" fill="url(#jacket)" {st()}/>')
+    parts.append(f'<path d="M{tx+5} {52+b} v{body_bottom-61} M{tx+10} {57+b} q5 4 9 0" fill="none" stroke="{c["accent"]}" stroke-width="1.4" opacity=".48"/>')
     parts.append(f'<path d="M{tx+tw-9} {48+b} q8 1 7 8 v{body_bottom-63} q-5 3 -9 1z" fill="{c["shade"]}" opacity=".7"/>')
     if row == 'down':
         parts.append(f'<path d="M31 {47+b} L40 {58+b} L49 {47+b} L45 {61+b} L40 {58+b} L35 {61+b}Z" fill="{c["accent"]}" {st(1.8)}/>')
@@ -146,7 +151,7 @@ def frame(c, row, state, i, n):
                      f'<circle cx="{42 + a + lean}" cy="{78 + b}" r="4" fill="{c["skin"]}" {st(1.8)}/>')
     else:
         for x, dy in ((19, a), (61, -a)):
-            parts.append(f'<rect x="{x - 4}" y="{50 + b + dy * .4}" width="8" height="26" rx="4" fill="{c["jacket"]}" {st(2)}/>'
+            parts.append(f'<rect x="{x - 4}" y="{50 + b + dy * .4}" width="8" height="26" rx="4" fill="url(#jacket)" {st(2)}/>'
                          f'<path d="M{x-3} {70+b+dy*.4} h6" stroke="{c["shade"]}" stroke-width="2"/>'
                          f'<circle cx="{x}" cy="{78 + b + dy * .4}" r="4" fill="{c["skin"]}" {st(1.8)}/>')
         if row == 'down' and c.get('clipboard'):
@@ -154,7 +159,7 @@ def frame(c, row, state, i, n):
                          f'<path d="M58 {66 + b} h8 M58 {71 + b} h6" {st(1.4)}/>')
     # head
     hx = 40 + (lean if row == 'side' else 0)
-    parts.append(f'<circle cx="{hx}" cy="{30 + b}" r="16" fill="{c["skin"]}" {st()}/>'
+    parts.append(f'<circle cx="{hx}" cy="{30 + b}" r="16" fill="url(#skin)" {st()}/>'
                  f'<path d="M{hx-11} {37+b} q11 10 22 0" fill="none" stroke="#b77e65" stroke-width="1.3" opacity=".55"/>')
     head = hair_front(c, row, b) + face(c, row, b)
     if lean and row == 'side':
@@ -172,7 +177,12 @@ def sheet(c):
                 body.append(f'<g transform="translate({col * FW} {r * FH})">{frame(c, row, state, i, n)}</g>')
                 col += 1
     w, h = FW * sum(count for _, count in STATES), FH * len(ROWS)
-    return f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">{"".join(body)}</svg>\n'
+    defs = (f'<linearGradient id="jacket" x2="1" y2="1"><stop stop-color="{c["accent"]}" stop-opacity=".5"/>'
+            f'<stop offset=".38" stop-color="{c["jacket"]}"/><stop offset="1" stop-color="{c["shade"]}"/></linearGradient>'
+            f'<linearGradient id="skin" x2="1" y2="1"><stop stop-color="#fff0ca"/><stop offset=".42" stop-color="{c["skin"]}"/>'
+            '<stop offset="1" stop-color="#bd8068"/></linearGradient>'
+            f'<linearGradient id="pants" x2="0" y2="1"><stop stop-color="#526b78"/><stop offset="1" stop-color="{c["pants"]}"/></linearGradient>')
+    return f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}"><defs>{defs}</defs>{"".join(body)}</svg>\n'
 
 
 def portrait(cid, c):

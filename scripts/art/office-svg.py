@@ -13,6 +13,17 @@ def svg(w, h, body, defs=''):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">'
             f'<defs>{defs}</defs>{body}</svg>\n')
 
+FLOOR_DEF = ('<linearGradient id="floorWarm" x2="0" y2="1"><stop stop-color="#fff7e6" stop-opacity=".52"/>'
+             '<stop offset="1" stop-color="#b77e52" stop-opacity=".12"/></linearGradient>')
+WOOD_DEF = ('<linearGradient id="wood" x2="0" y2="1"><stop stop-color="#f4b47e"/><stop offset=".48" stop-color="#d9895e"/>'
+            '<stop offset="1" stop-color="#a9573d"/></linearGradient>')
+CABINET_DEF = ('<linearGradient id="cabinet" x2="1" y2="0"><stop stop-color="#397b76"/><stop offset=".2" stop-color="#78b9a9"/>'
+               '<stop offset=".72" stop-color="#5c9d94"/><stop offset="1" stop-color="#376e6d"/></linearGradient>')
+PLANT_DEF = '<radialGradient id="leaf"><stop stop-color="#9bd27d"/><stop offset="1" stop-color="#387755"/></radialGradient>'
+COOLER_DEFS = ('<linearGradient id="ceramic" x2="1" y2="0"><stop stop-color="#dbe8d9"/><stop offset=".35" stop-color="#fff8e9"/>'
+               '<stop offset=".72" stop-color="#f4e8d2"/><stop offset="1" stop-color="#c8d5ca"/></linearGradient>'
+               '<linearGradient id="glass" x2="0" y2="1"><stop stop-color="#c4eff0"/><stop offset="1" stop-color="#64aaa9"/></linearGradient>')
+
 HALFTONE = (f'<pattern id="ht" width="8" height="8" patternUnits="userSpaceOnUse">'
             f'<circle cx="2" cy="2" r="1.1" fill="{INK}" opacity=".10"/></pattern>')
 
@@ -32,30 +43,36 @@ A['floor-lobby'] = svg(128, 128, (
     + ''.join(f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y + 32}" stroke="#c9a56f" stroke-width="2"/>'
               for x, y in [(40, 0), (104, 32), (20, 64), (84, 96)])
     + ''.join(f'<line x1="0" y1="{y}" x2="128" y2="{y}" stroke="#c9a56f" stroke-width="2"/>' for y in (0, 32, 64, 96))
-    + '<path d="M10 14 q20 -4 40 0 M70 78 q16 -3 34 0" stroke="#d3b17c" stroke-width="1.5" fill="none"/>'))
+    + '<path d="M10 14 q20 -4 40 0 M70 78 q16 -3 34 0" stroke="#d3b17c" stroke-width="1.5" fill="none"/>'
+    + '<rect width="128" height="128" fill="url(#floorWarm)"/>'
+    + '<path d="M8 10h32 M78 74h24 M28 111h42" stroke="#fff7e6" stroke-width="2" opacity=".38"/>'), FLOOR_DEF)
 
 A['floor-office'] = svg(128, 128, (
     '<rect width="128" height="128" fill="#bfe3d8"/>'
     '<rect x="0" y="0" width="64" height="64" fill="#b6ddd1"/><rect x="64" y="64" width="64" height="64" fill="#b6ddd1"/>'
     '<path d="M0 0H128V128H0Z M64 0V128 M0 64H128" stroke="#9fcabd" stroke-width="2" fill="none"/>'
-    '<rect width="128" height="128" fill="url(#ht)"/>'), HALFTONE)
+    '<rect width="128" height="128" fill="url(#ht)"/>'
+    '<rect width="128" height="128" fill="url(#floorWarm)"/>'
+    '<path d="M8 8h32 M77 77h34" stroke="#fff8e8" stroke-width="2" opacity=".42"/>'), HALFTONE + FLOOR_DEF)
 
 A['floor-archive'] = svg(128, 128, (
     '<rect width="128" height="128" fill="#efe3cc"/>'
     '<path d="M0 0H128V128H0Z M0 64H128 M64 0V64 M32 64V128 M96 64V128" stroke="#d8c7a6" stroke-width="2" fill="none"/>'
     '<rect width="128" height="128" fill="url(#ht)"/>'
-    '<circle cx="90" cy="30" r="3" fill="#d8c7a6"/>'), HALFTONE)
+    '<circle cx="90" cy="30" r="3" fill="#d8c7a6"/>'
+    '<rect width="128" height="128" fill="url(#floorWarm)"/>'), HALFTONE + FLOOR_DEF)
 
 A['floor-meeting'] = svg(128, 128, (
     '<rect width="128" height="128" fill="#cfe9dc"/>'
     + ''.join(f'<path d="M{x} 0 L{x + 64} 128" stroke="#b9dccb" stroke-width="10"/>' for x in (-64, 0, 64, 128))
-    + '<rect width="128" height="128" fill="url(#ht)"/>'), HALFTONE)
+    + '<rect width="128" height="128" fill="url(#ht)"/>'
+    + '<rect width="128" height="128" fill="url(#floorWarm)"/>'), HALFTONE + FLOOR_DEF)
 
 # ---- furniture (bottom edge = footprint front; shadow band below) ----
 # desk: footprint 250 wide; canvas 280x176, foot line y=160, footprint x 15..265
 A['desk'] = svg(280, 176, (
     shadow(140, 162, 140, 14)
-    + f'<rect x="15" y="92" width="250" height="68" rx="4" fill="#c7794f" {stroke()}/>'
+    + f'<rect x="15" y="92" width="250" height="68" rx="4" fill="url(#wood)" {stroke()}/>'
     f'<rect x="25" y="104" width="100" height="44" rx="3" fill="#b0653f" {stroke(w=2)}/>'
     f'<rect x="155" y="104" width="100" height="18" rx="3" fill="#b0653f" {stroke(w=2)}/>'
     f'<rect x="155" y="128" width="100" height="20" rx="3" fill="#b0653f" {stroke(w=2)}/>'
@@ -68,28 +85,28 @@ A['desk'] = svg(280, 176, (
     f'<rect x="56" y="72" width="80" height="12" rx="3" fill="#fff6e6" {stroke(w=2)}/>'
     f'<g transform="rotate(-8 190 68)"><rect x="160" y="56" width="56" height="26" fill="#fff6e6" {stroke(w=2)}/>'
     '<path d="M166 64h40M166 71h30" stroke="#1d3b3a" stroke-width="1.5" opacity=".5"/></g>'
-    f'<rect x="228" y="58" width="16" height="20" rx="3" fill="#e76f51" {stroke(w=2)}/>'))
+    f'<rect x="228" y="58" width="16" height="20" rx="3" fill="#e76f51" {stroke(w=2)}/>'), WOOD_DEF)
 
 # cabinet: footprint 120 wide; canvas 150x320, foot y=304, footprint x 15..135
 A['cabinet'] = svg(150, 320, (
     shadow(75, 306, 75, 12)
-    + f'<rect x="15" y="40" width="120" height="264" rx="4" fill="#4f8f88" {stroke()}/>'
+    + f'<rect x="15" y="40" width="120" height="264" rx="4" fill="url(#cabinet)" {stroke()}/>'
     f'<path d="M15 40 L27 22 H123 L135 40" fill="#6fb1a6" {stroke()}/>'
     + ''.join(f'<rect x="27" y="{y}" width="96" height="54" rx="3" fill="#5ea39a" {stroke(w=2)}/>'
               f'<rect x="57" y="{y + 10}" width="36" height="14" fill="#fff6e6" {stroke(w=1.5)}/>'
               f'<rect x="65" y="{y + 32}" width="20" height="6" rx="3" fill="{INK}"/>' for y in (54, 118, 182, 246) if y + 54 <= 300)
     + f'<g transform="rotate(-4 75 20)"><rect x="40" y="2" width="70" height="26" fill="#e9c58f" {stroke(w=2)}/>'
-    '<text x="75" y="20" font-family="Georgia,serif" font-size="11" font-weight="700" fill="#1d3b3a" text-anchor="middle">FILES</text></g>'))
+    '<text x="75" y="20" font-family="Georgia,serif" font-size="11" font-weight="700" fill="#1d3b3a" text-anchor="middle">FILES</text></g>'), CABINET_DEF)
 
 # planter: footprint 130x70; canvas 170x200, foot y=186
 A['planter'] = svg(170, 200, (
     shadow(85, 188, 80, 12)
-    + '<ellipse cx="85" cy="82" rx="70" ry="60" fill="#3f8a67" stroke="#1d3b3a" stroke-width="3"/>'
-    '<ellipse cx="55" cy="64" rx="38" ry="42" fill="#5aa469" stroke="#1d3b3a" stroke-width="3"/>'
-    '<ellipse cx="118" cy="58" rx="36" ry="40" fill="#6fbf7a" stroke="#1d3b3a" stroke-width="3"/>'
+    + '<ellipse cx="85" cy="82" rx="70" ry="60" fill="url(#leaf)" stroke="#1d3b3a" stroke-width="3"/>'
+    '<ellipse cx="55" cy="64" rx="38" ry="42" fill="url(#leaf)" stroke="#1d3b3a" stroke-width="3"/>'
+    '<ellipse cx="118" cy="58" rx="36" ry="40" fill="url(#leaf)" stroke="#1d3b3a" stroke-width="3"/>'
     '<path d="M60 60 q10 -14 22 -4 M110 48 q10 -10 18 0" stroke="#1d3b3a" stroke-width="2" fill="none" opacity=".45"/>'
     f'<path d="M20 124 H150 L140 186 H30 Z" fill="#f4a261" {stroke()}/>'
-    f'<rect x="14" y="116" width="142" height="16" rx="4" fill="#e76f51" {stroke()}/>'))
+    f'<rect x="14" y="116" width="142" height="16" rx="4" fill="#e76f51" {stroke()}/>'), PLANT_DEF)
 
 # meeting table: footprint 225x106; canvas 265x200, foot y=186, footprint x 20..245
 A['meeting-table'] = svg(265, 200, (
@@ -123,9 +140,9 @@ A['papers'] = svg(90, 50, (
 
 A['water-cooler'] = svg(60, 140, (
     shadow(30, 134, 24, 6)
-    + f'<rect x="12" y="56" width="36" height="76" rx="4" fill="#fff6e6" {stroke()}/>'
-    f'<path d="M16 56 V20 q14 -16 28 0 V56 Z" fill="#9fd6ea" {stroke()}/>'
-    f'<rect x="24" y="72" width="12" height="8" fill="#2f6f9f" {stroke(w=1.5)}/>'))
+    + f'<rect x="12" y="56" width="36" height="76" rx="4" fill="url(#ceramic)" {stroke()}/>'
+    f'<path d="M16 56 V20 q14 -16 28 0 V56 Z" fill="url(#glass)" {stroke()}/>'
+    f'<rect x="24" y="72" width="12" height="8" fill="#2f6f9f" {stroke(w=1.5)}/>'), COOLER_DEFS)
 
 A['rug-lobby'] = svg(240, 150, (
     f'<ellipse cx="120" cy="75" rx="116" ry="70" fill="#e76f51" {stroke()}/>'

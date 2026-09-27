@@ -31,4 +31,8 @@ Status: implementation/browser checks passed; product acceptance remains open.
 1. Owner names the ordinary target laptop, OS/browser, viewport and network profile; rerun first-load and frame cadence there and decide the load ceiling from the baseline.
 2. Owner reviews and approves the separate consent/session-notes draft and resolves compensation before inviting participants.
 3. Owner conducts 5–8 sessions with the M1 scorecard. Record deidentified raw counts and concrete explanations; do not infer statistical market demand or willingness to pay.
-4. Revisit the M1 product gate report after those observations. Do not start M2/paid-pack scope based on automated or AI-role evidence alone.
+4. Revisit the M1 product gate report after those observations. T38 recommends M2 as a validation pilot only; automated or AI-role evidence does not authorize paid case-pack production.
+
+## T38 visual-quality follow-up (2026-09-27)
+
+T38 retained the approved 2.5D renderer and improved the reproducible office/character SVG art. Two post-art headed samples again measured **60 fps, p95 17 ms** at 1280×800. Final visual-state `/assets/` measurement is **991,549 bytes**, +58,719 bytes (6.3%) against the T37 932,830-byte sample; the separately gesture-loaded 3.84 MB ambience MP3 is excluded. Exact target hardware/browser/network acceptance remains open. See [T38 visual QA](T38-visual-quality-qa.md) for before/after captures, verification, and the five AI role simulations, and [the T38 synthesis](../research/T38-ai-roleplay-synthesis.md) for limits and the conditional M2 validation recommendation.
