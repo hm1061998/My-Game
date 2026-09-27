@@ -1,6 +1,6 @@
 # M0 accelerated gate report
 
-Status: **M0 evidence assembled; M1 start conditional on owner choices**, 2026-09-27. M0 took an AI-assisted route authorized by the owner, with two independent simulated learner roles and a visible opening-screen audit. See [findings](../research/M0-findings.md), [art/audio brief](../design/M0-art-direction-brief.md) and [M1 scorecard](../research/M1-scorecard.md).
+Status: **M0 evidence assembled; M1 design approved, implementation plan pending**, 2026-09-27. M0 took an AI-assisted route authorized by the owner, with two independent simulated learner roles and a visible opening-screen audit. See [findings](../research/M0-findings.md), [art/audio brief](../design/M0-art-direction-brief.md) and [M1 scorecard](../research/M1-scorecard.md).
 
 ## Decision recommendation
 
@@ -13,12 +13,11 @@ Status: **M0 evidence assembled; M1 start conditional on owner choices**, 2026-0
 - The approved adjacent Vietnamese reveal is not implemented. M1 must test comprehension, discoverability, replay and score neutrality.
 - Cash cost, production time per finished minute, target-laptop performance, real learner response, and willingness to pay remain unknown. The M1 pilot must measure them before M2 or commercial scope.
 
-## Choices needed to open M1 production
+## M1 decisions and remaining gates
 
-1. Review or amend the [M1 segment design](../design/M1-segment-spec.md), including its art/audio sample direction and exact 3–5 minute passage.
-2. Set a maximum **cash** ceiling for sample art/animation/audio and identify whether the lead developer or an outside creator makes the first sample. Obtain rights/provenance before use.
-3. Choose the ordinary target laptop/browser floor and network profile so first-load limits can be fixed; retain p95 frame time ≤33 ms.
-4. Choose a lawful, consent-based source for 5–8 target learners and any compensation ceiling. No outreach has happened.
-5. Approve the separate file-level M1 implementation plan after these inputs. This gate report does not authorize M1 product code or vendor contact.
+1. The owner approved the [M1 segment design](../design/M1-segment-spec.md): E01→E02→scanner→E03→E06, optional hidden-by-default Vietnamese, no quiz gate for E06 in v2.
+2. The owner chose no cash spend for the initial sample and will personally invite 5–8 learners. Do not contact participants or acquire paid assets. Settle consent/compensation before sessions.
+3. Record the ordinary target laptop/browser, viewport and network profile before performance/load acceptance; retain p95 frame time ≤33 ms.
+4. Approve the separate [file-level implementation plan](../superpowers/plans/2026-09-27-m1-version-two-segment.md). This report does not authorize product code, participant contact, spending or deployment.
 
 Fallback if cost or recruitment is unavailable: keep the one-room sample as an internal visual/audio prototype, test it technically in a visible browser, and label enjoyment/commercial questions unanswered. Pause paid-pack planning until real player evidence exists.

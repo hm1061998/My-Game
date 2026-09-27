@@ -1,6 +1,6 @@
 # M1 human playtest and engineering scorecard
 
-Status: pre-registered draft for owner review, 2026-09-27. AI M0 reports are hypotheses only. Use 5–8 new target learners aged about 18–35, A2–B1, who work or are preparing to work. Recruitment source, consent wording and compensation require owner approval before outreach. No recording by default; use deidentified notes and avoid storing personal English scores with identities.
+Status: draft for the approved M1 segment; learner-session protocol needs consent/compensation details, 2026-09-27. AI M0 reports are hypotheses only. Use 5–8 new target learners aged about 18–35, A2–B1, who work or are preparing to work. The owner will invite participants personally. Settle consent wording and any compensation before sessions. No recording by default; use deidentified notes and avoid storing personal English scores with identities.
 
 ## Session, 30–45 minutes each
 
@@ -29,4 +29,4 @@ M1 succeeds only with no unresolved severe blocker and a clear majority of new p
 
 Retain the existing 60 fps intent and p95 frame time ≤33 ms. Measure final build transfer, first interactive load, memory and frame cadence on the **owner-selected ordinary laptop/browser**; no numeric load ceiling is fixed until that hardware floor and network profile are chosen. Also test pause/focus, movement/collision/depth, clue visibility, retry/checkpoint, muted/blocked audio, missing asset fallback and score neutrality after translation use in a visible browser. Current baseline hardware is not yet a target-market floor.
 
-Gate inputs still needed from owner: target desktop/laptop floor and browser, source for 5–8 real participants, any compensation ceiling, and M1 cash ceiling. Do not start outreach or paid assets before those are resolved.
+Gate inputs still needed: target desktop/laptop floor and browser before performance acceptance; consent and any compensation details before learner sessions. The owner chose no cash spend for the first sample and will invite 5–8 participants. Do not start paid assets or learner sessions before the relevant gates are resolved.

@@ -1,6 +1,6 @@
 # M1 segment design spec — “Version Two at 8:50”
 
-Status: **design proposal for owner review**, 2026-09-27. The user asked to continue after M0. This document makes the recommended first M1 slice concrete; it does not approve product code, contracts, spending, vendor contact, recruitment or deployment.
+Status: **design approved by owner**, 2026-09-27. Approved choices: E01→E02→scanner→E03→Nora E06; no Q02/Q03 gate for E06 in v2; Vietnamese hidden by default with adjacent toggle; no cash spend for the first art/audio sample; owner personally invites 5–8 learners. Approval covers design only, not product code, external contact, spending or deployment.
 
 ## Audience and intended result
 
@@ -10,7 +10,7 @@ M1 tests one 3–5 minute passage from the existing **The Swapped Report** case.
 
 ## Proposed creative direction and scope
 
-- Candidate art direction: **Illustrated mystery** from [M0 art/audio brief](M0-art-direction-brief.md): warm painted 2.5D sprites, teal shadows, expressive gestures, restrained clue lighting and a small sound signature. This is the recommended sample direction, pending owner selection.
+- Art direction: **Illustrated mystery** from [M0 art/audio brief](M0-art-direction-brief.md): warm painted 2.5D sprites, teal shadows, expressive gestures, restrained clue lighting and a small sound signature. The owner approved a self-produced, no-spend sample before any broader art commitment.
 - Keep React as the owner of readable content, focus, translation controls and dialogs; Phaser owns room rendering, character animation, camera, movement, collision and scanner timing; the API remains authoritative for collected evidence and session state. The server JSON remains the source for versioned case text and private solution.
 - Use an immutable new case content version for M1. Existing sessions stay pinned to v1; new sessions use v2. Keep all answers and scoring rules server-side.
 - Include the existing E01 email, E02 chat, scanner crossing and E03 version history, followed by the Nora statement E06. Do not redesign the whole case, case ending, admin backlog, checkout, identity or analytics.
@@ -21,7 +21,7 @@ M1 tests one 3–5 minute passage from the existing **The Swapped Report** case.
 1. **Hook, Maya at the desk:** Maya says the client meeting is close and the team needs the approved report. Her gesture points to the lit desk. A short English line appears as accessible DOM text; the player can reveal its Vietnamese translation beside it. Close dialogue returns keyboard focus to the Phaser canvas.
 2. **E01, the decision clue:** collect Maya's email. Highlight “approved report, version three” and “Do not use the previous version” as readable evidence without highlighting an answer. English is shown first; each evidence passage has an adjacent “Hiện tiếng Việt” control, hidden by default. Preference persists locally; use never affects score.
 3. **E02, an unresolved question:** collect the chat where Nora asks whether she should send the previous version. Show Nora's brief reaction using the approved acting sample. The evidence supports uncertainty about meaning; it does not establish intent.
-4. **Working theory, not a quiz gate:** invite a temporary, non-scored note such as “What do we know?” / “What is still unknown?” before the archive route. The player can skip it and can change it after E03. It must not reveal the server solution or block movement, evidence, or statement access. The owner should approve this light interaction or remove it before implementation.
+4. **Working theory, not a quiz gate:** invite a temporary, non-scored note such as “What do we know?” / “What is still unknown?” before the archive route. The player can skip it and can change it after E03. It must not reveal the server solution or block movement, evidence, or statement access.
 5. **Fair action beat:** Maya's English direction is short and voiced or replayable with transcript: “Wait until the scanner turns away. Move when the light points to the wall.” A visible sweep and danger mark communicate the same timing. Player can pause, dodge and retry from the meeting checkpoint; a failed dodge keeps evidence and never reduces English score. Existing scanner mechanics are reused unless the asset sample shows a clear readability gap.
 6. **E03, evidence changes the theory:** after the scan is cleared, collect version history. It says Nora's account replaced the client file with v2 at 8:50, and the record alone does not explain why. The player gets a chance to revise their temporary note; the game does not declare motive from an account log.
 7. **E06, character payoff:** after E02 and E03 are collected, Nora's statement is available without requiring Q02/Q03. She explains that she misread “previous version” and corrected the mistake when she learned about it. The expression, English transcript, adjacent optional Vietnamese and a short musical cue land the reveal. End the slice on the open question of how the team will prevent another version mix-up.
@@ -48,10 +48,8 @@ The segment needs: the updated room passage, protagonist walk/turn/idle/dodge, t
 
 ## Open decisions before an implementation plan
 
-1. Accept, revise or reject “Illustrated mystery” and the temporary working-theory interaction.
-2. Confirm the exact E01→E02→scanner→E03→E06 passage and whether optional reflection questions appear in the segment.
-3. Set a maximum M1 cash ceiling and choose who produces the first art/audio sample. The quote structure is in the M0 brief; no price is assumed.
-4. Name the target laptop/browser and network profile for load tests.
-5. Choose the consent-based source for 5–8 real learners and any compensation ceiling.
+1. Name an ordinary target laptop, browser, viewport and network profile for performance/load checks.
+2. Settle consent and any compensation arrangements with the owner before learner sessions; the owner will invite participants.
+3. Review and approve the separate file-level M1 implementation plan before code begins.
 
-Once these are decided, the next artifact is a file-level implementation plan with exact React/API/content/Phaser files, contracts, tests and visible-browser scenarios. M1 code starts only after that plan is reviewed and approved.
+The design decisions above are settled. The file-level implementation plan is at [2026-09-27 M1 implementation plan](../superpowers/plans/2026-09-27-m1-version-two-segment.md). M1 code starts after plan approval; target-machine details are required before performance acceptance, and consent/compensation are required before learner sessions.
