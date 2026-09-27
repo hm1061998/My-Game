@@ -25,6 +25,7 @@
 | [P03](P03-packaged-delivery.md) packaged retest and delivery evidence | done | Codex | P01, P02, code_complete |
 | [T13](T13-environment-readme.md) environment setup guide | done | Codex | T02 |
 | [T14](T14-agent-lifecycle-improvement.md) agent lifecycle and improvement | done | Codex | T01 |
+| [T32](T32-project-local-skills.md) project-local UI/UX and Superpowers skills | done | Codex | T14 |
 | [T15](T15-admin-console.md) system administration portal epic | approved | unassigned | T05 contract baseline; identity/analytics align with T06-T12 |
 | [T16](T16-admin-decisions.md) admin decisions/privacy/architecture | approved | unassigned | T05 contract baseline |
 | [T17](T17-admin-shell-auth.md) admin shell and authorization | approved | unassigned | T16 |

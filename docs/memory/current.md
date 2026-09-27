@@ -1,7 +1,7 @@
 # Current context
 
-Updated: 2026-09-26
-T31 starting baseline: `845ea01` on `main`/`origin/main`. T31 character art upgrade is complete; consult Git for its final scoped commit/push. Keep T27's approved bright editorial Phaser 2.5D direction and do not change map/gameplay contracts. The next level is a separate future task.
+Updated: 2026-09-27
+T32 project-local skills installation is complete on the clean `f390ba4` starting baseline. The requested `ui-ux-pro-max` and all 15 Superpowers skills now live in `.agents/skills/`, with Claude pointers and an updated `docs/agent/skills-index.md`. The local UI/UX search, all skill/pointer/link checks, and agent docs check passed. Browser and full app scripts were N/A because no application behavior changed; the optional quick validator lacked PyYAML, so a standard-library check was used. The scoped local commit is ahead of `origin/main`; auto-review rejected push because remote ownership/trust for these internal docs was not verified. Do not try another push path without resolving that review condition. Next action: confirm the remote destination authority, then push the local commit; afterward resume the plan review. Keep T27's approved bright editorial Phaser 2.5D direction; the next level remains a separate task.
 Never commit `office-case-files.db`, `.tools/`, `test-results/`, `playwright-report/`, Docker exports or user-owned volumes.
 
 This file holds current state only. History and evidence live in task files under `docs/tasks/` and in Git.

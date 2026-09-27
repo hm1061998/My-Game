@@ -1,0 +1,7 @@
+/.agents/skills/**/*.sh text eol=lf
+/.agents/skills/executing-plans/scripts/task-start text eol=lf
+/.agents/skills/executing-plans/scripts/task-done text eol=lf
+/.agents/skills/subagent-driven-development/scripts/task-brief text eol=lf
+/.agents/skills/subagent-driven-development/scripts/sdd-workspace text eol=lf
+/.agents/skills/subagent-driven-development/scripts/review-package text eol=lf
+/.agents/skills/writing-skills/render-graphs.js text eol=lf
