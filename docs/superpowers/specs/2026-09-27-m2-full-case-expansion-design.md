@@ -1,15 +1,15 @@
-# Thiết kế M2: Mở rộng trọn vụ án The Swapped Report
+# Thiết kế M2: Hai vụ án và hành trình game mới
 
-- **Trạng thái:** bản thiết kế tiếng Việt v1.1; các hướng thiết kế đã được duyệt trong hội thoại, chờ chủ dự án duyệt tài liệu hoàn chỉnh
+- **Trạng thái:** định hướng v1.1 được duyệt; đang lập kế hoạch triển khai theo yêu cầu chủ dự án
 - **Ngày:** 2026-09-27
-- **Giai đoạn:** thiết kế; chưa lập kế hoạch triển khai
+- **Giai đoạn:** định hướng thiết kế đã duyệt; kế hoạch triển khai T40 đang chờ duyệt
 - **Sản phẩm:** Office Case Files, game điều tra trên trình duyệt để học tiếng Anh
 
 ## Mục tiêu và bằng chứng hiện có
 
 Chủ dự án muốn tiếp tục M2 nhưng cho rằng lát cắt M1 dài 3–5 phút chưa đủ để mời người học thật. Trước khi thử với người thật, game cần có cuộc điều tra rộng hơn và đủ nội dung tiếng Anh trong ngữ cảnh. Các tác tử AI sẽ đảm nhận phần lớn việc soạn nội dung, phản biện và triển khai để quy trình của chủ dự án gọn hơn. Phần thu phí/kiếm tiền vẫn tạm dừng đến khi chủ dự án chủ động yêu cầu mở lại.
 
-Bằng chứng hiện có: vụ án `swapped-report` có JSON v1 và v2, mỗi phiên bản gồm sáu hồ sơ, ba câu hỏi, ba NPC, bảng từ vựng, kết luận và năm câu ôn tập. Luồng M1 được duyệt là E01 → E02 → né máy quét → E03 → lời khai Nora E06 và được cố ý giữ ngắn. `OfficeScene` của Phaser đã có camera bám theo nhân vật trong thế giới 1600×1000, nhưng ranh giới bản đồ, sàn, hình ảnh phòng và vật cản đang được hard-code. Tọa độ tương tác trong vụ án hiện là tọa độ phẳng; server giữ đáp án và lời giải riêng. Hiện chỉ có hai JSON phiên bản của cùng một vụ. `SessionRules.IsKnownCase` ở API và `startSession()` ở web còn hard-code `swapped-report`; do đó lựa chọn hai vụ cần một thay đổi thật ở contract/use case/domain/content catalog, không chỉ thêm màn hình chọn. Code hiện chưa có chọn độ khó, khảo sát A2/B1, chọn ngoại hình hay minimap.
+Bằng chứng hiện có: vụ án `swapped-report` có JSON v1 và v2, mỗi phiên bản gồm sáu hồ sơ, ba câu hỏi, ba NPC, bảng từ vựng, kết luận và năm câu ôn tập. Luồng M1 được duyệt là E01 → E02 → né máy quét → E03 → lời khai Nora E06 và được cố ý giữ ngắn. `OfficeScene` của Phaser đã có camera bám theo nhân vật trong thế giới 1600×1000, nhưng ranh giới bản đồ, sàn, hình ảnh phòng và vật cản đang được hard-code. Tọa độ tương tác trong vụ án hiện là tọa độ phẳng; server giữ đáp án và lời giải riêng. JSON catalog và `GET /api/v1/cases` đã hỗ trợ liệt kê metadata; `POST /api/v1/sessions` nhận `caseId`, và phiên được ghim vào `(caseId, caseVersion)`. Tuy vậy, web vẫn khởi tạo `swapped-report` cố định; API/gameplay chỉ tạo một map/checkpoint topology và một trạng thái né tổng quát. Case JSON chỉ là hai phiên bản của cùng vụ; code chưa có chọn độ khó, khảo sát A2/B1, chọn ngoại hình hay minimap. Case validator hiện yêu cầu mỗi hồ sơ dài 25–60 từ và đúng năm câu ôn tập; cần kiểm tra các giới hạn này với hai vụ án trước khi thay đổi schema.
 
 ## Các phần thiết kế đã được duyệt
 
@@ -36,7 +36,7 @@ Người chơi theo một vụ việc công sở xuyên suốt từ chỉ dẫn 
 
 ### Hành trình ngoài màn chơi
 
-1. **Chọn hồ sơ vụ án:** màn hình chọn giữa hai vụ án hoàn chỉnh; The Swapped Report là vụ dài hơn. Không đặt giá, paywall hoặc luồng mua trong M2.
+1. **Chọn hồ sơ vụ án:** màn hình chọn từ catalog vụ án hiện có (`GET /api/v1/cases`); hai vụ án đều hoàn chỉnh, The Swapped Report là vụ dài hơn. Không đặt giá, paywall hoặc luồng mua trong M2.
 2. **Tạo nhân vật:** chọn một trong hai mẫu ngoại hình; lựa chọn có thể đổi lại và không ảnh hưởng gameplay.
 3. **Chọn thiết lập học:** khảo sát tự đánh giá ngắn đề xuất A2 hoặc B1; người chơi xác nhận hoặc tự đổi. Chọn Dễ/Trung bình/Khó/Chuyên gia ở một điều khiển riêng.
 4. **Vào màn chơi:** thế giới game chiếm phần lớn khung nhìn; HUD gắn trực tiếp trên màn chơi theo bố cục đã duyệt. Các cửa sổ đọc/nhiệm vụ tạm dừng nhịp gameplay để người chơi đọc rõ.
@@ -90,6 +90,7 @@ Kết quả của tác tử AI không phải bằng chứng người chơi thậ
 - **Nội dung nhiều nhưng loãng:** mỗi hồ sơ mới phải phục vụ mục đích điều tra và mục tiêu học tập; dùng lại ngôn ngữ trong ngữ cảnh; nhờ tác tử AI phản biện phát hiện phần lặp thừa.
 - **Vụ án thiếu công bằng hoặc giải thích quá sớm:** giữ độ bất định trong hồ sơ đầu, phân biệt hành động với ý định, kiểm tra ít nhất một giả thuyết thay thế hợp lý và chỉ mở lời giải ở payoff đã định.
 - **AI sinh sai dữ kiện hoặc bản dịch:** tác tử độc lập đối chiếu từng câu với bảng dữ kiện gốc; người điều phối quyết định cuối; đáp án vẫn phía server.
+- **Chọn vụ được nhưng phiên vẫn dùng sai tiến độ thế giới:** API đã nhận `caseId` và ghim phiên bản, nhưng map/checkpoint và encounter trong domain đang cố định một màn/đoạn né. Mỗi vụ cần topology và trạng thái encounter riêng; kiểm tra reload/retry để không mất tiến độ hồi trước.
 - **Bản đồ lớn làm rối va chạm/hình ảnh:** giữ một scene, dùng mốc nhận diện rõ cho từng khu, bảo đảm điểm tương tác có thể tiếp cận; kiểm tra camera/depth/collider bằng trình duyệt hiển thị.
 - **Đọc nhiều làm đứt nhịp chơi:** mở hồ sơ thì tạm dừng hành động; giữ mỗi hồ sơ trong giới hạn kiểm tra nội dung hiện tại trừ khi có lý do rõ để đổi cấu trúc dữ liệu.
 - **Giảm hiệu năng hoặc tăng kích thước tải:** giữ hỗ trợ giảm chuyển động và hình ảnh dự phòng; đo hành trình trên trình duyệt và dung lượng asset bản cuối, so với baseline M1; báo cáo giới hạn thực tế, không tự đặt trần tải ban đầu.
@@ -113,4 +114,4 @@ Các tiêu chí trên trước đây chỉ áp dụng cho The Swapped Report. Sa
 2. Chốt thiết kế cụ thể của khảo sát A2/B1 và cấu hình hành vi cho từng mức độ khó trong kế hoạch triển khai; đây là chi tiết sản xuất, không đổi các ranh giới đã duyệt ở trên.
 3. Chọn thiết bị/trình duyệt mục tiêu và cỡ màn hình để đặt cổng hiệu năng/tải trước khi triển khai.
 
-**Giai đoạn kế tiếp:** chủ dự án rà soát đặc tả v1.1 bằng tiếng Việt và chọn hướng cho vụ thứ hai. Sau khi đặc tả được duyệt, lập kế hoạch triển khai M2 bằng tiếng Việt, chia phạm vi theo tệp/tác tử, chốt dữ kiện/ID nội dung, kiểm thử, kịch bản trình duyệt và đường phục hồi khi lỗi. Chỉ bắt đầu triển khai sau khi chủ dự án duyệt riêng kế hoạch triển khai bằng văn bản và chọn cách thực hiện.
+**Giai đoạn kế tiếp:** hoàn tất kế hoạch M2 bằng tiếng Việt theo chỉ đạo ngày 2026-09-27. Kế hoạch đặt việc chọn premise vụ hai và chốt khảo sát/độ khó/biến thể A2–B1 làm cổng trước nhánh nội dung. Chỉ bắt đầu code sau khi chủ dự án duyệt kế hoạch triển khai bằng văn bản.

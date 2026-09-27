@@ -1,6 +1,6 @@
-# T39 — M2: Mở rộng trọn vụ án The Swapped Report
+# T39 — Thiết kế M2: Hai vụ án và hành trình game mới
 
-- **Trạng thái:** bản thiết kế v1.1 đã cập nhật theo lựa chọn mới; chờ chủ dự án rà soát và chọn tình huống cho vụ án thứ hai
+- **Trạng thái:** định hướng M2 v1.1 đã duyệt; chủ dự án yêu cầu lập kế hoạch triển khai theo thiết kế mới
 - **Chủ trì:** Codex/điều phối tích hợp
 - **Phụ thuộc:** T36, T37, T38
 - **Phiên bản kế hoạch:** thiết kế 1.1
@@ -9,7 +9,7 @@
 
 ## Bước hiện tại và việc tiếp theo
 
-Bản thiết kế v1.1 ở [Thiết kế mở rộng M2](../superpowers/specs/2026-09-27-m2-full-case-expansion-design.md) đã bổ sung các lựa chọn vừa duyệt. Bước hiện tại: chủ dự án rà soát bản viết và chọn tình huống trung tâm cho vụ án thứ hai. Chưa lập kế hoạch triển khai hoặc sửa code sản phẩm trước khi đặc tả được duyệt; sau đó sẽ lập kế hoạch theo phạm vi từng tệp và xin duyệt riêng trước khi triển khai.
+Bản thiết kế v1.1 ở [Thiết kế mở rộng M2](../superpowers/specs/2026-09-27-m2-full-case-expansion-design.md) ghi lại các lựa chọn đã duyệt: hai vụ án, phong cách hình ảnh, hai mẫu ngoại hình, độ khó/trình độ học độc lập, HUD có minimap. Ngày 2026-09-27, chủ dự án chỉ đạo tiếp tục lập kế hoạch triển khai theo thiết kế mới. Tình huống vụ hai và chi tiết khảo sát/ma trận mức độ chưa được chọn; kế hoạch T40 đặt chúng làm cổng trước nhánh nội dung. Chưa có chấp thuận code.
 
 ## Định hướng đã thống nhất
 
@@ -24,8 +24,8 @@ Trong phạm vi thiết kế: hai vụ án hoàn chỉnh, The Swapped Report là
 ## Ghi nhận phê duyệt
 
 - Các lựa chọn sản phẩm được ghi ở đặc tả đã duyệt qua câu trả lời ngày 2026-09-27; HUD/minimap được duyệt sau khi xem wireframe. Phê duyệt này cho phép cập nhật bản thiết kế.
-- Phê duyệt toàn văn đặc tả v1.1: đang chờ chủ dự án rà soát; tình huống vụ hai còn mở.
-- Phê duyệt kế hoạch triển khai và cách thực hiện: đang chờ; chưa có thay đổi code.
+- Chủ dự án chỉ đạo lập kế hoạch triển khai theo thiết kế v1.1 ngày 2026-09-27; việc này cho phép chuẩn bị kế hoạch, không tự duyệt code.
+- Phê duyệt kế hoạch triển khai: đang chờ ở T40; chưa có thay đổi code.
 
 ## Kiểm chứng
 
